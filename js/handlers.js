@@ -146,7 +146,7 @@ export async function handleSignUp(form) {
     showAlert('Error', 'Could not save user_info ' + infoErr.message);
     return;
   }
-  window.location.href = 'confirmation.html';
+  window.location.href = '/confirmation/';
 }
 
 export async function handleLogin(form) {
