@@ -56,35 +56,109 @@ function renderTopNav(activeTab, info) {
 
 function renderAuth() {
   app.innerHTML = `
-<div class="flex min-h-full items-center justify-center p-8 bg-gray-900">
-  <div class="w-full max-w-md space-y-6">
-    <h2 class="text-3xl font-bold text-center text-white">Sign In</h2>
-    <div class="bg-gray-800 rounded-lg p-6 shadow-xl border border-indigo-900">
-      <div class="mb-6 flex space-x-2 border-b border-gray-700">
-        <button data-action="show-tab" data-target="login-form" class="tab-button border-b-2 border-indigo-400 text-indigo-400 font-semibold px-4 py-3">Sign In</button>
-        <button data-action="show-tab" data-target="signup-form" class="tab-button px-4 py-3 text-gray-400 hover:text-indigo-400 transition">Sign Up</button>
-      </div>
-      <div id="login-form" class="tab-content">
-        <form data-form-action="login" class="space-y-4">
-          <input name="email" type="email" required placeholder="Email" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500">
-          <input name="password" type="password" required placeholder="Password" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5 focus:ring-indigo-500 focus:border-indigo-500">
-          <button class="w-full py-2.5 mt-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-500 transition">Sign In</button>
-        </form>
-      </div>
-      <div id="signup-form" class="tab-content hidden">
-        <form data-form-action="signup" class="space-y-3">
-          <input name="first_name" required placeholder="First name" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5">
-          <input name="last_name" required placeholder="Last name" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5">
-          <input name="username" required placeholder="Username" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5">
-          <input name="email" type="email" required placeholder="Email" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5">
-          <input name="phone_number" type="tel" placeholder="Phone number (optional)" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5">
-          <input name="password" type="password" required placeholder="Password" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5">
-          <input name="confirm_password" type="password" required placeholder="Confirm Password" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-4 py-2.5">
-          <button class="w-full py-2.5 mt-4 bg-indigo-600 text-white font-semibold rounded-lg hover:bg-indigo-500 transition">Create Account</button>
-        </form>
-      </div>
+<div class="home-shell auth-page">
+  <header class="app-header auth-header">
+    <div class="app-header__left">
+      <div class="app-logo">Split</div>
     </div>
-  </div>
+  </header>
+  <main class="home-main">
+    <section class="auth-layout">
+      <div class="auth-intro">
+        <div class="summary-card auth-summary">
+          <p class="summary-title">Welcome back</p>
+          <h2 class="summary-amount">Keep every bill in sync.</h2>
+          <p class="summary-desc">Track shared expenses, approve splits, and store receipts for every group.</p>
+          <div class="auth-highlights">
+            <div class="auth-highlight">
+              <span class="auth-highlight__dot"></span>
+              <div>
+                <div class="auth-highlight__title">One dashboard</div>
+                <div class="auth-highlight__desc">See pending proposals, totals, and activity at a glance.</div>
+              </div>
+            </div>
+            <div class="auth-highlight">
+              <span class="auth-highlight__dot"></span>
+              <div>
+                <div class="auth-highlight__title">Smart splits</div>
+                <div class="auth-highlight__desc">Auto-calculate shares and keep approvals tidy.</div>
+              </div>
+            </div>
+            <div class="auth-highlight">
+              <span class="auth-highlight__dot"></span>
+              <div>
+                <div class="auth-highlight__title">Trusted profiles</div>
+                <div class="auth-highlight__desc">Find friends by email or username and stay connected.</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="card auth-card">
+        <div class="auth-card__header">
+          <p class="auth-card__eyebrow">Account</p>
+          <h2 class="auth-card__title">Sign in to Split</h2>
+          <p class="auth-card__subtitle">Use your email to sign in or create a new account.</p>
+        </div>
+        <div class="auth-tabs">
+          <button data-action="show-tab" data-target="login-form" class="tab-button auth-tab border-b-2 border-indigo-400 text-indigo-400 font-semibold">Sign In</button>
+          <button data-action="show-tab" data-target="signup-form" class="tab-button auth-tab text-gray-400">Sign Up</button>
+        </div>
+        <div id="login-form" class="tab-content">
+          <form data-form-action="login" class="auth-form">
+            <label class="auth-field">
+              <span>Email address</span>
+              <input name="email" type="email" autocomplete="email" required placeholder="you@email.com" class="auth-input">
+            </label>
+            <label class="auth-field">
+              <span>Password</span>
+              <input name="password" type="password" autocomplete="current-password" required placeholder="Enter your password" class="auth-input">
+            </label>
+            <button class="auth-submit">Sign In</button>
+          </form>
+          <p class="auth-helper">New here? Use Sign Up to create your account.</p>
+        </div>
+        <div id="signup-form" class="tab-content hidden">
+          <form data-form-action="signup" class="auth-form">
+            <div class="auth-form__row">
+              <label class="auth-field">
+                <span>First name</span>
+                <input name="first_name" required placeholder="First name" class="auth-input">
+              </label>
+              <label class="auth-field">
+                <span>Last name</span>
+                <input name="last_name" required placeholder="Last name" class="auth-input">
+              </label>
+            </div>
+            <label class="auth-field">
+              <span>Username</span>
+              <input name="username" required placeholder="Username" class="auth-input">
+            </label>
+            <label class="auth-field">
+              <span>Email address</span>
+              <input name="email" type="email" autocomplete="email" required placeholder="you@email.com" class="auth-input">
+            </label>
+            <label class="auth-field">
+              <span>Phone number (optional)</span>
+              <input name="phone_number" type="tel" autocomplete="tel" placeholder="(555) 123-4567" class="auth-input">
+            </label>
+            <div class="auth-form__row">
+              <label class="auth-field">
+                <span>Password</span>
+                <input name="password" type="password" autocomplete="new-password" required placeholder="Create a password" class="auth-input">
+              </label>
+              <label class="auth-field">
+                <span>Confirm password</span>
+                <input name="confirm_password" type="password" autocomplete="new-password" required placeholder="Confirm password" class="auth-input">
+              </label>
+            </div>
+            <button class="auth-submit">Create Account</button>
+          </form>
+          <p class="auth-helper">Already have an account? Switch back to Sign In.</p>
+        </div>
+      </div>
+    </section>
+  </main>
 </div>`;
 }
 

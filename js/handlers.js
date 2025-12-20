@@ -12,6 +12,7 @@ import {
   fetchGroupMembers
 } from './fetchers.js';
 import { render } from './views.js';
+import { navigate } from './router.js';
 import { getUserInfo } from './users.js';
 
 const PROFILE_PICTURE_BUCKET = 'profile_pictures';
@@ -51,7 +52,35 @@ async function getBlockSetsForCurrentUser() {
  */
 
 export async function handleLogout() {
-  await db.auth.signOut();
+  setLoading(true);
+  let signOutOk = false;
+  try {
+    const { error } = await db.auth.signOut();
+    if (error && !/auth session missing/i.test(error.message || '')) throw error;
+    signOutOk = true;
+  } catch (err) {
+    console.warn('signOut failed, attempting local sign out', err);
+    try {
+      const { error: localErr } = await db.auth.signOut({ scope: 'local' });
+      if (localErr && !/auth session missing/i.test(localErr.message || '')) throw localErr;
+      signOutOk = true;
+    } catch (localErr) {
+      showAlert('Sign out failed', localErr?.message || 'Unable to sign out right now.');
+    }
+  } finally {
+    setLoading(false);
+  }
+
+  if (!signOutOk) return;
+  appState.currentUser = null;
+  appState.currentView = 'auth';
+  appState.currentGroup = null;
+  appState.currentGroupMembers = [];
+  appState.currentGroupMemberIds = [];
+  appState.userCache.clear();
+  appState.pendingProfilePicturePath = '';
+  appState.pendingProfilePictureUrl = '';
+  navigate('/signin', { replace: true });
 }
 
 export async function handleSignUp(form) {
