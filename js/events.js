@@ -10,6 +10,8 @@ import {
   showDeleteGroupConfirmModal,
   showRemoveMemberConfirmModal
 } from './views.js';
+import { navigate } from './router.js';
+
 import {
   handleAddFriend,
   handleAddMember,
@@ -30,10 +32,11 @@ import {
   handleDeleteGroup,
   handleRemoveGroupMember,
   handleRemoveFriend,
-  handleBlockFriend
+  handleBlockFriend,
+  handleExpenseApprovalResponse
 } from './handlers.js';
 import { formatCurrency } from './format.js';
-import { showAlert } from './ui.js';
+import { showAlert, showConfirm } from './ui.js';
 
 const clamp = (val, min = 0, max = 100) => Math.max(min, Math.min(max, val));
 const sanitizeDecimalInput = (input) => {
@@ -217,8 +220,7 @@ export function registerEventListeners() {
           description: t.dataset.groupDesc ? decodeURIComponent(t.dataset.groupDesc) : '',
           owner_id: t.dataset.ownerId || ''
         };
-        appState.currentView = 'group';
-        render();
+        navigate(`/${appState.currentUser?.id}/groups/${t.dataset.groupId}`);
         break;
       case 'edit-group':
         showEditGroupModal({
@@ -241,8 +243,7 @@ export function registerEventListeners() {
       case 'nav': {
         const targetView = t.dataset.target || e.target.dataset.target;
         if (targetView) {
-          appState.currentView = targetView;
-          render();
+          navigate(`/${appState.currentUser?.id || ''}/${targetView}`);
         }
         break;
       }
@@ -274,18 +275,24 @@ export function registerEventListeners() {
         const friendId = t.dataset.friendid;
         if (!friendId) return;
         closeFriendMenus();
-        if (confirm('Remove this friend?')) {
-          handleRemoveFriend(friendId);
-        }
+        showConfirm('Remove friend', 'Are you sure you want to remove this friend?', {
+          confirmText: 'Remove',
+          cancelText: 'Cancel'
+        }).then((ok) => {
+          if (ok) handleRemoveFriend(friendId);
+        });
         break;
       }
       case 'block-friend': {
         const friendId = t.dataset.friendid;
         if (!friendId) return;
         closeFriendMenus();
-        if (confirm('Block this user? They will also be removed from friends.')) {
-          handleBlockFriend(friendId);
-        }
+        showConfirm('Block friend', 'Block this user? They will also be removed from friends.', {
+          confirmText: 'Block',
+          cancelText: 'Cancel'
+        }).then((ok) => {
+          if (ok) handleBlockFriend(friendId);
+        });
         break;
       }
       case 'change-password':
@@ -293,6 +300,9 @@ export function registerEventListeners() {
         break;
       case 'respond-friend-request':
         handleFriendRequestResponse(t.dataset.requester, t.dataset.requestee, t.dataset.response);
+        break;
+      case 'respond-expense':
+        handleExpenseApprovalResponse(t.dataset.expenseId, t.dataset.response);
         break;
       case 'respond-group-invite':
         handleGroupInviteResponse(t.dataset.groupId, t.dataset.response);
@@ -410,15 +420,6 @@ export function registerEventListeners() {
         form.querySelectorAll('.expense-percent-input').forEach((input) => {
           input.value = 50;
         });
-        updateExpenseSplitPreview(form);
-        break;
-      }
-      case 'toggle-percent-mode': {
-        const form = t.closest('form');
-        if (!form) return;
-        const isActive = form.classList.toggle('percentage-mode');
-        t.setAttribute('aria-pressed', isActive ? 'true' : 'false');
-        form.querySelectorAll('.expense-percent-box').forEach((box) => box.classList.toggle('hidden', !isActive));
         updateExpenseSplitPreview(form);
         break;
       }

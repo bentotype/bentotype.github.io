@@ -1,6 +1,6 @@
 import { db } from './supabaseClient.js';
 import { appState, modalContainer } from './state.js';
-import { setLoading, showAlert } from './ui.js';
+import { setLoading, showAlert, showConfirm } from './ui.js';
 import {
   fetchFriends,
   fetchPendingFriendRequests,
@@ -24,22 +24,24 @@ async function getBlockSetsForCurrentUser() {
     return { blocked: new Set(), blockedBy: new Set() };
   }
   const userId = appState.currentUser.id;
-  const { data, error } = await db
-    .from('block_list')
-    .select('user_id_1, user_id_2')
-    .or(`user_id_1.eq.${userId},user_id_2.eq.${userId}`);
+  try {
+    const { data, error } = await db
+      .from('block_list')
+      .select('user_id_1, user_id_2')
+      .or(`user_id_1.eq.${userId},user_id_2.eq.${userId}`);
+    if (error) throw error;
 
-  if (error) {
-    throw error;
+    const blocked = new Set();
+    const blockedBy = new Set();
+    (data || []).forEach((row) => {
+      if (row.user_id_1 === userId) blocked.add(row.user_id_2);
+      if (row.user_id_2 === userId) blockedBy.add(row.user_id_1);
+    });
+    return { blocked, blockedBy };
+  } catch (err) {
+    console.error('block_list lookup failed', err);
+    return { blocked: new Set(), blockedBy: new Set() };
   }
-
-  const blocked = new Set();
-  const blockedBy = new Set();
-  (data || []).forEach((row) => {
-    if (row.user_id_1 === userId) blocked.add(row.user_id_2);
-    if (row.user_id_2 === userId) blockedBy.add(row.user_id_1);
-  });
-  return { blocked, blockedBy };
 }
 
 /**
@@ -130,9 +132,7 @@ export async function handleLogin(form) {
     return;
   }
   if (data?.user) {
-    appState.currentUser = data.user;
-    appState.currentView = 'home';
-    render();
+    // Auth state listener in main.js will handle navigation
   }
 }
 
@@ -287,15 +287,62 @@ export async function handleAddFriend(targetUserId) {
   }
   setLoading(true);
   try {
-    const { blocked, blockedBy } = await getBlockSetsForCurrentUser();
-    if (blocked.has(targetUserId) || blockedBy.has(targetUserId)) {
-      showAlert('Error', 'Friend request not allowed because one of you has blocked the other.');
+    const userId = appState.currentUser.id;
+
+    // Fresh block check directly against DB (split queries for clarity)
+    const [{ data: youBlockedRow, error: youBlockedErr }, { data: theyBlockedRow, error: theyBlockedErr }] = await Promise.all([
+      db
+        .from('block_list')
+        .select('user_id_1, user_id_2')
+        .eq('user_id_1', userId)
+        .eq('user_id_2', targetUserId)
+        .maybeSingle(),
+      db
+        .from('block_list')
+        .select('user_id_1, user_id_2')
+        .eq('user_id_1', targetUserId)
+        .eq('user_id_2', userId)
+        .maybeSingle()
+    ]);
+    if (youBlockedErr || theyBlockedErr) {
+      throw youBlockedErr || theyBlockedErr;
+    }
+
+    const youBlocked = Boolean(youBlockedRow);
+    const theyBlocked = Boolean(theyBlockedRow);
+
+    if (theyBlocked) {
+      showAlert('Error', 'Friend request not allowed because this user has blocked you.');
       return;
+    }
+
+    if (youBlocked) {
+      setLoading(false);
+      const confirmUnblock = await showConfirm('User is blocked', 'You have blocked this user. Unblock and send a friend request?', {
+        confirmText: 'Unblock & Send',
+        cancelText: 'Cancel'
+      });
+      if (!confirmUnblock) return;
+      setLoading(true);
+      const { error: unblockErr } = await db
+        .from('block_list')
+        .delete({ returning: 'minimal' })
+        .eq('user_id_1', userId)
+        .eq('user_id_2', targetUserId);
+      if (unblockErr) {
+        showAlert('Error', unblockErr.message || 'Unable to unblock user.');
+        return;
+      }
     }
 
     const payload = { id_1: appState.currentUser.id, id_2: targetUserId };
     const { error } = await db.from('friend_request').insert(payload);
-    if (error) throw error;
+    if (error) {
+      if (/duplicate key value violates unique constraint "friend_request_id_2_key"/i.test(error.message || '')) {
+        throw new Error('Friend request already sent');
+      }
+      throw error;
+    }
     showAlert('Success', 'Friend request sent');
   } catch (err) {
     showAlert('Error', err?.message || 'Unable to send friend request.');
@@ -321,14 +368,24 @@ export async function handleFriendRequestResponse(requesterId, requesteeId, resp
     }
 
     if (response === 'accept') {
-      const payload = [
-        { id_1: requesterId, id_2: requesteeId },
-        { id_1: requesteeId, id_2: requesterId }
-      ];
-      const { error: friendErr } = await db
+      const { data: existing, error: existingErr } = await db
         .from('friend_list')
-        .insert(payload, { upsert: true, onConflict: 'id_1,id_2' });
-      if (friendErr) throw friendErr;
+        .select('id_1, id_2')
+        .or(`and(id_1.eq.${requesterId},id_2.eq.${requesteeId}),and(id_1.eq.${requesteeId},id_2.eq.${requesterId})`);
+      if (existingErr) throw existingErr;
+
+      const existingKeys = new Set((existing || []).map((row) => `${row.id_1}-${row.id_2}`));
+      const toInsert = [];
+      if (!existingKeys.has(`${requesterId}-${requesteeId}`)) {
+        toInsert.push({ id_1: requesterId, id_2: requesteeId });
+      }
+      if (!existingKeys.has(`${requesteeId}-${requesterId}`)) {
+        toInsert.push({ id_1: requesteeId, id_2: requesterId });
+      }
+      if (toInsert.length) {
+        const { error: friendErr } = await db.from('friend_list').insert(toInsert, { returning: 'minimal' });
+        if (friendErr) throw friendErr;
+      }
     }
     const { error: deleteErr } = await db
       .from('friend_request')
@@ -354,14 +411,30 @@ export async function handleRemoveFriend(friendId) {
   setLoading(true);
   try {
     const userId = appState.currentUser.id;
-    const { error } = await db
+    const { error: primaryErr } = await db
       .from('friend_list')
-      .delete()
-      .or(`and(id_1.eq.${userId},id_2.eq.${friendId}),and(id_1.eq.${friendId},id_2.eq.${userId})`);
-    if (error) throw error;
-    showAlert('Success', 'Friend removed.');
+      .delete({ returning: 'minimal' })
+      .eq('id_1', userId)
+      .eq('id_2', friendId);
+    if (primaryErr) {
+      console.error('remove friend primary failed', primaryErr);
+      throw primaryErr;
+    }
+
+    const { error: secondaryErr } = await db
+      .from('friend_list')
+      .delete({ returning: 'minimal' })
+      .eq('id_1', friendId)
+      .eq('id_2', userId);
+    if (secondaryErr && !/row-level security|permission denied/i.test(secondaryErr.message || '')) {
+      console.error('remove friend secondary failed', secondaryErr);
+      throw secondaryErr;
+    }
+
+    showAlert('Success', 'Friend removed');
     fetchFriends();
   } catch (err) {
+    console.error('remove friend error', err);
     showAlert('Error', err?.message || 'Unable to remove friend.');
   } finally {
     setLoading(false);
@@ -376,26 +449,48 @@ export async function handleBlockFriend(friendId) {
   setLoading(true);
   try {
     const userId = appState.currentUser.id;
-    const { error: friendErr } = await db
+    const { error: primaryErr } = await db
       .from('friend_list')
-      .delete()
-      .or(`and(id_1.eq.${userId},id_2.eq.${friendId}),and(id_1.eq.${friendId},id_2.eq.${userId})`);
-    if (friendErr) throw friendErr;
+      .delete({ returning: 'minimal' })
+      .eq('id_1', userId)
+      .eq('id_2', friendId);
+    if (primaryErr) {
+      console.error('block friend primary delete failed', primaryErr);
+      throw primaryErr;
+    }
+
+    const { error: secondaryErr } = await db
+      .from('friend_list')
+      .delete({ returning: 'minimal' })
+      .eq('id_1', friendId)
+      .eq('id_2', userId);
+    if (secondaryErr && !/row-level security|permission denied/i.test(secondaryErr.message || '')) {
+      console.error('block friend secondary delete failed', secondaryErr);
+      throw secondaryErr;
+    }
+
     const { error: requestErr } = await db
       .from('friend_request')
       .delete()
       .or(`and(id_1.eq.${userId},id_2.eq.${friendId}),and(id_1.eq.${friendId},id_2.eq.${userId})`);
-    if (requestErr) throw requestErr;
+    if (requestErr) {
+      console.error('block friend - remove pending request failed', requestErr);
+      throw requestErr;
+    }
 
     const { error: blockErr } = await db
       .from('block_list')
-      .insert({ user_id_1: userId, user_id_2: friendId }, { upsert: true, onConflict: 'user_id_1,user_id_2' });
-    if (blockErr) throw blockErr;
+      .insert({ user_id_1: userId, user_id_2: friendId }, { upsert: true, onConflict: 'user_id_1,user_id_2', returning: 'minimal' });
+    if (blockErr) {
+      console.error('block friend - insert block failed', blockErr);
+      throw blockErr;
+    }
 
-    showAlert('Success', 'User blocked and removed from friends.');
+    showAlert('Success', 'Friend blocked');
     fetchFriends();
     fetchPendingFriendRequests();
   } catch (err) {
+    console.error('block friend error', err);
     showAlert('Error', err?.message || 'Unable to block user.');
   } finally {
     setLoading(false);
@@ -603,15 +698,22 @@ export async function handleRemoveGroupMember(memberId, groupIdOverride = null) 
       return;
     }
 
-    const { data: removed, error: deleteErr } = await db
+    const { error: deleteErr } = await db
       .from('groups')
-      .delete()
+      .delete({ returning: 'minimal' })
+      .eq('group_id', groupId)
+      .eq('user_id', memberId);
+    if (deleteErr) throw deleteErr;
+
+    const { data: stillExists, error: checkErr } = await db
+      .from('groups')
+      .select('user_id')
       .eq('group_id', groupId)
       .eq('user_id', memberId)
-      .select('user_id, group_id');
-    if (deleteErr) throw deleteErr;
-    if (!removed || removed.length === 0) {
-      throw new Error('Member not found in this group.');
+      .maybeSingle();
+    if (checkErr) throw checkErr;
+    if (stillExists) {
+      throw new Error('Member could not be removed due to a database rule.');
     }
 
     appState.currentGroupMemberIds = (appState.currentGroupMemberIds || []).filter((id) => id !== memberId);
@@ -703,19 +805,15 @@ export async function handleSearchUser(form) {
     .limit(10);
   setLoading(false);
 
-  let blockSets = { blocked: new Set(), blockedBy: new Set() };
-  try {
-    blockSets = await getBlockSetsForCurrentUser();
-  } catch (err) {
-    res.innerHTML = '<div class="text-red-500">Unable to check block settings right now.</div>';
-    return;
-  }
+  let blockSets = await getBlockSetsForCurrentUser();
 
   if (error) {
     res.innerHTML = '<div class="text-red-500">' + error.message + '</div>';
     return;
   }
-  const visibleUsers = (data || []).filter((u) => !blockSets.blocked.has(u.user_id) && !blockSets.blockedBy.has(u.user_id));
+  // Blocked users (that you blocked) remain visible so you can choose to unblock and re-add.
+  // Users who have blocked you are hidden from your search results.
+  const visibleUsers = (data || []).filter((u) => !blockSets.blockedBy.has(u.user_id));
   if (!visibleUsers.length) {
     res.innerHTML = '<div class="text-gray-500">No users.</div>';
     return;
@@ -892,13 +990,13 @@ export async function handleCreateExpense(form) {
     receiptPath = filePath;
   }
 
-  const expense_id =
+  const clientGeneratedId =
     typeof crypto !== 'undefined' && crypto.randomUUID
       ? crypto.randomUUID()
       : `exp_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
   const expenseInfoPayload = {
-    expense_id,
+    expense_id: clientGeneratedId,
     group_id: appState.currentGroup.id,
     title,
     explanation,
@@ -910,31 +1008,81 @@ export async function handleCreateExpense(form) {
     receipt_image: receiptPath
   };
 
-  const expenseRows = allocations.map((entry) => ({
-    expense_id,
-    user_id: entry.userId,
-    individual_amount: entry.cents,
-    approval: false
-  }));
-
   setLoading(true);
-  const { error: infoErr } = await db.from('expense_info').insert(expenseInfoPayload);
-  if (infoErr) {
+  try {
+    const { data: infoRows, error: infoErr } = await db
+      .from('expense_info')
+      .insert(expenseInfoPayload)
+      .select('expense_id')
+      .limit(1);
+    if (infoErr) throw new Error(infoErr.message || 'Could not save expense details.');
+
+    const persistedId = infoRows?.[0]?.expense_id || clientGeneratedId;
+    const expenseRows = allocations.map((entry) => ({
+      expense_id: persistedId,
+      user_id: entry.userId,
+      individual_amount: entry.cents,
+      approval: false
+    }));
+
+    const { error: expenseErr } = await db.from('expense').insert(expenseRows);
+    if (expenseErr) {
+      // Clean up the expense_info row if splits fail to save.
+      try {
+        await db.from('expense_info').delete().eq('expense_id', persistedId);
+      } catch (cleanupErr) {
+        console.error('Failed to roll back expense_info row', cleanupErr);
+      }
+      throw new Error(expenseErr.message || 'Could not save expense shares.');
+    }
+
+    modalContainer.innerHTML = '';
+    showAlert('Success', 'Expense proposal created.');
+    fetchPendingProposals();
+    fetchGroupPendingExpenses(appState.currentGroup.id);
+    fetchGroupExpenseActivity(appState.currentGroup.id);
+  } catch (err) {
+    showAlert('Error', err?.message || 'Unable to create expense.');
+  } finally {
     setLoading(false);
-    showAlert('Error', infoErr.message || 'Could not save expense details.');
+  }
+}
+
+/**
+ * Handles user approval/decline of an expense share. When all shares for an
+ * expense are approved, the parent expense_info.proposal is marked false.
+ */
+export async function handleExpenseApprovalResponse(expenseId, response) {
+  if (!appState.currentUser?.id || !expenseId) {
+    showAlert('Error', 'Missing expense or user context.');
     return;
   }
+  const approve = response === 'approve';
+  setLoading(true);
+  try {
+    const { error: updateErr } = await db
+      .from('expense')
+      .update({ approval: approve })
+      .eq('expense_id', expenseId)
+      .eq('user_id', appState.currentUser.id);
+    if (updateErr) throw updateErr;
 
-  const { error: expenseErr } = await db.from('expense').insert(expenseRows);
-  setLoading(false);
-  if (expenseErr) {
-    showAlert('Warning', 'Expense created, but shares could not be saved: ' + expenseErr.message);
-    return;
+    if (approve) {
+      const { data: rows, error: checkErr } = await db.from('expense').select('approval').eq('expense_id', expenseId);
+      if (checkErr) throw checkErr;
+      const allApproved = (rows || []).length > 0 && rows.every((row) => row.approval === true);
+      if (allApproved) {
+        await db.from('expense_info').update({ proposal: false }).eq('expense_id', expenseId);
+      }
+    }
+
+    fetchGroupPendingExpenses(appState.currentGroup?.id);
+    fetchGroupExpenseActivity(appState.currentGroup?.id);
+    fetchPendingProposals();
+    showAlert('Success', approve ? 'Marked approved.' : 'Marked declined.');
+  } catch (err) {
+    showAlert('Error', err?.message || 'Unable to update approval.');
+  } finally {
+    setLoading(false);
   }
-
-  modalContainer.innerHTML = '';
-  showAlert('Success', 'Expense proposal created.');
-  fetchPendingProposals();
-  fetchGroupPendingExpenses(appState.currentGroup.id);
-  fetchGroupExpenseActivity(appState.currentGroup.id);
 }

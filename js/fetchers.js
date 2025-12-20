@@ -327,12 +327,18 @@ export async function fetchGroupPendingExpenses(groupId) {
       const due = row.expense_info?.due_date ? new Date(row.expense_info.due_date).toLocaleDateString() : 'No due date';
       const title = escapeHtml(row.expense_info?.title || 'Expense');
       const amount = (row.individual_amount || 0) / 100;
-      return `<div class="expense-pill">
+      return `<div class="expense-pill" data-expense-id="${row.expense_id}">
         <div>
           <div class="expense-pill__title">${title}</div>
           <div class="expense-pill__meta">Due ${due}</div>
         </div>
-        <div class="expense-pill__amount">${formatCurrency(amount)}</div>
+        <div class="expense-pill__actions">
+          <div class="expense-pill__amount">${formatCurrency(amount)}</div>
+          <div class="expense-pill__buttons">
+            <button type="button" class="expense-pill__btn approve" data-action="respond-expense" data-response="approve" data-expense-id="${row.expense_id}" aria-label="Approve expense">✔</button>
+            <button type="button" class="expense-pill__btn decline" data-action="respond-expense" data-response="decline" data-expense-id="${row.expense_id}" aria-label="Decline expense">✕</button>
+          </div>
+        </div>
       </div>`;
     })
     .join('');
@@ -348,6 +354,7 @@ export async function fetchGroupExpenseActivity(groupId) {
     .from('expense_info')
     .select('expense_id, title, explanation, total_amount, payer_id, date, proposal, due_date')
     .eq('group_id', groupId)
+    .eq('proposal', false)
     .order('date', { ascending: false })
     .limit(15);
 
