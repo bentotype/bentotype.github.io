@@ -492,7 +492,11 @@ async function renderReceiptUploadPage() {
   }
 
   const hasPreview = Boolean(appState.pendingReceiptPreviewUrl);
-  const statusText = hasPreview ? 'Ready to scan this receipt locally.' : 'Upload a receipt to scan.';
+  const statusText = hasPreview
+    ? items.length
+      ? `Found ${items.length} item${items.length === 1 ? '' : 's'}. Review before continuing.`
+      : 'Scanning receipt...'
+    : 'Upload a receipt to scan.';
   const items = appState.pendingReceiptItems || [];
   const itemsMarkup = items.length
     ? items
@@ -523,21 +527,18 @@ async function renderReceiptUploadPage() {
       </div>
     </section>
     <form id="receipt-upload-form" class="receipt-upload-grid">
-      <section class="card receipt-upload-card">
+      <section class="card receipt-upload-card" data-receipt-dropzone>
         <label class="expense-field">
           <span>Receipt image</span>
           <div class="expense-file receipt-upload-file">
-            <input id="receipt-upload-input" type="file" name="receipt_image" accept="image/*" class="expense-file__input">
+            <input id="receipt-upload-input" type="file" name="receipt_image" accept="image/png,image/jpeg" class="expense-file__input">
             <label for="receipt-upload-input" class="expense-file__button">Upload receipt</label>
             <span class="expense-file__name" data-receipt-label>${escapeHtml(fileLabel)}</span>
           </div>
         </label>
         <div class="receipt-preview">
           <img class="receipt-preview__image${hasPreview ? '' : ' hidden'}" data-receipt-preview src="${hasPreview ? appState.pendingReceiptPreviewUrl : ''}" alt="Receipt preview">
-          <div class="receipt-preview__placeholder${hasPreview ? ' hidden' : ''}" data-receipt-placeholder>Upload a receipt to preview it here.</div>
-        </div>
-        <div class="receipt-scan__controls">
-          <button type="button" class="receipt-scan__button" data-action="scan-receipt"${hasPreview ? '' : ' disabled'}>Scan receipt</button>
+          <div class="receipt-preview__placeholder${hasPreview ? ' hidden' : ''}" data-receipt-placeholder>Drag & drop or paste a receipt here, or use Upload receipt.</div>
         </div>
         <p class="receipt-scan__status" data-receipt-status>${statusText}</p>
         <div class="receipt-scan__total" data-receipt-total${totalValue ? '' : ' hidden'}>${totalLabel}</div>
@@ -844,21 +845,9 @@ export function showCreateExpenseModal() {
       <label class="expense-field expense-field--full">
         <span>Receipt image (optional)</span>
         <div class="expense-file">
-          <input id="${receiptId}" type="file" name="receipt_image" accept="image/*" class="expense-file__input">
+          <input id="${receiptId}" type="file" name="receipt_image" accept="image/png,image/jpeg" class="expense-file__input">
           <label for="${receiptId}" class="expense-file__button">Upload receipt</label>
           <span class="expense-file__name" data-receipt-label>No file chosen</span>
-        </div>
-      </label>
-      <label class="expense-field expense-field--full">
-        <span>Receipt scan (on-device)</span>
-        <div class="receipt-scan">
-          <div class="receipt-scan__controls">
-            <button type="button" class="receipt-scan__button" data-action="scan-receipt" disabled>Scan receipt</button>
-            <button type="button" class="receipt-scan__button receipt-scan__button--ghost" data-action="use-receipt-total" disabled>Use total</button>
-          </div>
-          <p class="receipt-scan__status" data-receipt-status aria-live="polite">Upload a receipt to scan.</p>
-          <div class="receipt-scan__total" data-receipt-total hidden></div>
-          <ul class="receipt-scan__list" data-receipt-items></ul>
         </div>
       </label>
     </div>

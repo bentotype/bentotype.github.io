@@ -1105,25 +1105,21 @@ export async function handleCreateExpense(form) {
   }
 }
 
-export async function handleReceiptFileChange(inputEl, { autoScan = false } = {}) {
-  const form = inputEl?.closest('form');
+async function applyReceiptFile(form, file, { autoScan = false } = {}) {
   if (!form) return;
-  const file = inputEl?.files?.[0] || null;
   const label = form.querySelector('[data-receipt-label]');
-  if (label) {
-    label.textContent = file?.name || 'No file chosen';
-  }
-
   const previewImg = form.querySelector('[data-receipt-preview]');
   const placeholder = form.querySelector('[data-receipt-placeholder]');
   const statusEl = form.querySelector('[data-receipt-status]');
   const listEl = form.querySelector('[data-receipt-items]');
   const totalEl = form.querySelector('[data-receipt-total]');
-  const scanButton = form.querySelector('[data-action="scan-receipt"]');
 
   if (!file) {
     resetPendingReceiptState();
     form.dataset.receiptTotal = '';
+    if (label) {
+      label.textContent = 'No file chosen';
+    }
     if (previewImg) {
       previewImg.removeAttribute('src');
       previewImg.classList.add('hidden');
@@ -1135,13 +1131,20 @@ export async function handleReceiptFileChange(inputEl, { autoScan = false } = {}
       totalEl.textContent = '';
       totalEl.hidden = true;
     }
-    if (scanButton) scanButton.disabled = true;
     return;
   }
 
   if (file.size > MAX_RECEIPT_UPLOAD_BYTES) {
     showAlert('Error', 'Receipt image must be 10MB or smaller.');
-    inputEl.value = '';
+    return;
+  }
+
+  const fileType = (file.type || '').toLowerCase();
+  const fileName = (file.name || '').toLowerCase();
+  const isJpeg = fileType === 'image/jpeg' || fileType === 'image/jpg' || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
+  const isPng = fileType === 'image/png' || fileName.endsWith('.png');
+  if (!isJpeg && !isPng) {
+    showAlert('Error', 'Only JPEG and PNG files are supported for receipt scanning.');
     return;
   }
 
@@ -1161,41 +1164,52 @@ export async function handleReceiptFileChange(inputEl, { autoScan = false } = {}
   appState.pendingReceiptGroupId = appState.currentGroup?.id || null;
   form.dataset.receiptTotal = '';
 
+  if (label) {
+    label.textContent = file.name || 'Receipt image';
+  }
   if (previewImg) {
     previewImg.src = previewUrl;
     previewImg.classList.remove('hidden');
   }
   if (placeholder) placeholder.classList.add('hidden');
-  if (statusEl) statusEl.textContent = 'Ready to scan this receipt locally.';
+  if (statusEl) statusEl.textContent = 'Scanning receipt...';
   if (listEl) listEl.innerHTML = '';
   if (totalEl) {
     totalEl.textContent = '';
     totalEl.hidden = true;
   }
-  if (scanButton) scanButton.disabled = false;
 
   if (autoScan) {
     await handleReceiptScan(form);
   }
 }
 
+export async function handleReceiptFileChange(inputEl, { autoScan = false } = {}) {
+  const form = inputEl?.closest('form');
+  if (!form) return;
+  const file = inputEl?.files?.[0] || null;
+  await applyReceiptFile(form, file, { autoScan });
+}
+
+export async function handleReceiptDrop(form, file) {
+  if (!form) return;
+  await applyReceiptFile(form, file, { autoScan: true });
+}
+
 export async function handleReceiptScan(form) {
   if (!form) return;
   const fileInput = form.querySelector('input[name="receipt_image"]');
-  const receiptFile = fileInput?.files?.[0];
+  const receiptFile = fileInput?.files?.[0] || appState.pendingReceiptFile || null;
   if (!receiptFile) {
     showAlert('Error', 'Upload a receipt image before scanning.');
     return;
   }
   const fileName = (receiptFile.name || '').toLowerCase();
-  const fileType = receiptFile.type || '';
-  if (
-    fileType.includes('heic') ||
-    fileType.includes('heif') ||
-    fileName.endsWith('.heic') ||
-    fileName.endsWith('.heif')
-  ) {
-    showAlert('Error', 'HEIC/HEIF images are not supported for OCR yet. Please convert to JPG or PNG.');
+  const fileType = (receiptFile.type || '').toLowerCase();
+  const isJpeg = fileType === 'image/jpeg' || fileType === 'image/jpg' || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
+  const isPng = fileType === 'image/png' || fileName.endsWith('.png');
+  if (!isJpeg && !isPng) {
+    showAlert('Error', 'Only JPEG and PNG files are supported for receipt scanning.');
     return;
   }
 
@@ -1240,17 +1254,24 @@ export async function handleReceiptScan(form) {
     appState.pendingReceiptItems = items;
     if (listEl) {
       listEl.innerHTML = '';
-      items.forEach((item) => {
-        const row = document.createElement('li');
-        const typeClass = item.type ? ` receipt-scan__item--${item.type}` : '';
-        row.className = `receipt-scan__item${typeClass}`;
-        const nameEl = document.createElement('span');
-        nameEl.textContent = item.name;
-        const priceEl = document.createElement('span');
-        priceEl.textContent = formatCurrency(item.price);
-        row.append(nameEl, priceEl);
-        listEl.appendChild(row);
-      });
+      if (!items.length) {
+        const empty = document.createElement('li');
+        empty.className = 'receipt-scan__empty';
+        empty.textContent = 'No items detected. Try a sharper photo.';
+        listEl.appendChild(empty);
+      } else {
+        items.forEach((item) => {
+          const row = document.createElement('li');
+          const typeClass = item.type ? ` receipt-scan__item--${item.type}` : '';
+          row.className = `receipt-scan__item${typeClass}`;
+          const nameEl = document.createElement('span');
+          nameEl.textContent = item.name;
+          const priceEl = document.createElement('span');
+          priceEl.textContent = formatCurrency(item.price);
+          row.append(nameEl, priceEl);
+          listEl.appendChild(row);
+        });
+      }
     }
 
     if (statusEl) {

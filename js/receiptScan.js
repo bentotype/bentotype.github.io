@@ -50,25 +50,39 @@ function parseReceiptLines(lines) {
   const subtotalLine = /sub\s*total/i;
   const taxLine = /\b(tax|vat|gst|hst|pst|sales tax)\b/i;
   const discountLine = /\b(discount|coupon|promo|promotion|savings|save|member|loyalty|deal|markdown)\b/i;
+  const feeLine = /\b(service|surcharge|gratuity|tip|svc|service charge)\b/i;
   const priceRegex = /(?:\$|usd|us\$)?\s*[-(]?\s*([0-9]{1,3}(?:[.,][0-9]{3})*(?:[.,][0-9]{2}))\s*\)?-?/gi;
 
   const items = [];
   let detectedTotal = null;
+  let pendingName = '';
 
   for (const line of lines) {
     const compact = line.replace(/\s+/g, ' ').trim();
     if (!compact) continue;
+    const isSubtotal = subtotalLine.test(compact);
+    const isTotal = totalLine.test(compact) && !isSubtotal;
+    if (isTotal || isSubtotal) {
+      pendingName = '';
+    }
     const matches = Array.from(compact.matchAll(priceRegex));
-    if (!matches.length) continue;
+    if (!matches.length) {
+      if (/[a-z]/i.test(compact) && !ignoreItemLine.test(compact)) {
+        pendingName = pendingName ? `${pendingName} ${compact}` : compact;
+        if (pendingName.length > 120) {
+          pendingName = pendingName.slice(0, 120);
+        }
+      }
+      continue;
+    }
 
     const lastMatch = matches[matches.length - 1];
     const isTax = taxLine.test(compact);
     const isDiscount = discountLine.test(compact);
+    const isFee = feeLine.test(compact);
     const priceValue = parseSignedAmount(lastMatch[0], lastMatch[1], isDiscount);
     if (priceValue == null) continue;
 
-    const isSubtotal = subtotalLine.test(compact);
-    const isTotal = totalLine.test(compact) && !isSubtotal;
     if (isTotal && priceValue > 0) {
       if (detectedTotal == null || priceValue > detectedTotal) {
         detectedTotal = priceValue;
@@ -76,15 +90,20 @@ function parseReceiptLines(lines) {
     }
 
     if (isSubtotal) continue;
-    if (ignoreItemLine.test(compact) && !isTax && !isDiscount) continue;
-    if (!/[a-z]/i.test(compact) && !isTax && !isDiscount) continue;
+    if (ignoreItemLine.test(compact) && !isTax && !isDiscount && !isFee) continue;
+    if (!/[a-z]/i.test(compact) && !isTax && !isDiscount && !isFee && !pendingName) continue;
 
     const namePart = compact.slice(0, lastMatch.index).trim() || compact.replace(lastMatch[0], '').trim();
     let name = cleanItemName(namePart);
+    if ((!namePart || name === 'Item') && pendingName) {
+      name = cleanItemName(pendingName);
+    }
     if (isTax && name === 'Item') name = 'Tax';
     if (isDiscount && name === 'Item') name = 'Discount';
-    const type = isTax ? 'tax' : isDiscount ? 'discount' : 'item';
+    if (isFee && name === 'Item') name = 'Service';
+    const type = isTax ? 'tax' : isDiscount ? 'discount' : isFee ? 'fee' : 'item';
     items.push({ name, price: priceValue, type, raw: compact });
+    pendingName = '';
   }
 
   return { items, detectedTotal };

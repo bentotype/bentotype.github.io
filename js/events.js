@@ -35,7 +35,8 @@ import {
   handleExpenseApprovalResponse,
   handleReceiptScan,
   handleUseReceiptTotal,
-  handleReceiptFileChange
+  handleReceiptFileChange,
+  handleReceiptDrop
 } from './handlers.js';
 import { formatCurrency } from './format.js';
 import { showAlert, showConfirm } from './ui.js';
@@ -422,6 +423,43 @@ export function registerEventListeners() {
       const form = target.closest('form');
       updateExpenseSplitPreview(form, target);
     }
+  });
+
+  app.addEventListener('dragover', (e) => {
+    const zone = e.target?.closest?.('[data-receipt-dropzone]');
+    if (!zone) return;
+    e.preventDefault();
+    zone.classList.add('is-dragover');
+  });
+
+  app.addEventListener('dragleave', (e) => {
+    const zone = e.target?.closest?.('[data-receipt-dropzone]');
+    if (!zone) return;
+    if (e.relatedTarget && zone.contains(e.relatedTarget)) return;
+    zone.classList.remove('is-dragover');
+  });
+
+  app.addEventListener('drop', (e) => {
+    const zone = e.target?.closest?.('[data-receipt-dropzone]');
+    if (!zone) return;
+    e.preventDefault();
+    zone.classList.remove('is-dragover');
+    const file = e.dataTransfer?.files?.[0] || null;
+    if (!file) return;
+    const form = zone.closest('form') || zone;
+    handleReceiptDrop(form, file);
+  });
+
+  app.addEventListener('paste', (e) => {
+    const zone = document.querySelector('[data-receipt-dropzone]');
+    if (!zone) return;
+    const items = e.clipboardData?.items || [];
+    const imageItem = Array.from(items).find((item) => item.kind === 'file' && item.type.startsWith('image/'));
+    if (!imageItem) return;
+    const file = imageItem.getAsFile();
+    if (!file) return;
+    const form = zone.closest('form') || zone;
+    handleReceiptDrop(form, file);
   });
 
   app.addEventListener('input', (e) => {

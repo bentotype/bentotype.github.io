@@ -1288,6 +1288,11 @@ body {
   background: #fef2f2;
 }
 
+.receipt-scan__item--fee {
+  border-color: #fde68a;
+  background: #fffbeb;
+}
+
 .receipt-scan__empty {
   color: #6b7280;
   font-size: 0.9rem;
@@ -1342,6 +1347,12 @@ body {
 .receipt-upload-card {
   display: grid;
   gap: 0.9rem;
+}
+
+.receipt-upload-card.is-dragover {
+  border-color: #4338ca;
+  box-shadow: 0 0 0 2px rgba(67, 56, 202, 0.2);
+  background: #eef2ff;
 }
 
 .receipt-items-card__header {
