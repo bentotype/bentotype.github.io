@@ -1,6 +1,7 @@
-import { appState, app, modalContainer } from './state.js';
+import { appState, app, modalContainer, resetPendingReceiptState } from './state.js';
 import { setLoading } from './ui.js';
 import { getUserInfo, getFriendsForUser } from './users.js';
+import { formatCurrency } from './format.js';
 import {
   fetchMonthlyTotal,
   fetchUserGroups,
@@ -402,7 +403,7 @@ async function renderGroupDetail() {
         <div class="card-header">
           <h3 class="card-title">Activity</h3>
           <div class="card-actions">
-            <button type="button" class="primary-action" data-action="show-create-expense-modal">+ Expense</button>
+            <button type="button" class="primary-action" data-action="start-expense" data-group-id="${appState.currentGroup?.id || ''}">+ Expense</button>
           </div>
         </div>
         <div class="card-body">
@@ -426,6 +427,236 @@ async function renderGroupDetail() {
   fetchGroupExpenseActivity(appState.currentGroup.id);
 }
 
+function buildExpenseMemberMarkup() {
+  const members =
+    appState.currentGroupMembers && appState.currentGroupMembers.length
+      ? appState.currentGroupMembers
+      : [
+          {
+            user_id: appState.currentUser?.id || 'self',
+            first_name: 'You',
+            last_name: '',
+            email: appState.currentUser?.email || ''
+          }
+        ];
+
+  const payerOptions = members
+    .map((m) => {
+      const label = `${m.first_name || ''} ${m.last_name || ''}`.trim() || m.email || 'Member';
+      const suffix = m.user_id === appState.currentUser?.id ? ' (you)' : '';
+      return `<option value="${m.user_id}">${escapeHtml(label + suffix)}</option>`;
+    })
+    .join('');
+
+  const memberRows = members
+    .map((m) => {
+      const name = escapeHtml(`${m.first_name || ''} ${m.last_name || ''}`.trim() || m.email || 'Member');
+      return `
+        <div class="expense-member-row" data-member-id="${m.user_id}">
+          <div>
+            <div class="expense-member-name">${name}</div>
+          </div>
+          <div class="expense-member-inputs" data-member-id="${m.user_id}">
+            <div class="expense-percent-box" data-percent-box>
+              <input type="number" min="0" max="100" step="1" value="50" class="expense-percent-input" aria-label="Percent for ${name}">
+              <span>%</span>
+            </div>
+            <input type="range" min="0" max="100" step="1" value="50" class="expense-split-slider" data-member-id="${m.user_id}" aria-label="Split for ${name}">
+            <div class="expense-share-box">
+              <input type="number" step="0.01" min="0" class="expense-amount-input" data-share-for="${m.user_id}" value="0.00" aria-label="Amount for ${name}">
+              <span>USD</span>
+            </div>
+          </div>
+        </div>`;
+    })
+    .join('');
+
+  return { payerOptions, memberRows };
+}
+
+async function renderReceiptUploadPage() {
+  const user = appState.currentUser;
+  if (!user) {
+    appState.currentView = 'auth';
+    render();
+    return;
+  }
+
+  const info = await getUserInfo(user.id);
+  const groupId = appState.currentGroup?.id || '';
+  if (appState.pendingReceiptGroupId && appState.pendingReceiptGroupId !== groupId) {
+    resetPendingReceiptState();
+  }
+  if (groupId && !appState.pendingReceiptGroupId) {
+    appState.pendingReceiptGroupId = groupId;
+  }
+
+  const hasPreview = Boolean(appState.pendingReceiptPreviewUrl);
+  const statusText = hasPreview ? 'Ready to scan this receipt locally.' : 'Upload a receipt to scan.';
+  const items = appState.pendingReceiptItems || [];
+  const itemsMarkup = items.length
+    ? items
+        .map((item) => {
+          const typeClass = item.type ? ` receipt-scan__item--${item.type}` : '';
+          return `
+          <li class="receipt-scan__item${typeClass}">
+            <span>${escapeHtml(item.name || 'Item')}</span>
+            <span>${formatCurrency(item.price || 0)}</span>
+          </li>`;
+        })
+        .join('')
+    : '<li class="receipt-scan__empty">No items yet. Upload and scan a receipt.</li>';
+
+  const totalValue = Number.isFinite(appState.pendingReceiptTotal) ? appState.pendingReceiptTotal : null;
+  const totalLabel = totalValue ? `Detected total: ${formatCurrency(totalValue)}` : '';
+  const fileLabel = appState.pendingReceiptFile?.name || 'No file chosen';
+
+  app.innerHTML = `
+<div class="home-shell">
+  ${renderTopNav('groups', info)}
+  <main class="home-main receipt-upload-page">
+    <section class="receipt-upload-header">
+      <div>
+        <p class="receipt-upload__eyebrow">New expense</p>
+        <h2 class="receipt-upload__title">Upload a receipt</h2>
+        <p class="receipt-upload__subtitle">Scan locally to extract line items before entering expense details.</p>
+      </div>
+    </section>
+    <form id="receipt-upload-form" class="receipt-upload-grid">
+      <section class="card receipt-upload-card">
+        <label class="expense-field">
+          <span>Receipt image</span>
+          <div class="expense-file receipt-upload-file">
+            <input id="receipt-upload-input" type="file" name="receipt_image" accept="image/*" class="expense-file__input">
+            <label for="receipt-upload-input" class="expense-file__button">Upload receipt</label>
+            <span class="expense-file__name" data-receipt-label>${escapeHtml(fileLabel)}</span>
+          </div>
+        </label>
+        <div class="receipt-preview">
+          <img class="receipt-preview__image${hasPreview ? '' : ' hidden'}" data-receipt-preview src="${hasPreview ? appState.pendingReceiptPreviewUrl : ''}" alt="Receipt preview">
+          <div class="receipt-preview__placeholder${hasPreview ? ' hidden' : ''}" data-receipt-placeholder>Upload a receipt to preview it here.</div>
+        </div>
+        <div class="receipt-scan__controls">
+          <button type="button" class="receipt-scan__button" data-action="scan-receipt"${hasPreview ? '' : ' disabled'}>Scan receipt</button>
+        </div>
+        <p class="receipt-scan__status" data-receipt-status>${statusText}</p>
+        <div class="receipt-scan__total" data-receipt-total${totalValue ? '' : ' hidden'}>${totalLabel}</div>
+      </section>
+      <aside class="card receipt-items-card">
+        <div class="receipt-items-card__header">
+          <h3 class="card-title">Scanned items</h3>
+          <p class="receipt-items-card__subtitle">Review the list before you continue.</p>
+        </div>
+        <ul class="receipt-scan__list" data-receipt-items>
+          ${itemsMarkup}
+        </ul>
+      </aside>
+    </form>
+    <div class="receipt-upload-footer">
+      <button type="button" class="expense-primary" data-action="manual-expense-input" data-group-id="${groupId}">Manual Input</button>
+    </div>
+  </main>
+</div>`;
+
+  if (groupId) {
+    fetchGroupMembers(groupId);
+  }
+}
+
+async function renderExpenseInfoPage() {
+  const user = appState.currentUser;
+  if (!user) {
+    appState.currentView = 'auth';
+    render();
+    return;
+  }
+  const info = await getUserInfo(user.id);
+  const groupId = appState.currentGroup?.id || '';
+  const totalPrefill = Number.isFinite(appState.pendingReceiptTotal) ? appState.pendingReceiptTotal.toFixed(2) : '';
+  if (groupId) {
+    await fetchGroupMembers(groupId);
+  }
+  const { payerOptions, memberRows } = buildExpenseMemberMarkup();
+
+  app.innerHTML = `
+<div class="home-shell">
+  ${renderTopNav('groups', info)}
+  <main class="home-main expense-info-page">
+    <section class="receipt-upload-header">
+      <div>
+        <p class="receipt-upload__eyebrow">Expense details</p>
+        <h2 class="receipt-upload__title">Enter expense info</h2>
+        <p class="receipt-upload__subtitle">Fill in the details for this expense.</p>
+      </div>
+      <button type="button" class="back-groups-btn" data-action="back-to-group" data-group-id="${groupId}">Back to group</button>
+    </section>
+    <form id="create-expense-form" data-form-action="create-expense" class="expense-modal expense-info-form">
+      <div class="expense-modal__header">
+        <div>
+          <p class="expense-modal__eyebrow">Group expense</p>
+          <h3 class="expense-modal__title">Propose an expense</h3>
+        </div>
+        <div class="expense-modal__meta">
+          <span class="expense-chip expense-chip--pending">Proposal</span>
+          <span class="expense-modal__badge">Will notify all members in this split</span>
+        </div>
+      </div>
+      <div class="expense-form-grid">
+        <label class="expense-field">
+          <span>Title</span>
+          <input name="title" required placeholder="Groceries, utilities, tickets..." class="expense-input" />
+        </label>
+        <label class="expense-field">
+          <span>Total amount (USD)</span>
+          <input name="total_amount" type="number" step="0.01" min="0" required data-expense-total inputmode="decimal" class="expense-input" placeholder="0.00" value="${totalPrefill}" />
+        </label>
+        <label class="expense-field">
+          <span>Payer (optional)</span>
+          <select name="payer_id" class="expense-input">
+            <option value="">Not decided yet</option>
+            ${payerOptions}
+          </select>
+        </label>
+        <label class="expense-field">
+          <span>Due date</span>
+          <input name="due_date" type="date" class="expense-input" />
+        </label>
+        <label class="expense-field expense-field--full">
+          <span>Explanation</span>
+          <textarea name="explanation" rows="3" placeholder="Add context so everyone knows what this is." class="expense-input"></textarea>
+        </label>
+      </div>
+      <div class="expense-split">
+        <div class="expense-split__header">
+          <div>
+            <p class="expense-split__title">Split between members</p>
+            <p class="expense-split__sub">Drag left for $0, middle for even split, right to have them cover everything.</p>
+          </div>
+          <div class="expense-split-actions">
+            <button type="button" class="expense-split-even" data-action="expense-split-even">Split evenly</button>
+          </div>
+        </div>
+        ${memberRows || '<p class="text-sm text-gray-500">No members available to split.</p>'}
+        <div class="expense-split-total">
+          <span>Total from splits</span>
+          <span id="expense-split-total">$0.00</span>
+        </div>
+        <p class="expense-split-status" id="expense-split-status">Enter a total amount to split across members.</p>
+      </div>
+      <div class="expense-modal__footer">
+        <button type="button" class="expense-secondary" data-action="back-to-group" data-group-id="${groupId}">Cancel</button>
+        <button class="expense-primary">Save expense</button>
+      </div>
+    </form>
+  </main>
+</div>`;
+
+  setTimeout(() => {
+    const totalInput = document.querySelector('[data-expense-total]');
+    totalInput?.dispatchEvent(new Event('input', { bubbles: true }));
+  }, 20);
+}
+
 export function render() {
   setLoading(true);
   app.innerHTML = '';
@@ -447,6 +678,12 @@ export function render() {
       break;
     case 'group':
       renderGroupDetail();
+      break;
+    case 'receipt':
+      renderReceiptUploadPage();
+      break;
+    case 'expense':
+      renderExpenseInfoPage();
       break;
     default:
       renderAuth();
@@ -565,49 +802,7 @@ export async function showInviteFriendsModal() {
 export function showCreateExpenseModal() {
   const modalId = 'create-expense-modal';
   const receiptId = `${modalId}-receipt`;
-  const members =
-    appState.currentGroupMembers && appState.currentGroupMembers.length
-      ? appState.currentGroupMembers
-      : [
-          {
-            user_id: appState.currentUser?.id || 'self',
-            first_name: 'You',
-            last_name: '',
-            email: appState.currentUser?.email || ''
-          }
-        ];
-
-  const payerOptions = members
-    .map((m) => {
-      const label =
-        `${m.first_name || ''} ${m.last_name || ''}`.trim() || m.email || 'Member';
-      const suffix = m.user_id === appState.currentUser?.id ? ' (you)' : '';
-      return `<option value="${m.user_id}">${escapeHtml(label + suffix)}</option>`;
-    })
-    .join('');
-
-  const memberRows = members
-    .map((m) => {
-      const name = escapeHtml(`${m.first_name || ''} ${m.last_name || ''}`.trim() || m.email || 'Member');
-      return `
-        <div class="expense-member-row" data-member-id="${m.user_id}">
-          <div>
-            <div class="expense-member-name">${name}</div>
-          </div>
-          <div class="expense-member-inputs" data-member-id="${m.user_id}">
-            <div class="expense-percent-box" data-percent-box>
-              <input type="number" min="0" max="100" step="1" value="50" class="expense-percent-input" aria-label="Percent for ${name}">
-              <span>%</span>
-            </div>
-            <input type="range" min="0" max="100" step="1" value="50" class="expense-split-slider" data-member-id="${m.user_id}" aria-label="Split for ${name}">
-            <div class="expense-share-box">
-              <input type="number" step="0.01" min="0" class="expense-amount-input" data-share-for="${m.user_id}" value="0.00" aria-label="Amount for ${name}">
-              <span>USD</span>
-            </div>
-          </div>
-        </div>`;
-    })
-    .join('');
+  const { payerOptions, memberRows } = buildExpenseMemberMarkup();
 
   modalContainer.innerHTML = `
 <div id="${modalId}" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
@@ -652,6 +847,18 @@ export function showCreateExpenseModal() {
           <input id="${receiptId}" type="file" name="receipt_image" accept="image/*" class="expense-file__input">
           <label for="${receiptId}" class="expense-file__button">Upload receipt</label>
           <span class="expense-file__name" data-receipt-label>No file chosen</span>
+        </div>
+      </label>
+      <label class="expense-field expense-field--full">
+        <span>Receipt scan (on-device)</span>
+        <div class="receipt-scan">
+          <div class="receipt-scan__controls">
+            <button type="button" class="receipt-scan__button" data-action="scan-receipt" disabled>Scan receipt</button>
+            <button type="button" class="receipt-scan__button receipt-scan__button--ghost" data-action="use-receipt-total" disabled>Use total</button>
+          </div>
+          <p class="receipt-scan__status" data-receipt-status aria-live="polite">Upload a receipt to scan.</p>
+          <div class="receipt-scan__total" data-receipt-total hidden></div>
+          <ul class="receipt-scan__list" data-receipt-items></ul>
         </div>
       </label>
     </div>

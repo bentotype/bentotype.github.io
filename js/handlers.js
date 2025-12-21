@@ -1,5 +1,5 @@
 import { db } from './supabaseClient.js';
-import { appState, modalContainer } from './state.js';
+import { appState, modalContainer, resetPendingReceiptState } from './state.js';
 import { setLoading, showAlert, showConfirm } from './ui.js';
 import {
   fetchFriends,
@@ -14,6 +14,8 @@ import {
 import { render } from './views.js';
 import { navigate } from './router.js';
 import { getUserInfo } from './users.js';
+import { formatCurrency } from './format.js';
+import { scanReceiptImage } from './receiptScan.js';
 
 const PROFILE_PICTURE_BUCKET = 'profile_pictures';
 const MAX_PROFILE_UPLOAD_BYTES = 5 * 1024 * 1024;
@@ -968,7 +970,12 @@ export async function handleCreateExpense(form) {
   const payer_id = (fd.get('payer_id') || '').trim() || null;
   const dueDateRaw = fd.get('due_date');
   const due_date = dueDateRaw ? new Date(dueDateRaw).toISOString() : null;
-  const receiptFile = form.querySelector('input[name="receipt_image"]')?.files?.[0] || null;
+  const receiptInputFile = form.querySelector('input[name="receipt_image"]')?.files?.[0] || null;
+  const pendingReceiptFile =
+    appState.pendingReceiptGroupId && appState.currentGroup?.id === appState.pendingReceiptGroupId
+      ? appState.pendingReceiptFile
+      : null;
+  const receiptFile = receiptInputFile || pendingReceiptFile || null;
 
   if (!title) {
     showAlert('Error', 'Title is required for an expense.');
@@ -996,6 +1003,19 @@ export async function handleCreateExpense(form) {
     showAlert('Error', 'Assign at least one member to this expense.');
     return;
   }
+
+  const receiptItems =
+    appState.pendingReceiptGroupId && appState.currentGroup?.id === appState.pendingReceiptGroupId
+      ? appState.pendingReceiptItems || []
+      : [];
+  const cleanedItems = receiptItems
+    .filter((item) => Number.isFinite(item?.price))
+    .map((item) => ({
+      name: (item?.name || 'Item').replace(/,/g, '').trim() || 'Item',
+      price: item.price
+    }));
+  const itemValue = cleanedItems.length ? cleanedItems.map((item) => item.name).join(', ') : null;
+  const priceValue = cleanedItems.length ? cleanedItems.map((item) => item.price.toFixed(2)).join(', ') : null;
 
   let receiptPath = null;
   if (receiptFile) {
@@ -1034,7 +1054,9 @@ export async function handleCreateExpense(form) {
     date: new Date().toISOString(),
     proposal: true,
     due_date,
-    receipt_image: receiptPath
+    receipt_image: receiptPath,
+    item: itemValue,
+    price: priceValue
   };
 
   setLoading(true);
@@ -1065,7 +1087,13 @@ export async function handleCreateExpense(form) {
       throw new Error(expenseErr.message || 'Could not save expense shares.');
     }
 
-    modalContainer.innerHTML = '';
+    const fromModal = modalContainer.contains(form);
+    if (fromModal) {
+      modalContainer.innerHTML = '';
+    } else if (appState.currentUser?.id && appState.currentGroup?.id) {
+      navigate(`/${appState.currentUser.id}/groups/${appState.currentGroup.id}`);
+    }
+    resetPendingReceiptState();
     showAlert('Success', 'Expense proposal created.');
     fetchPendingProposals();
     fetchGroupPendingExpenses(appState.currentGroup.id);
@@ -1075,6 +1103,202 @@ export async function handleCreateExpense(form) {
   } finally {
     setLoading(false);
   }
+}
+
+export async function handleReceiptFileChange(inputEl, { autoScan = false } = {}) {
+  const form = inputEl?.closest('form');
+  if (!form) return;
+  const file = inputEl?.files?.[0] || null;
+  const label = form.querySelector('[data-receipt-label]');
+  if (label) {
+    label.textContent = file?.name || 'No file chosen';
+  }
+
+  const previewImg = form.querySelector('[data-receipt-preview]');
+  const placeholder = form.querySelector('[data-receipt-placeholder]');
+  const statusEl = form.querySelector('[data-receipt-status]');
+  const listEl = form.querySelector('[data-receipt-items]');
+  const totalEl = form.querySelector('[data-receipt-total]');
+  const scanButton = form.querySelector('[data-action="scan-receipt"]');
+
+  if (!file) {
+    resetPendingReceiptState();
+    form.dataset.receiptTotal = '';
+    if (previewImg) {
+      previewImg.removeAttribute('src');
+      previewImg.classList.add('hidden');
+    }
+    if (placeholder) placeholder.classList.remove('hidden');
+    if (statusEl) statusEl.textContent = 'Upload a receipt to scan.';
+    if (listEl) listEl.innerHTML = '';
+    if (totalEl) {
+      totalEl.textContent = '';
+      totalEl.hidden = true;
+    }
+    if (scanButton) scanButton.disabled = true;
+    return;
+  }
+
+  if (file.size > MAX_RECEIPT_UPLOAD_BYTES) {
+    showAlert('Error', 'Receipt image must be 10MB or smaller.');
+    inputEl.value = '';
+    return;
+  }
+
+  if (appState.pendingReceiptPreviewUrl) {
+    try {
+      URL.revokeObjectURL(appState.pendingReceiptPreviewUrl);
+    } catch (err) {
+      console.warn('Failed to revoke receipt preview URL', err);
+    }
+  }
+
+  const previewUrl = URL.createObjectURL(file);
+  appState.pendingReceiptFile = file;
+  appState.pendingReceiptPreviewUrl = previewUrl;
+  appState.pendingReceiptItems = [];
+  appState.pendingReceiptTotal = null;
+  appState.pendingReceiptGroupId = appState.currentGroup?.id || null;
+  form.dataset.receiptTotal = '';
+
+  if (previewImg) {
+    previewImg.src = previewUrl;
+    previewImg.classList.remove('hidden');
+  }
+  if (placeholder) placeholder.classList.add('hidden');
+  if (statusEl) statusEl.textContent = 'Ready to scan this receipt locally.';
+  if (listEl) listEl.innerHTML = '';
+  if (totalEl) {
+    totalEl.textContent = '';
+    totalEl.hidden = true;
+  }
+  if (scanButton) scanButton.disabled = false;
+
+  if (autoScan) {
+    await handleReceiptScan(form);
+  }
+}
+
+export async function handleReceiptScan(form) {
+  if (!form) return;
+  const fileInput = form.querySelector('input[name="receipt_image"]');
+  const receiptFile = fileInput?.files?.[0];
+  if (!receiptFile) {
+    showAlert('Error', 'Upload a receipt image before scanning.');
+    return;
+  }
+  const fileName = (receiptFile.name || '').toLowerCase();
+  const fileType = receiptFile.type || '';
+  if (
+    fileType.includes('heic') ||
+    fileType.includes('heif') ||
+    fileName.endsWith('.heic') ||
+    fileName.endsWith('.heif')
+  ) {
+    showAlert('Error', 'HEIC/HEIF images are not supported for OCR yet. Please convert to JPG or PNG.');
+    return;
+  }
+
+  appState.pendingReceiptFile = receiptFile;
+  if (!appState.pendingReceiptGroupId && appState.currentGroup?.id) {
+    appState.pendingReceiptGroupId = appState.currentGroup.id;
+  }
+
+  const scanButton = form.querySelector('[data-action="scan-receipt"]');
+  const useTotalButton = form.querySelector('[data-action="use-receipt-total"]');
+  const statusEl = form.querySelector('[data-receipt-status]');
+  const listEl = form.querySelector('[data-receipt-items]');
+  const totalEl = form.querySelector('[data-receipt-total]');
+
+  const scanId = `${Date.now()}`;
+  form.dataset.receiptScanId = scanId;
+  form.dataset.receiptTotal = '';
+
+  if (scanButton) scanButton.disabled = true;
+  if (useTotalButton) useTotalButton.disabled = true;
+  if (statusEl) statusEl.textContent = 'Preparing on-device OCR...';
+  if (listEl) listEl.innerHTML = '';
+  if (totalEl) {
+    totalEl.textContent = '';
+    totalEl.hidden = true;
+  }
+
+  appState.pendingReceiptItems = [];
+  appState.pendingReceiptTotal = null;
+
+  try {
+    const result = await scanReceiptImage(receiptFile, (progress) => {
+      if (statusEl) {
+        const percent = Math.round((progress || 0) * 100);
+        statusEl.textContent = `Scanning receipt... ${percent}%`;
+      }
+    });
+
+    if (form.dataset.receiptScanId !== scanId) return;
+
+    const items = result?.items || [];
+    appState.pendingReceiptItems = items;
+    if (listEl) {
+      listEl.innerHTML = '';
+      items.forEach((item) => {
+        const row = document.createElement('li');
+        const typeClass = item.type ? ` receipt-scan__item--${item.type}` : '';
+        row.className = `receipt-scan__item${typeClass}`;
+        const nameEl = document.createElement('span');
+        nameEl.textContent = item.name;
+        const priceEl = document.createElement('span');
+        priceEl.textContent = formatCurrency(item.price);
+        row.append(nameEl, priceEl);
+        listEl.appendChild(row);
+      });
+    }
+
+    if (statusEl) {
+      statusEl.textContent = items.length
+        ? `Found ${items.length} line item${items.length === 1 ? '' : 's'}. Review below.`
+        : 'No line items found. Try a clearer, brighter photo.';
+    }
+
+    const totalValue =
+      typeof result?.detectedTotal === 'number'
+        ? result.detectedTotal
+        : result?.itemsTotal > 0
+          ? result.itemsTotal
+          : null;
+
+    if (totalValue && Number.isFinite(totalValue)) {
+      appState.pendingReceiptTotal = totalValue;
+      form.dataset.receiptTotal = totalValue.toFixed(2);
+      if (totalEl) {
+        totalEl.textContent = `Detected total: ${formatCurrency(totalValue)}`;
+        totalEl.hidden = false;
+      }
+      if (useTotalButton) useTotalButton.disabled = false;
+    }
+  } catch (err) {
+    console.error('receipt scan failed', err);
+    const message = err?.message || 'Receipt scan failed. Try a clearer photo.';
+    showAlert('Error', message);
+    if (statusEl) statusEl.textContent = message;
+    appState.pendingReceiptItems = [];
+    appState.pendingReceiptTotal = null;
+  } finally {
+    if (scanButton) scanButton.disabled = false;
+  }
+}
+
+export function handleUseReceiptTotal(form) {
+  if (!form) return;
+  const totalInput = form.querySelector('[data-expense-total]');
+  const totalValue = Number.isFinite(appState.pendingReceiptTotal)
+    ? appState.pendingReceiptTotal
+    : parseFloat(form.dataset.receiptTotal || '');
+  if (!totalInput || !Number.isFinite(totalValue)) {
+    showAlert('Error', 'No scanned total is available yet.');
+    return;
+  }
+  totalInput.value = totalValue.toFixed(2);
+  totalInput.dispatchEvent(new Event('input', { bubbles: true }));
 }
 
 /**

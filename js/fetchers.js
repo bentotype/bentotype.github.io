@@ -232,9 +232,11 @@ export async function fetchGroupInvites() {
 
 export async function fetchGroupMembers(groupId) {
   const listEl = document.getElementById('group-members-list');
-  if (!listEl || !groupId) return;
+  if (!groupId) return;
 
-  listEl.innerHTML = '<p class="text-sm text-gray-500">Loading members...</p>';
+  if (listEl) {
+    listEl.innerHTML = '<p class="text-sm text-gray-500">Loading members...</p>';
+  }
 
   const { data, error } = await db
     .from('groups')
@@ -242,7 +244,9 @@ export async function fetchGroupMembers(groupId) {
     .eq('group_id', groupId);
 
   if (error) {
-    listEl.innerHTML = '<p class="text-sm text-red-500">Unable to load members.</p>';
+    if (listEl) {
+      listEl.innerHTML = '<p class="text-sm text-red-500">Unable to load members.</p>';
+    }
     appState.currentGroupMembers = [];
     appState.currentGroupMemberIds = [];
     return;
@@ -252,7 +256,9 @@ export async function fetchGroupMembers(groupId) {
 
   const confirmed = (data || []).filter((row) => row.invite !== true);
   if (!confirmed.length) {
-    listEl.innerHTML = '<p class="text-sm text-gray-500">No members yet.</p>';
+    if (listEl) {
+      listEl.innerHTML = '<p class="text-sm text-gray-500">No members yet.</p>';
+    }
     appState.currentGroupMembers = [];
     return;
   }
@@ -271,23 +277,24 @@ export async function fetchGroupMembers(groupId) {
 
   const ownerId = appState.currentGroup?.owner_id;
 
-  listEl.innerHTML = members
-    .map((user) => {
-      const isOwner = ownerId && user.user_id === ownerId;
-      const canRemove = ownerId && appState.currentUser?.id === ownerId && !isOwner;
-      const fullName = `${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}`.trim() || escapeHtml(user.email || 'Member');
-      const initials = `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
-      const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
-      const avatarContent = user.profile_picture
-        ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
-            user.first_name || ''
-          )} ${escapeHtml(user.last_name || '')}" /></div>`
-        : `<div class="group-member__avatar">${initials}</div>`;
-      const ownerBadge = isOwner ? '<span class="group-member__owner-badge">Owner</span>' : '';
-      const removeButton = canRemove
-        ? `<button type="button" class="group-member__remove" data-action="remove-group-member" data-group-id="${appState.currentGroup?.id || ''}" data-userid="${user.user_id}" data-member-name="${fullName}" aria-label="Remove ${fullName} from group">-</button>`
-        : '';
-      return `
+  if (listEl) {
+    listEl.innerHTML = members
+      .map((user) => {
+        const isOwner = ownerId && user.user_id === ownerId;
+        const canRemove = ownerId && appState.currentUser?.id === ownerId && !isOwner;
+        const fullName = `${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}`.trim() || escapeHtml(user.email || 'Member');
+        const initials = `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
+        const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
+        const avatarContent = user.profile_picture
+          ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
+              user.first_name || ''
+            )} ${escapeHtml(user.last_name || '')}" /></div>`
+          : `<div class="group-member__avatar">${initials}</div>`;
+        const ownerBadge = isOwner ? '<span class="group-member__owner-badge">Owner</span>' : '';
+        const removeButton = canRemove
+          ? `<button type="button" class="group-member__remove" data-action="remove-group-member" data-group-id="${appState.currentGroup?.id || ''}" data-userid="${user.user_id}" data-member-name="${fullName}" aria-label="Remove ${fullName} from group">-</button>`
+          : '';
+        return `
         <div class="group-member${isOwner ? ' group-member--owner' : ''}">
           ${avatarContent}
           <div class="group-member__meta">
@@ -296,8 +303,9 @@ export async function fetchGroupMembers(groupId) {
           </div>
           ${removeButton}
         </div>`;
-    })
-    .join('');
+      })
+      .join('');
+  }
 }
 
 export async function fetchGroupPendingExpenses(groupId) {

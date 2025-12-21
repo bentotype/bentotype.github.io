@@ -125,6 +125,34 @@ function handleRouteChange() {
             render();
             return;
         }
+        if (page === 'receipt') {
+            const groupId = parts[2];
+            if (groupId) {
+                if (!appState.currentGroup || appState.currentGroup.id !== groupId) {
+                    appState.currentGroup = { id: groupId };
+                }
+                appState.currentView = 'receipt';
+                render();
+                return;
+            }
+            appState.currentView = 'groups';
+            render();
+            return;
+        }
+        if (page === 'expense') {
+            const groupId = parts[2];
+            if (groupId) {
+                if (!appState.currentGroup || appState.currentGroup.id !== groupId) {
+                    appState.currentGroup = { id: groupId };
+                }
+                appState.currentView = 'expense';
+                render();
+                return;
+            }
+            appState.currentView = 'groups';
+            render();
+            return;
+        }
     }
 
     // Default fallback

@@ -5,7 +5,6 @@ import {
   showEditGroupModal,
   showInviteFriendsModal,
   renderUserProfileModal,
-  showCreateExpenseModal,
   showChangePasswordModal,
   showDeleteGroupConfirmModal,
   showRemoveMemberConfirmModal
@@ -33,7 +32,10 @@ import {
   handleRemoveGroupMember,
   handleRemoveFriend,
   handleBlockFriend,
-  handleExpenseApprovalResponse
+  handleExpenseApprovalResponse,
+  handleReceiptScan,
+  handleUseReceiptTotal,
+  handleReceiptFileChange
 } from './handlers.js';
 import { formatCurrency } from './format.js';
 import { showAlert, showConfirm } from './ui.js';
@@ -234,12 +236,27 @@ export function registerEventListeners() {
         showInviteFriendsModal();
         break;
       case 'show-create-expense-modal':
-        showCreateExpenseModal();
-        setTimeout(() => {
-          const form = document.getElementById('create-expense-form');
-          updateExpenseSplitPreview(form);
-        }, 20);
+      case 'start-expense': {
+        const groupId = t.dataset.groupId || appState.currentGroup?.id;
+        if (groupId && appState.currentUser?.id) {
+          navigate(`/${appState.currentUser.id}/receipt/${groupId}`);
+        }
         break;
+      }
+      case 'manual-expense-input': {
+        const groupId = t.dataset.groupId || appState.currentGroup?.id;
+        if (groupId && appState.currentUser?.id) {
+          navigate(`/${appState.currentUser.id}/expense/${groupId}`);
+        }
+        break;
+      }
+      case 'back-to-group': {
+        const groupId = t.dataset.groupId || appState.currentGroup?.id;
+        if (groupId && appState.currentUser?.id) {
+          navigate(`/${appState.currentUser.id}/groups/${groupId}`);
+        }
+        break;
+      }
       case 'nav': {
         const targetView = t.dataset.target || e.target.dataset.target;
         if (targetView) {
@@ -298,6 +315,30 @@ export function registerEventListeners() {
       case 'change-password':
         showChangePasswordModal();
         break;
+      case 'scan-receipt': {
+        const form = t.closest('form');
+        if (!form) return;
+        handleReceiptScan(form);
+        break;
+      }
+      case 'use-receipt-total': {
+        const form = t.closest('form');
+        if (!form) return;
+        handleUseReceiptTotal(form);
+        break;
+      }
+      case 'expense-split-even': {
+        const form = t.closest('form');
+        if (!form) return;
+        form.querySelectorAll('.expense-split-slider').forEach((slider) => {
+          slider.value = 50;
+        });
+        form.querySelectorAll('.expense-percent-input').forEach((input) => {
+          input.value = 50;
+        });
+        updateExpenseSplitPreview(form);
+        break;
+      }
       case 'respond-friend-request':
         handleFriendRequestResponse(t.dataset.requester, t.dataset.requestee, t.dataset.response);
         break;
@@ -356,6 +397,9 @@ export function registerEventListeners() {
       case 'update-profile':
         handleUpdateProfile(form);
         break;
+      case 'create-expense':
+        handleCreateExpense(form);
+        break;
     }
   });
 
@@ -363,6 +407,36 @@ export function registerEventListeners() {
     const target = e.target;
     if (target?.name === 'profile_picture') {
       handleProfilePictureFileChange(target);
+    } else if (target?.name === 'receipt_image') {
+      handleReceiptFileChange(target, { autoScan: true });
+    } else if (
+      target.classList.contains('expense-percent-input') ||
+      target.classList.contains('expense-amount-input') ||
+      typeof target.dataset.expenseTotal !== 'undefined'
+    ) {
+      if (typeof target.dataset.expenseTotal !== 'undefined') {
+        sanitizeDecimalInput(target);
+      } else if (target.classList.contains('expense-amount-input')) {
+        sanitizeDecimalInput(target);
+      }
+      const form = target.closest('form');
+      updateExpenseSplitPreview(form, target);
+    }
+  });
+
+  app.addEventListener('input', (e) => {
+    const target = e.target;
+    if (target.classList.contains('expense-amount-input')) {
+      sanitizeDecimalInput(target);
+    }
+    if (
+      target.classList.contains('expense-split-slider') ||
+      target.classList.contains('expense-percent-input') ||
+      target.classList.contains('expense-amount-input') ||
+      typeof target.dataset.expenseTotal !== 'undefined'
+    ) {
+      const form = target.closest('form');
+      updateExpenseSplitPreview(form, target);
     }
   });
 
@@ -421,6 +495,18 @@ export function registerEventListeners() {
           input.value = 50;
         });
         updateExpenseSplitPreview(form);
+        break;
+      }
+      case 'scan-receipt': {
+        const form = t.closest('form');
+        if (!form) return;
+        handleReceiptScan(form);
+        break;
+      }
+      case 'use-receipt-total': {
+        const form = t.closest('form');
+        if (!form) return;
+        handleUseReceiptTotal(form);
         break;
       }
       case 'expense-remove-member': {
@@ -527,6 +613,25 @@ export function registerEventListeners() {
       if (label) {
         label.textContent = target.files?.[0]?.name || 'No file chosen';
       }
+      const scanButton = form?.querySelector('[data-action="scan-receipt"]');
+      const useTotalButton = form?.querySelector('[data-action="use-receipt-total"]');
+      const statusEl = form?.querySelector('[data-receipt-status]');
+      const listEl = form?.querySelector('[data-receipt-items]');
+      const totalEl = form?.querySelector('[data-receipt-total]');
+      const hasFile = Boolean(target.files?.[0]);
+      if (scanButton) scanButton.disabled = !hasFile;
+      if (useTotalButton) useTotalButton.disabled = true;
+      if (statusEl) {
+        statusEl.textContent = hasFile
+          ? 'Ready to scan this receipt locally.'
+          : 'Upload a receipt to scan.';
+      }
+      if (listEl) listEl.innerHTML = '';
+      if (totalEl) {
+        totalEl.textContent = '';
+        totalEl.hidden = true;
+      }
+      if (form) form.dataset.receiptTotal = '';
     } else if (
       target.classList.contains('expense-percent-input') ||
       target.classList.contains('expense-amount-input') ||
