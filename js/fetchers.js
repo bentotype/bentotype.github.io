@@ -50,7 +50,7 @@ export async function fetchUserGroups() {
     .map((g) => {
       const title = g.group_info?.group_title || 'Untitled group';
       const description = g.group_info?.description || 'No description yet.';
-       const ownerId = g.group_info?.owner_id || '';
+      const ownerId = g.group_info?.owner_id || '';
       const safeTitle = encodeURIComponent(title);
       const safeDesc = encodeURIComponent(description);
       return `
@@ -148,7 +148,7 @@ export async function fetchFriends() {
         return `
         <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition friend-card" data-friend-id="${friendId}">
           <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 cursor-pointer" data-action="view-friend-profile" data-friend-id="${friendId}">
               <div class="friend-avatar">${avatar}</div>
               <div>
                 <div class="text-gray-900 font-semibold text-lg">${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}</div>
@@ -232,11 +232,9 @@ export async function fetchGroupInvites() {
 
 export async function fetchGroupMembers(groupId) {
   const listEl = document.getElementById('group-members-list');
-  if (!groupId) return;
+  if (!listEl || !groupId) return;
 
-  if (listEl) {
-    listEl.innerHTML = '<p class="text-sm text-gray-500">Loading members...</p>';
-  }
+  listEl.innerHTML = '<p class="text-sm text-gray-500">Loading members...</p>';
 
   const { data, error } = await db
     .from('groups')
@@ -244,9 +242,7 @@ export async function fetchGroupMembers(groupId) {
     .eq('group_id', groupId);
 
   if (error) {
-    if (listEl) {
-      listEl.innerHTML = '<p class="text-sm text-red-500">Unable to load members.</p>';
-    }
+    listEl.innerHTML = '<p class="text-sm text-red-500">Unable to load members.</p>';
     appState.currentGroupMembers = [];
     appState.currentGroupMemberIds = [];
     return;
@@ -256,9 +252,7 @@ export async function fetchGroupMembers(groupId) {
 
   const confirmed = (data || []).filter((row) => row.invite !== true);
   if (!confirmed.length) {
-    if (listEl) {
-      listEl.innerHTML = '<p class="text-sm text-gray-500">No members yet.</p>';
-    }
+    listEl.innerHTML = '<p class="text-sm text-gray-500">No members yet.</p>';
     appState.currentGroupMembers = [];
     return;
   }
@@ -277,24 +271,23 @@ export async function fetchGroupMembers(groupId) {
 
   const ownerId = appState.currentGroup?.owner_id;
 
-  if (listEl) {
-    listEl.innerHTML = members
-      .map((user) => {
-        const isOwner = ownerId && user.user_id === ownerId;
-        const canRemove = ownerId && appState.currentUser?.id === ownerId && !isOwner;
-        const fullName = `${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}`.trim() || escapeHtml(user.email || 'Member');
-        const initials = `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
-        const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
-        const avatarContent = user.profile_picture
-          ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
-              user.first_name || ''
-            )} ${escapeHtml(user.last_name || '')}" /></div>`
-          : `<div class="group-member__avatar">${initials}</div>`;
-        const ownerBadge = isOwner ? '<span class="group-member__owner-badge">Owner</span>' : '';
-        const removeButton = canRemove
-          ? `<button type="button" class="group-member__remove" data-action="remove-group-member" data-group-id="${appState.currentGroup?.id || ''}" data-userid="${user.user_id}" data-member-name="${fullName}" aria-label="Remove ${fullName} from group">-</button>`
-          : '';
-        return `
+  listEl.innerHTML = members
+    .map((user) => {
+      const isOwner = ownerId && user.user_id === ownerId;
+      const canRemove = ownerId && appState.currentUser?.id === ownerId && !isOwner;
+      const fullName = `${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}`.trim() || escapeHtml(user.email || 'Member');
+      const initials = `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
+      const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
+      const avatarContent = user.profile_picture
+        ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
+          user.first_name || ''
+        )} ${escapeHtml(user.last_name || '')}" /></div>`
+        : `<div class="group-member__avatar">${initials}</div>`;
+      const ownerBadge = isOwner ? '<span class="group-member__owner-badge">Owner</span>' : '';
+      const removeButton = canRemove
+        ? `<button type="button" class="group-member__remove" data-action="remove-group-member" data-group-id="${appState.currentGroup?.id || ''}" data-userid="${user.user_id}" data-member-name="${fullName}" aria-label="Remove ${fullName} from group">-</button>`
+        : '';
+      return `
         <div class="group-member${isOwner ? ' group-member--owner' : ''}">
           ${avatarContent}
           <div class="group-member__meta">
@@ -303,9 +296,8 @@ export async function fetchGroupMembers(groupId) {
           </div>
           ${removeButton}
         </div>`;
-      })
-      .join('');
-  }
+    })
+    .join('');
 }
 
 export async function fetchGroupPendingExpenses(groupId) {
@@ -335,17 +327,16 @@ export async function fetchGroupPendingExpenses(groupId) {
       const due = row.expense_info?.due_date ? new Date(row.expense_info.due_date).toLocaleDateString() : 'No due date';
       const title = escapeHtml(row.expense_info?.title || 'Expense');
       const amount = (row.individual_amount || 0) / 100;
-      return `<div class="expense-pill" data-expense-id="${row.expense_id}">
+      return `<div class="expense-pill">
         <div>
           <div class="expense-pill__title">${title}</div>
           <div class="expense-pill__meta">Due ${due}</div>
         </div>
-        <div class="expense-pill__actions">
-          <div class="expense-pill__amount">${formatCurrency(amount)}</div>
-          <div class="expense-pill__buttons">
-            <button type="button" class="expense-pill__btn approve" data-action="respond-expense" data-response="approve" data-expense-id="${row.expense_id}" aria-label="Approve expense">✔</button>
-            <button type="button" class="expense-pill__btn decline" data-action="respond-expense" data-response="decline" data-expense-id="${row.expense_id}" aria-label="Decline expense">✕</button>
-          </div>
+        <div class="text-right">
+            <div class="expense-pill__amount">${formatCurrency(amount)}</div>
+            <button class="text-xs bg-green-600 text-white px-2 py-1 rounded mt-1 hover:bg-green-500" 
+                data-action="approve-expense" 
+                data-expense-id="${row.expense_id}">Approve</button>
         </div>
       </div>`;
     })
@@ -362,7 +353,6 @@ export async function fetchGroupExpenseActivity(groupId) {
     .from('expense_info')
     .select('expense_id, title, explanation, total_amount, payer_id, date, proposal, due_date')
     .eq('group_id', groupId)
-    .eq('proposal', false)
     .order('date', { ascending: false })
     .limit(15);
 
@@ -396,9 +386,8 @@ export async function fetchGroupExpenseActivity(groupId) {
           <div class="expense-activity-title">${escapeHtml(row.title || 'Expense')}</div>
           <div class="expense-activity-meta">${badge} <span class="expense-separator">•</span> ${escapeHtml(
         payerLabel
-      )} <span class="expense-separator">•</span> Due ${due} ${
-        created ? `<span class="expense-separator">•</span> ${created}` : ''
-      }</div>
+      )} <span class="expense-separator">•</span> Due ${due} ${created ? `<span class="expense-separator">•</span> ${created}` : ''
+        }</div>
           <div class="expense-activity-desc">${desc}</div>
         </div>
         <div class="expense-activity-amount">${formatCurrency((row.total_amount || 0) / 100)}</div>
@@ -520,4 +509,26 @@ export async function fetchMonthlyTotal() {
   }
   const cents = data.reduce((sum, row) => sum + (row.total_amount || 0), 0);
   target.textContent = formatCurrency(cents / 100);
+}
+
+/**
+ * ===============================================================
+ * DUES
+ * ===============================================================
+ */
+export async function fetchDues(user1, user2) {
+  if (!user1 || !user2) return [];
+
+  // fetch where (id_1 = u1 AND id_2 = u2) OR (id_1 = u2 AND id_2 = u1)
+  const { data, error } = await db
+    .from('dues')
+    .select('id_1, id_2, amount, expense_id, expense_info(title, date)')
+    .or(`and(id_1.eq.${user1},id_2.eq.${user2}),and(id_1.eq.${user2},id_2.eq.${user1})`)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('fetchDues error', error);
+    return [];
+  }
+  return data || [];
 }

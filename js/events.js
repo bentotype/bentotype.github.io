@@ -5,12 +5,11 @@ import {
   showEditGroupModal,
   showInviteFriendsModal,
   renderUserProfileModal,
+  showCreateExpenseModal,
   showChangePasswordModal,
   showDeleteGroupConfirmModal,
   showRemoveMemberConfirmModal
 } from './views.js';
-import { navigate } from './router.js';
-
 import {
   handleAddFriend,
   handleAddMember,
@@ -31,15 +30,10 @@ import {
   handleDeleteGroup,
   handleRemoveGroupMember,
   handleRemoveFriend,
-  handleBlockFriend,
-  handleExpenseApprovalResponse,
-  handleReceiptScan,
-  handleUseReceiptTotal,
-  handleReceiptFileChange,
-  handleReceiptDrop
+  handleBlockFriend
 } from './handlers.js';
 import { formatCurrency } from './format.js';
-import { showAlert, showConfirm } from './ui.js';
+import { showAlert } from './ui.js';
 
 const clamp = (val, min = 0, max = 100) => Math.max(min, Math.min(max, val));
 const sanitizeDecimalInput = (input) => {
@@ -223,7 +217,8 @@ export function registerEventListeners() {
           description: t.dataset.groupDesc ? decodeURIComponent(t.dataset.groupDesc) : '',
           owner_id: t.dataset.ownerId || ''
         };
-        navigate(`/${appState.currentUser?.id}/groups/${t.dataset.groupId}`);
+        appState.currentView = 'group';
+        render();
         break;
       case 'edit-group':
         showEditGroupModal({
@@ -237,37 +232,45 @@ export function registerEventListeners() {
         showInviteFriendsModal();
         break;
       case 'show-create-expense-modal':
-      case 'start-expense': {
-        const groupId = t.dataset.groupId || appState.currentGroup?.id;
-        if (groupId && appState.currentUser?.id) {
-          navigate(`/${appState.currentUser.id}/receipt/${groupId}`);
-        }
+        showCreateExpenseModal();
+        setTimeout(() => {
+          const form = document.getElementById('create-expense-form');
+          updateExpenseSplitPreview(form);
+        }, 20);
         break;
-      }
-      case 'manual-expense-input': {
-        const groupId = t.dataset.groupId || appState.currentGroup?.id;
-        if (groupId && appState.currentUser?.id) {
-          navigate(`/${appState.currentUser.id}/expense/${groupId}`);
-        }
-        break;
-      }
-      case 'back-to-group': {
-        const groupId = t.dataset.groupId || appState.currentGroup?.id;
-        if (groupId && appState.currentUser?.id) {
-          navigate(`/${appState.currentUser.id}/groups/${groupId}`);
-        }
-        break;
-      }
       case 'nav': {
         const targetView = t.dataset.target || e.target.dataset.target;
         if (targetView) {
-          navigate(`/${appState.currentUser?.id || ''}/${targetView}`);
+          appState.currentView = targetView;
+          render();
         }
         break;
       }
       case 'view-profile':
         renderUserProfileModal(e.target.dataset.userid);
         break;
+      case 'open-receipt-scanner':
+        import('./views.js').then(m => m.showReceiptScannerModal());
+        break;
+      case 'approve-expense': {
+        const expenseId = target.dataset.expenseId;
+        if (expenseId) {
+          // Dynamic import to avoid circular dep if needed, or import at top
+          import('./handlers.js').then(m => m.handleApproveExpense(expenseId));
+        }
+        break;
+      }
+
+      case 'view-friend-profile': {
+        // Find the closest container with the data 
+        const wrapper = target.closest('[data-friend-id]');
+        const friendId = wrapper?.dataset.friendId;
+        if (friendId) {
+          import('./views.js').then(m => m.showFriendProfileModal(friendId));
+        }
+        break;
+      }
+
       case 'add-friend':
         handleAddFriend(e.target.dataset.userid);
         break;
@@ -293,58 +296,25 @@ export function registerEventListeners() {
         const friendId = t.dataset.friendid;
         if (!friendId) return;
         closeFriendMenus();
-        showConfirm('Remove friend', 'Are you sure you want to remove this friend?', {
-          confirmText: 'Remove',
-          cancelText: 'Cancel'
-        }).then((ok) => {
-          if (ok) handleRemoveFriend(friendId);
-        });
+        if (confirm('Remove this friend?')) {
+          handleRemoveFriend(friendId);
+        }
         break;
       }
       case 'block-friend': {
         const friendId = t.dataset.friendid;
         if (!friendId) return;
         closeFriendMenus();
-        showConfirm('Block friend', 'Block this user? They will also be removed from friends.', {
-          confirmText: 'Block',
-          cancelText: 'Cancel'
-        }).then((ok) => {
-          if (ok) handleBlockFriend(friendId);
-        });
+        if (confirm('Block this user? They will also be removed from friends.')) {
+          handleBlockFriend(friendId);
+        }
         break;
       }
       case 'change-password':
         showChangePasswordModal();
         break;
-      case 'scan-receipt': {
-        const form = t.closest('form');
-        if (!form) return;
-        handleReceiptScan(form);
-        break;
-      }
-      case 'use-receipt-total': {
-        const form = t.closest('form');
-        if (!form) return;
-        handleUseReceiptTotal(form);
-        break;
-      }
-      case 'expense-split-even': {
-        const form = t.closest('form');
-        if (!form) return;
-        form.querySelectorAll('.expense-split-slider').forEach((slider) => {
-          slider.value = 50;
-        });
-        form.querySelectorAll('.expense-percent-input').forEach((input) => {
-          input.value = 50;
-        });
-        updateExpenseSplitPreview(form);
-        break;
-      }
       case 'respond-friend-request':
         handleFriendRequestResponse(t.dataset.requester, t.dataset.requestee, t.dataset.response);
-        break;
-      case 'respond-expense':
-        handleExpenseApprovalResponse(t.dataset.expenseId, t.dataset.response);
         break;
       case 'respond-group-invite':
         handleGroupInviteResponse(t.dataset.groupId, t.dataset.response);
@@ -398,9 +368,6 @@ export function registerEventListeners() {
       case 'update-profile':
         handleUpdateProfile(form);
         break;
-      case 'create-expense':
-        handleCreateExpense(form);
-        break;
     }
   });
 
@@ -408,73 +375,6 @@ export function registerEventListeners() {
     const target = e.target;
     if (target?.name === 'profile_picture') {
       handleProfilePictureFileChange(target);
-    } else if (target?.name === 'receipt_image') {
-      handleReceiptFileChange(target, { autoScan: true });
-    } else if (
-      target.classList.contains('expense-percent-input') ||
-      target.classList.contains('expense-amount-input') ||
-      typeof target.dataset.expenseTotal !== 'undefined'
-    ) {
-      if (typeof target.dataset.expenseTotal !== 'undefined') {
-        sanitizeDecimalInput(target);
-      } else if (target.classList.contains('expense-amount-input')) {
-        sanitizeDecimalInput(target);
-      }
-      const form = target.closest('form');
-      updateExpenseSplitPreview(form, target);
-    }
-  });
-
-  app.addEventListener('dragover', (e) => {
-    const zone = e.target?.closest?.('[data-receipt-dropzone]');
-    if (!zone) return;
-    e.preventDefault();
-    zone.classList.add('is-dragover');
-  });
-
-  app.addEventListener('dragleave', (e) => {
-    const zone = e.target?.closest?.('[data-receipt-dropzone]');
-    if (!zone) return;
-    if (e.relatedTarget && zone.contains(e.relatedTarget)) return;
-    zone.classList.remove('is-dragover');
-  });
-
-  app.addEventListener('drop', (e) => {
-    const zone = e.target?.closest?.('[data-receipt-dropzone]');
-    if (!zone) return;
-    e.preventDefault();
-    zone.classList.remove('is-dragover');
-    const file = e.dataTransfer?.files?.[0] || null;
-    if (!file) return;
-    const form = zone.closest('form') || zone;
-    handleReceiptDrop(form, file);
-  });
-
-  app.addEventListener('paste', (e) => {
-    const zone = document.querySelector('[data-receipt-dropzone]');
-    if (!zone) return;
-    const items = e.clipboardData?.items || [];
-    const imageItem = Array.from(items).find((item) => item.kind === 'file' && item.type.startsWith('image/'));
-    if (!imageItem) return;
-    const file = imageItem.getAsFile();
-    if (!file) return;
-    const form = zone.closest('form') || zone;
-    handleReceiptDrop(form, file);
-  });
-
-  app.addEventListener('input', (e) => {
-    const target = e.target;
-    if (target.classList.contains('expense-amount-input')) {
-      sanitizeDecimalInput(target);
-    }
-    if (
-      target.classList.contains('expense-split-slider') ||
-      target.classList.contains('expense-percent-input') ||
-      target.classList.contains('expense-amount-input') ||
-      typeof target.dataset.expenseTotal !== 'undefined'
-    ) {
-      const form = target.closest('form');
-      updateExpenseSplitPreview(form, target);
     }
   });
 
@@ -535,16 +435,13 @@ export function registerEventListeners() {
         updateExpenseSplitPreview(form);
         break;
       }
-      case 'scan-receipt': {
+      case 'toggle-percent-mode': {
         const form = t.closest('form');
         if (!form) return;
-        handleReceiptScan(form);
-        break;
-      }
-      case 'use-receipt-total': {
-        const form = t.closest('form');
-        if (!form) return;
-        handleUseReceiptTotal(form);
+        const isActive = form.classList.toggle('percentage-mode');
+        t.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        form.querySelectorAll('.expense-percent-box').forEach((box) => box.classList.toggle('hidden', !isActive));
+        updateExpenseSplitPreview(form);
         break;
       }
       case 'expense-remove-member': {
@@ -651,25 +548,6 @@ export function registerEventListeners() {
       if (label) {
         label.textContent = target.files?.[0]?.name || 'No file chosen';
       }
-      const scanButton = form?.querySelector('[data-action="scan-receipt"]');
-      const useTotalButton = form?.querySelector('[data-action="use-receipt-total"]');
-      const statusEl = form?.querySelector('[data-receipt-status]');
-      const listEl = form?.querySelector('[data-receipt-items]');
-      const totalEl = form?.querySelector('[data-receipt-total]');
-      const hasFile = Boolean(target.files?.[0]);
-      if (scanButton) scanButton.disabled = !hasFile;
-      if (useTotalButton) useTotalButton.disabled = true;
-      if (statusEl) {
-        statusEl.textContent = hasFile
-          ? 'Ready to scan this receipt locally.'
-          : 'Upload a receipt to scan.';
-      }
-      if (listEl) listEl.innerHTML = '';
-      if (totalEl) {
-        totalEl.textContent = '';
-        totalEl.hidden = true;
-      }
-      if (form) form.dataset.receiptTotal = '';
     } else if (
       target.classList.contains('expense-percent-input') ||
       target.classList.contains('expense-amount-input') ||
