@@ -420,7 +420,7 @@ export async function fetchPendingFriendRequests() {
   const { data, error } = await db
     .from('friend_request')
     .select('id_1, id_2, created_at')
-    .eq('id_2', user.id);
+    .eq('id_1', user.id);
 
   if (error) {
     el.innerHTML = '<div class="text-red-500">Unable to load requests.</div>';
@@ -433,12 +433,12 @@ export async function fetchPendingFriendRequests() {
 
   const requests = await Promise.all(
     data.map(async (row) => {
-      const sender = await getUserInfo(row.id_1);
+      const sender = await getUserInfo(row.id_2);
       return {
         sender,
         created_at: row.created_at,
-        requesterId: row.id_1,
-        requesteeId: row.id_2
+        requesterId: row.id_2,
+        requesteeId: row.id_1
       };
     })
   );

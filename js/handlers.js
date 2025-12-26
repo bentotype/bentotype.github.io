@@ -428,7 +428,7 @@ export async function handleAddFriend(targetUserId) {
       }
     }
 
-    const payload = { id_1: appState.currentUser.id, id_2: targetUserId };
+    const payload = { id_1: targetUserId, id_2: appState.currentUser.id };
     const { error } = await db.from('friend_request').insert(payload);
     if (error) {
       if (/duplicate key value violates unique constraint "friend_request_id_2_key"/i.test(error.message || '')) {
@@ -456,7 +456,7 @@ export async function handleFriendRequestResponse(requesterId, requesteeId, resp
       .eq('id_2', blockId2);
     if (blockErr) throw blockErr;
     if (blocks?.length) {
-      await db.from('friend_request').delete().eq('id_1', requesterId).eq('id_2', requesteeId);
+      await db.from('friend_request').delete().eq('id_1', requesteeId).eq('id_2', requesterId);
       showAlert('Error', 'Friend request cannot be processed because a block is in place.');
       fetchPendingFriendRequests();
       return;
@@ -481,8 +481,8 @@ export async function handleFriendRequestResponse(requesterId, requesteeId, resp
     const { error: deleteErr } = await db
       .from('friend_request')
       .delete()
-      .eq('id_1', requesterId)
-      .eq('id_2', requesteeId);
+      .eq('id_1', requesteeId)
+      .eq('id_2', requesterId);
     if (deleteErr) throw deleteErr;
     showAlert('Success', response === 'accept' ? 'Friend request accepted.' : 'Friend request rejected.');
     fetchPendingFriendRequests();
