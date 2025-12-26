@@ -9,9 +9,29 @@ export const appState = {
   currentGroupMemberIds: [],
   userCache: new Map(),
   pendingProfilePicturePath: '',
-  pendingProfilePictureUrl: ''
+  pendingProfilePictureUrl: '',
+  pendingReceiptFile: null,
+  pendingReceiptPreviewUrl: '',
+  pendingReceiptItems: [],
+  pendingReceiptTotal: null,
+  pendingReceiptGroupId: null
 };
 
 export const app = document.getElementById('app');
 export const modalContainer = document.getElementById('modal-container');
 export const loadingOverlay = document.getElementById('loading-overlay');
+
+export function resetPendingReceiptState() {
+  if (appState.pendingReceiptPreviewUrl) {
+    try {
+      URL.revokeObjectURL(appState.pendingReceiptPreviewUrl);
+    } catch (err) {
+      console.warn('Failed to revoke receipt preview URL', err);
+    }
+  }
+  appState.pendingReceiptFile = null;
+  appState.pendingReceiptPreviewUrl = '';
+  appState.pendingReceiptItems = [];
+  appState.pendingReceiptTotal = null;
+  appState.pendingReceiptGroupId = null;
+}

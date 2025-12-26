@@ -120,12 +120,10 @@ export async function scanReceiptImage(file, onProgress) {
   if (typeof createWorker !== 'function') {
     throw new Error('OCR library did not expose createWorker. Try reloading or use a local bundle.');
   }
+  if (typeof onProgress === 'function') {
+    onProgress(0);
+  }
   const worker = await createWorker({
-    logger: (msg) => {
-      if (msg?.status === 'recognizing text' && typeof onProgress === 'function') {
-        onProgress(msg.progress || 0);
-      }
-    },
     workerPath: `${TESSERACT_BASE}/worker.min.js`,
     corePath: TESSERACT_CORE
   });
@@ -139,5 +137,8 @@ export async function scanReceiptImage(file, onProgress) {
   const lines = text.split(/\r?\n/);
   const { items, detectedTotal } = parseReceiptLines(lines);
   const itemsTotal = items.reduce((sum, item) => sum + item.price, 0);
+  if (typeof onProgress === 'function') {
+    onProgress(1);
+  }
   return { text, items, detectedTotal, itemsTotal };
 }
