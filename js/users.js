@@ -41,42 +41,23 @@ export async function getUserInfo(userId) {
 
 /**
  * Returns all friends for the current user with cached profile info.
- * Blocked users are filtered out.
  */
 export async function getFriendsForUser(userId) {
   if (!userId) return [];
-
-  const { data: friendships, error: friendErr } = await db
+  const { data, error } = await db
     .from('friend_list')
     .select('id_1, id_2')
     .or(`id_1.eq.${userId},id_2.eq.${userId}`);
-  if (friendErr || !friendships?.length) return [];
 
-  const { data: blocks, error: blockErr } = await db
-    .from('block_list')
-    .select('id_1, id_2')
-    .or(`id_1.eq.${userId},id_2.eq.${userId}`);
-  const blocked = new Set();
-  if (!blockErr && Array.isArray(blocks)) {
-    blocks.forEach((row) => {
-      const otherId = row.id_1 === userId ? row.id_2 : row.id_1;
-      if (otherId) blocked.add(otherId);
-    });
-  }
-
-  const friendIds = friendships
-    .map((row) => (row.id_1 === userId ? row.id_2 : row.id_1))
-    .filter((fid) => fid && !blocked.has(fid));
-
-  if (!friendIds.length) return [];
-
+  if (error || !data?.length) return [];
   const seen = new Set();
   const friendEntries = await Promise.all(
-    friendIds.map(async (fid) => {
-      if (!fid || seen.has(fid)) return null;
-      seen.add(fid);
-      const info = await getUserInfo(fid);
-      return { friendId: fid, info };
+    data.map(async (row) => {
+      const friendId = row.id_1 === userId ? row.id_2 : row.id_1;
+      if (!friendId || seen.has(friendId)) return null;
+      seen.add(friendId);
+      const info = await getUserInfo(friendId);
+      return { friendId, info };
     })
   );
   return friendEntries.filter(Boolean);

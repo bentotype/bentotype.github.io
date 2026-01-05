@@ -1,6 +1,6 @@
 import { db } from './supabaseClient.js';
-import { appState, modalContainer, resetPendingReceiptState } from './state.js';
-import { setLoading, showAlert, showConfirm } from './ui.js';
+import { appState, modalContainer } from './state.js';
+import { setLoading, showAlert } from './ui.js';
 import {
   fetchFriends,
   fetchPendingFriendRequests,
@@ -12,46 +12,34 @@ import {
   fetchGroupMembers
 } from './fetchers.js';
 import { render } from './views.js';
-import { navigate } from './router.js';
 import { getUserInfo } from './users.js';
-import { formatCurrency } from './format.js';
-import { scanReceiptImage } from './receiptScan.js';
 
 const PROFILE_PICTURE_BUCKET = 'profile_pictures';
 const MAX_PROFILE_UPLOAD_BYTES = 5 * 1024 * 1024;
 const RECEIPT_BUCKET = 'expense_receipts';
 const MAX_RECEIPT_UPLOAD_BYTES = 10 * 1024 * 1024;
 
-const orderUserIds = (idA, idB) => {
-  if (!idA || !idB) return [idA, idB];
-  return String(idA) < String(idB) ? [idA, idB] : [idB, idA];
-};
-
 async function getBlockSetsForCurrentUser() {
   if (!appState.currentUser?.id) {
     return { blocked: new Set(), blockedBy: new Set() };
   }
   const userId = appState.currentUser.id;
-  try {
-    const { data, error } = await db
-      .from('block_list')
-      .select('id_1, id_2')
-      .or(`id_1.eq.${userId},id_2.eq.${userId}`);
-    if (error) throw error;
+  const { data, error } = await db
+    .from('block_list')
+    .select('id_1, id_2')
+    .or(`id_1.eq.${userId},id_2.eq.${userId}`);
 
-    const blocked = new Set();
-    const blockedBy = new Set();
-    (data || []).forEach((row) => {
-      const otherId = row.id_1 === userId ? row.id_2 : row.id_1;
-      if (!otherId) return;
-      blocked.add(otherId);
-      blockedBy.add(otherId);
-    });
-    return { blocked, blockedBy };
-  } catch (err) {
-    console.error('block_list lookup failed', err);
-    return { blocked: new Set(), blockedBy: new Set() };
+  if (error) {
+    throw error;
   }
+
+  const blocked = new Set();
+  const blockedBy = new Set();
+  (data || []).forEach((row) => {
+    if (row.id_1 === userId) blocked.add(row.id_2);
+    if (row.id_2 === userId) blockedBy.add(row.id_1);
+  });
+  return { blocked, blockedBy };
 }
 
 /**
@@ -61,53 +49,19 @@ async function getBlockSetsForCurrentUser() {
  */
 
 export async function handleLogout() {
-  setLoading(true);
-  let signOutOk = false;
-  try {
-    const { error } = await db.auth.signOut();
-    if (error && !/auth session missing/i.test(error.message || '')) throw error;
-    signOutOk = true;
-  } catch (err) {
-    console.warn('signOut failed, attempting local sign out', err);
-    try {
-      const { error: localErr } = await db.auth.signOut({ scope: 'local' });
-      if (localErr && !/auth session missing/i.test(localErr.message || '')) throw localErr;
-      signOutOk = true;
-    } catch (localErr) {
-      showAlert('Sign out failed', localErr?.message || 'Unable to sign out right now.');
-    }
-  } finally {
-    setLoading(false);
-  }
-
-  if (!signOutOk) return;
-  appState.currentUser = null;
-  appState.currentView = 'auth';
-  appState.currentGroup = null;
-  appState.currentGroupMembers = [];
-  appState.currentGroupMemberIds = [];
-  appState.userCache.clear();
-  appState.pendingProfilePicturePath = '';
-  appState.pendingProfilePictureUrl = '';
-  navigate('/signin', { replace: true });
+  await db.auth.signOut();
 }
 
 export async function handleSignUp(form) {
   setLoading(true);
   const fd = new FormData(form);
-  const email = (fd.get('email') || '').trim();
+  const email = fd.get('email');
   const password = fd.get('password');
   const confirmPassword = fd.get('confirm_password');
   const first_name = fd.get('first_name');
   const last_name = fd.get('last_name');
-  let username = (fd.get('username') || '').trim();
+  const username = fd.get('username');
   const phone_number = (fd.get('phone_number') || '').trim() || null;
-
-  if (!email) {
-    setLoading(false);
-    showAlert('Error', 'Email is required to create an account.');
-    return;
-  }
 
   if (password !== confirmPassword) {
     setLoading(false);
@@ -147,35 +101,6 @@ export async function handleSignUp(form) {
     return;
   }
 
-  if (!username) {
-    const base = email.split('@')[0]?.replace(/[^a-z0-9._-]/gi, '').toLowerCase() || 'user';
-    let candidate = base;
-    let suffix = 0;
-    while (suffix < 5) {
-      const { data: candidateRow, error: candidateErr } = await db
-        .from('user_info')
-        .select('user_id')
-        .eq('username', candidate)
-        .maybeSingle();
-      if (candidateErr) {
-        setLoading(false);
-        showAlert('Error', candidateErr.message);
-        return;
-      }
-      if (!candidateRow) {
-        username = candidate;
-        break;
-      }
-      suffix += 1;
-      candidate = `${base}${suffix}`;
-    }
-    if (!username) {
-      setLoading(false);
-      showAlert('Error', 'Please choose a different username.');
-      return;
-    }
-  }
-
   const { data: authData, error: authErr } = await db.auth.signUp({ email, password });
   if (authErr) {
     setLoading(false);
@@ -184,47 +109,13 @@ export async function handleSignUp(form) {
   }
   const { error: infoErr } = await db
     .from('user_info')
-    .insert({ user_id: authData.user.id, email, first_name, last_name, username, phone_number });
+    .insert({ user_id: authData.user.id, email, first_name, last_name, username, phone_number, password });
   setLoading(false);
   if (infoErr) {
     showAlert('Error', 'Could not save user_info ' + infoErr.message);
     return;
   }
-  window.location.href = '/confirmation/';
-}
-
-export async function handleAppleLogin() {
-  setLoading(true);
-  try {
-    const { error } = await db.auth.signInWithOAuth({
-      provider: 'apple',
-      options: {
-        redirectTo: `${window.location.origin}/`
-      }
-    });
-    if (error) throw error;
-  } catch (err) {
-    showAlert('Error', err?.message || 'Unable to start Apple sign-in.');
-  } finally {
-    setLoading(false);
-  }
-}
-
-export async function handleGoogleLogin() {
-  setLoading(true);
-  try {
-    const { error } = await db.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/`
-      }
-    });
-    if (error) throw error;
-  } catch (err) {
-    showAlert('Error', err?.message || 'Unable to start Google sign-in.');
-  } finally {
-    setLoading(false);
-  }
+  window.location.href = 'confirmation.html';
 }
 
 export async function handleLogin(form) {
@@ -239,7 +130,9 @@ export async function handleLogin(form) {
     return;
   }
   if (data?.user) {
-    // Auth state listener in main.js will handle navigation
+    appState.currentUser = data.user;
+    appState.currentView = 'home';
+    render();
   }
 }
 
@@ -394,48 +287,15 @@ export async function handleAddFriend(targetUserId) {
   }
   setLoading(true);
   try {
-    const userId = appState.currentUser.id;
-
-    const [blockId1, blockId2] = orderUserIds(userId, targetUserId);
-    const { data: blockRow, error: blockErr } = await db
-      .from('block_list')
-      .select('id_1, id_2')
-      .eq('id_1', blockId1)
-      .eq('id_2', blockId2)
-      .maybeSingle();
-    if (blockErr) throw blockErr;
-
-    if (blockRow) {
-      setLoading(false);
-      const confirmUnblock = await showConfirm(
-        'User is blocked',
-        'A block exists between you and this user. Remove the block and send a friend request?',
-        {
-          confirmText: 'Remove Block & Send',
-          cancelText: 'Cancel'
-        }
-      );
-      if (!confirmUnblock) return;
-      setLoading(true);
-      const { error: unblockErr } = await db
-        .from('block_list')
-        .delete({ returning: 'minimal' })
-        .eq('id_1', blockId1)
-        .eq('id_2', blockId2);
-      if (unblockErr) {
-        showAlert('Error', unblockErr.message || 'Unable to remove block.');
-        return;
-      }
+    const { blocked, blockedBy } = await getBlockSetsForCurrentUser();
+    if (blocked.has(targetUserId) || blockedBy.has(targetUserId)) {
+      showAlert('Error', 'Friend request not allowed because one of you has blocked the other.');
+      return;
     }
 
-    const payload = { id_1: targetUserId, id_2: appState.currentUser.id };
+    const payload = { id_1: appState.currentUser.id, id_2: targetUserId };
     const { error } = await db.from('friend_request').insert(payload);
-    if (error) {
-      if (/duplicate key value violates unique constraint "friend_request_id_2_key"/i.test(error.message || '')) {
-        throw new Error('Friend request already sent');
-      }
-      throw error;
-    }
+    if (error) throw error;
     showAlert('Success', 'Friend request sent');
   } catch (err) {
     showAlert('Error', err?.message || 'Unable to send friend request.');
@@ -448,41 +308,33 @@ export async function handleFriendRequestResponse(requesterId, requesteeId, resp
   if (!requesterId || !requesteeId || !response) return;
   setLoading(true);
   try {
-    const [blockId1, blockId2] = orderUserIds(requesterId, requesteeId);
     const { data: blocks, error: blockErr } = await db
       .from('block_list')
       .select('id_1, id_2')
-      .eq('id_1', blockId1)
-      .eq('id_2', blockId2);
+      .or(`and(id_1.eq.${requesterId},id_2.eq.${requesteeId}),and(id_1.eq.${requesteeId},id_2.eq.${requesterId})`);
     if (blockErr) throw blockErr;
     if (blocks?.length) {
-      await db.from('friend_request').delete().eq('id_1', requesteeId).eq('id_2', requesterId);
+      await db.from('friend_request').delete().eq('id_1', requesterId).eq('id_2', requesteeId);
       showAlert('Error', 'Friend request cannot be processed because a block is in place.');
       fetchPendingFriendRequests();
       return;
     }
 
     if (response === 'accept') {
-      const [pairId1, pairId2] = orderUserIds(requesterId, requesteeId);
-      const { data: existing, error: existingErr } = await db
+      const payload = [
+        { id_1: requesterId, id_2: requesteeId },
+        { id_1: requesteeId, id_2: requesterId }
+      ];
+      const { error: friendErr } = await db
         .from('friend_list')
-        .select('id_1, id_2')
-        .eq('id_1', pairId1)
-        .eq('id_2', pairId2);
-      if (existingErr) throw existingErr;
-
-      if (!existing?.length) {
-        const { error: friendErr } = await db
-          .from('friend_list')
-          .insert({ id_1: pairId1, id_2: pairId2 }, { returning: 'minimal' });
-        if (friendErr) throw friendErr;
-      }
+        .insert(payload, { upsert: true, onConflict: 'id_1,id_2' });
+      if (friendErr) throw friendErr;
     }
     const { error: deleteErr } = await db
       .from('friend_request')
       .delete()
-      .eq('id_1', requesteeId)
-      .eq('id_2', requesterId);
+      .eq('id_1', requesterId)
+      .eq('id_2', requesteeId);
     if (deleteErr) throw deleteErr;
     showAlert('Success', response === 'accept' ? 'Friend request accepted.' : 'Friend request rejected.');
     fetchPendingFriendRequests();
@@ -502,14 +354,14 @@ export async function handleRemoveFriend(friendId) {
   setLoading(true);
   try {
     const userId = appState.currentUser.id;
-    const [pairId1, pairId2] = orderUserIds(userId, friendId);
-    const { error: primaryErr } = await db.from('friend_list').delete({ returning: 'minimal' }).eq('id_1', pairId1).eq('id_2', pairId2);
-    if (primaryErr) throw primaryErr;
-
-    showAlert('Success', 'Friend removed');
+    const { error } = await db
+      .from('friend_list')
+      .delete()
+      .or(`and(id_1.eq.${userId},id_2.eq.${friendId}),and(id_1.eq.${friendId},id_2.eq.${userId})`);
+    if (error) throw error;
+    showAlert('Success', 'Friend removed.');
     fetchFriends();
   } catch (err) {
-    console.error('remove friend error', err);
     showAlert('Error', err?.message || 'Unable to remove friend.');
   } finally {
     setLoading(false);
@@ -524,32 +376,26 @@ export async function handleBlockFriend(friendId) {
   setLoading(true);
   try {
     const userId = appState.currentUser.id;
-    const [pairId1, pairId2] = orderUserIds(userId, friendId);
-    const { error: primaryErr } = await db.from('friend_list').delete({ returning: 'minimal' }).eq('id_1', pairId1).eq('id_2', pairId2);
-    if (primaryErr) throw primaryErr;
-
+    const { error: friendErr } = await db
+      .from('friend_list')
+      .delete()
+      .or(`and(id_1.eq.${userId},id_2.eq.${friendId}),and(id_1.eq.${friendId},id_2.eq.${userId})`);
+    if (friendErr) throw friendErr;
     const { error: requestErr } = await db
       .from('friend_request')
       .delete()
       .or(`and(id_1.eq.${userId},id_2.eq.${friendId}),and(id_1.eq.${friendId},id_2.eq.${userId})`);
-    if (requestErr) {
-      console.error('block friend - remove pending request failed', requestErr);
-      throw requestErr;
-    }
+    if (requestErr) throw requestErr;
 
     const { error: blockErr } = await db
       .from('block_list')
-      .insert({ id_1: pairId1, id_2: pairId2 }, { upsert: true, onConflict: 'id_1,id_2', returning: 'minimal' });
-    if (blockErr) {
-      console.error('block friend - insert block failed', blockErr);
-      throw blockErr;
-    }
+      .insert({ id_1: userId, id_2: friendId }, { upsert: true, onConflict: 'id_1,id_2' });
+    if (blockErr) throw blockErr;
 
-    showAlert('Success', 'Friend blocked');
+    showAlert('Success', 'User blocked and removed from friends.');
     fetchFriends();
     fetchPendingFriendRequests();
   } catch (err) {
-    console.error('block friend error', err);
     showAlert('Error', err?.message || 'Unable to block user.');
   } finally {
     setLoading(false);
@@ -587,7 +433,7 @@ export async function handleCreateGroup(form) {
     return;
   }
 
-  const { error } = await db.from('split_groups').insert({
+  const { error } = await db.from('groups').insert({
     user_id: appState.currentUser.id,
     group_id,
     invite: false
@@ -677,7 +523,7 @@ export async function handleDeleteGroup(groupId) {
     const { error: expenseInfoDeleteErr } = await db.from('expense_info').delete().eq('group_id', groupId);
     if (expenseInfoDeleteErr) throw expenseInfoDeleteErr;
 
-    const { error: groupsDeleteErr } = await db.from('split_groups').delete().eq('group_id', groupId);
+    const { error: groupsDeleteErr } = await db.from('groups').delete().eq('group_id', groupId);
     if (groupsDeleteErr) throw groupsDeleteErr;
 
     const { error: groupInfoDeleteErr } = await db.from('group_info').delete().eq('group_id', groupId);
@@ -706,7 +552,7 @@ export async function handleInviteFriendToGroup(friendId) {
   setLoading(true);
   try {
     const { data: existing, error: checkErr } = await db
-      .from('split_groups')
+      .from('groups')
       .select('invite')
       .eq('group_id', appState.currentGroup.id)
       .eq('user_id', friendId)
@@ -718,7 +564,7 @@ export async function handleInviteFriendToGroup(friendId) {
     }
 
     const payload = { group_id: appState.currentGroup.id, user_id: friendId, invite: true };
-    const { error } = await db.from('split_groups').insert(payload);
+    const { error } = await db.from('groups').insert(payload);
     if (error) throw error;
     const existingIds = new Set(appState.currentGroupMemberIds || []);
     existingIds.add(friendId);
@@ -757,22 +603,15 @@ export async function handleRemoveGroupMember(memberId, groupIdOverride = null) 
       return;
     }
 
-    const { error: deleteErr } = await db
-      .from('split_groups')
-      .delete({ returning: 'minimal' })
-      .eq('group_id', groupId)
-      .eq('user_id', memberId);
-    if (deleteErr) throw deleteErr;
-
-    const { data: stillExists, error: checkErr } = await db
-      .from('split_groups')
-      .select('user_id')
+    const { data: removed, error: deleteErr } = await db
+      .from('groups')
+      .delete()
       .eq('group_id', groupId)
       .eq('user_id', memberId)
-      .maybeSingle();
-    if (checkErr) throw checkErr;
-    if (stillExists) {
-      throw new Error('Member could not be removed due to a database rule.');
+      .select('user_id, group_id');
+    if (deleteErr) throw deleteErr;
+    if (!removed || removed.length === 0) {
+      throw new Error('Member not found in this group.');
     }
 
     appState.currentGroupMemberIds = (appState.currentGroupMemberIds || []).filter((id) => id !== memberId);
@@ -793,7 +632,7 @@ export async function handleGroupInviteResponse(groupId, response) {
   try {
     const userId = appState.currentUser.id;
     const { data: membership, error: membershipErr } = await db
-      .from('split_groups')
+      .from('groups')
       .select('invite')
       .eq('group_id', groupId)
       .eq('user_id', userId)
@@ -811,7 +650,7 @@ export async function handleGroupInviteResponse(groupId, response) {
         showAlert('Info', 'You are already part of this group.');
       } else {
         const { error: updateErr } = await db
-          .from('split_groups')
+          .from('groups')
           .update({ invite: false })
           .eq('group_id', groupId)
           .eq('user_id', userId);
@@ -821,7 +660,7 @@ export async function handleGroupInviteResponse(groupId, response) {
       refreshGroups = true;
     } else {
       const { error: deleteErr } = await db
-        .from('split_groups')
+        .from('groups')
         .delete()
         .eq('group_id', groupId)
         .eq('user_id', userId);
@@ -864,15 +703,19 @@ export async function handleSearchUser(form) {
     .limit(10);
   setLoading(false);
 
-  let blockSets = await getBlockSetsForCurrentUser();
+  let blockSets = { blocked: new Set(), blockedBy: new Set() };
+  try {
+    blockSets = await getBlockSetsForCurrentUser();
+  } catch (err) {
+    res.innerHTML = '<div class="text-red-500">Unable to check block settings right now.</div>';
+    return;
+  }
 
   if (error) {
     res.innerHTML = '<div class="text-red-500">' + error.message + '</div>';
     return;
   }
-  // Blocked users (that you blocked) remain visible so you can choose to unblock and re-add.
-  // Users who have blocked you are hidden from your search results.
-  const visibleUsers = (data || []).filter((u) => !blockSets.blockedBy.has(u.user_id));
+  const visibleUsers = (data || []).filter((u) => !blockSets.blocked.has(u.user_id) && !blockSets.blockedBy.has(u.user_id));
   if (!visibleUsers.length) {
     res.innerHTML = '<div class="text-gray-500">No users.</div>';
     return;
@@ -918,7 +761,7 @@ export async function handleAddMember(form) {
     return;
   }
   const { error: aerr } = await db
-    .from('split_groups')
+    .from('groups')
     .insert({ user_id: user.user_id, group_id: appState.currentGroup.id });
   setLoading(false);
   if (aerr) {
@@ -926,6 +769,145 @@ export async function handleAddMember(form) {
     return;
   }
   showAlert('Success', 'User added');
+}
+
+export async function handleApproveExpense(expenseId) {
+  if (!expenseId || !appState.currentUser?.id) return;
+
+  setLoading(true);
+  try {
+    const userId = appState.currentUser.id;
+
+    // 1. Mark expense as approved
+    const { data: expenseItem, error: updateErr } = await db
+      .from('expense')
+      .update({ approval: true })
+      .eq('expense_id', expenseId)
+      .eq('user_id', userId)
+      .select('individual_amount, expense_id')
+      .single();
+
+    if (updateErr) throw new Error(updateErr.message);
+
+    // 2. Fetch expense info to get the payer
+    const { data: expenseInfo, error: infoErr2 } = await db
+      .from('expense_info')
+      .select('payer_id, title')
+      .eq('expense_id', expenseId)
+      .single();
+
+    if (infoErr2) throw new Error(infoErr2.message);
+
+    // 3. Insert into Dues if approver != payer
+    if (expenseInfo.payer_id && expenseInfo.payer_id !== userId) {
+      // Payer (id_1) paid. User (id_2) owes Payer.
+      // Wait, 'dues' table direction:
+      // id_1 = Creditor (Lender)? Or Debtor (Borrower)?
+      // Let's check SupabaseService.swift or inferred logic.
+      // iOS: SupabaseService.swift line ~650 (not shown but let's assume standard)
+      // Usually: id_1 owes id_2.
+      // If Payer paid $20, and I (User) approve $10 share.
+      // I owe Payer.
+      // So I am id_1, Payer is id_2.
+
+      const { error: dueErr } = await db.from('dues').insert({
+        id_1: userId,               // Me (Ower)
+        id_2: expenseInfo.payer_id, // Payer (Owed)
+        amount: expenseItem.individual_amount,
+        expense_id: expenseId,
+        paid: false,
+        received: false
+      });
+
+      if (dueErr) throw new Error(dueErr.message);
+    }
+
+    // 4. Create Activity for Payer
+    if (expenseInfo.payer_id && expenseInfo.payer_id !== userId) {
+      await db.from('activity').insert({
+        user_id: expenseInfo.payer_id,
+        type: 'expense_finalized',
+        title: 'Expense Approved',
+        message: `${appState.currentUser.user_metadata?.first_name || 'Someone'} approved their share of ${expenseInfo.title}`,
+        related_id: expenseId
+      });
+    }
+
+    showAlert('Success', 'Expense approved.');
+    fetchGroupPendingExpenses(appState.currentGroup.id);
+    fetchMonthlyTotal();
+  } catch (err) {
+    showAlert('Error', err.message || 'Unable to approve expense.');
+  } finally {
+    setLoading(false);
+  }
+}
+
+export async function handleMarkDuesPaid(friendId) {
+  if (!appState.currentUser?.id || !friendId) return;
+  setLoading(true);
+  try {
+    const myId = appState.currentUser.id;
+    // Mark all dues where I am id_1 (ower) and friend is id_2 (owed) as paid=true
+    const { error } = await db
+      .from('dues')
+      .update({ paid: true })
+      .eq('id_1', myId)
+      .eq('id_2', friendId)
+      .eq('received', false);
+
+    if (error) throw error;
+
+    showAlert('Success', 'Marked as paid.');
+    return true;
+  } catch (err) {
+    showAlert('Error', err.message || 'Unable to mark as paid.');
+    return false;
+  } finally {
+    setLoading(false);
+  }
+}
+
+export function showSettleUpModal(friendId) {
+  const modalId = 'settle-up-confirm';
+  modalContainer.innerHTML = `
+    <div id="${modalId}" class="modal fixed inset-0 bg-gray-900 bg-opacity-70 flex items-center justify-center z-50">
+      <div class="bg-gray-800 p-6 rounded-xl w-full max-w-sm shadow-2xl border border-gray-700">
+        <h3 class="text-lg font-bold text-white mb-2">Did you pay?</h3>
+        <p class="text-gray-400 text-sm mb-4">If you completed the payment externally (Cash App, Venmo, etc.), mark it as paid so your friend can confirm.</p>
+        <div class="flex justify-end gap-3">
+          <button data-action="close-modal" data-target="${modalId}" class="px-4 py-2 bg-gray-700 text-white rounded-md hover:bg-gray-600">Cancel</button>
+          <button data-action="confirm-settle-up" data-friend-id="${friendId}" class="px-4 py-2 bg-green-600 text-white font-semibold rounded-md hover:bg-green-500">I Paid Full Amount</button>
+        </div>
+      </div>
+    </div>`;
+  setTimeout(() => document.getElementById(modalId).classList.add('flex', 'show'), 10);
+}
+
+
+export async function handleConfirmDueReceipt(expenseId, owerId) {
+  if (!appState.currentUser?.id || !expenseId || !owerId) return;
+  setLoading(true);
+  try {
+    const myId = appState.currentUser.id;
+    // Mark specific due as received=true
+    const { error } = await db
+      .from('dues')
+      .update({ received: true, paid: true }) // Ensure paid is also true just in case
+      .eq('expense_id', expenseId)
+      .eq('id_1', owerId) // The person who owed me
+      .eq('id_2', myId);  // Me
+
+    if (error) throw error;
+
+    showAlert('Success', 'Payment confirmed.');
+    return true;
+  } catch (err) {
+    showAlert('Error', err.message || 'Unable to confirm receipt.');
+    return false;
+  } finally {
+    setLoading(false);
+  }
 }
 
 /**
@@ -998,12 +980,7 @@ export async function handleCreateExpense(form) {
   const payer_id = (fd.get('payer_id') || '').trim() || null;
   const dueDateRaw = fd.get('due_date');
   const due_date = dueDateRaw ? new Date(dueDateRaw).toISOString() : null;
-  const receiptInputFile = form.querySelector('input[name="receipt_image"]')?.files?.[0] || null;
-  const pendingReceiptFile =
-    appState.pendingReceiptGroupId && appState.currentGroup?.id === appState.pendingReceiptGroupId
-      ? appState.pendingReceiptFile
-      : null;
-  const receiptFile = receiptInputFile || pendingReceiptFile || null;
+  const receiptFile = form.querySelector('input[name="receipt_image"]')?.files?.[0] || null;
 
   if (!title) {
     showAlert('Error', 'Title is required for an expense.');
@@ -1032,17 +1009,6 @@ export async function handleCreateExpense(form) {
     return;
   }
 
-  const receiptItems =
-    appState.pendingReceiptGroupId && appState.currentGroup?.id === appState.pendingReceiptGroupId
-      ? appState.pendingReceiptItems || []
-      : [];
-  const cleanedItems = receiptItems
-    .filter((item) => Number.isFinite(item?.price))
-    .map((item) => ({
-      name: (item?.name || 'Item').replace(/,/g, '').trim() || 'Item',
-      price: item.price
-    }));
-
   let receiptPath = null;
   if (receiptFile) {
     if (receiptFile.size > MAX_RECEIPT_UPLOAD_BYTES) {
@@ -1065,13 +1031,13 @@ export async function handleCreateExpense(form) {
     receiptPath = filePath;
   }
 
-  const clientGeneratedId =
+  const expense_id =
     typeof crypto !== 'undefined' && crypto.randomUUID
       ? crypto.randomUUID()
       : `exp_${Date.now().toString(36)}${Math.random().toString(36).slice(2, 8)}`;
 
   const expenseInfoPayload = {
-    expense_id: clientGeneratedId,
+    expense_id,
     group_id: appState.currentGroup.id,
     title,
     explanation,
@@ -1083,317 +1049,31 @@ export async function handleCreateExpense(form) {
     receipt_image: receiptPath
   };
 
+  const expenseRows = allocations.map((entry) => ({
+    expense_id,
+    user_id: entry.userId,
+    individual_amount: entry.cents,
+    approval: entry.userId === appState.currentUser.id // Auto-approve if user is the creator
+  }));
+
   setLoading(true);
-  try {
-    const { data: infoRows, error: infoErr } = await db
-      .from('expense_info')
-      .insert(expenseInfoPayload)
-      .select('expense_id')
-      .limit(1);
-    if (infoErr) throw new Error(infoErr.message || 'Could not save expense details.');
-
-    const persistedId = infoRows?.[0]?.expense_id || clientGeneratedId;
-    const expenseRows = allocations.map((entry) => ({
-      expense_id: persistedId,
-      user_id: entry.userId,
-      individual_amount: entry.cents,
-      approval: false
-    }));
-
-    const { error: expenseErr } = await db.from('expense').insert(expenseRows);
-    if (expenseErr) {
-      // Clean up the expense_info row if splits fail to save.
-      try {
-        await db.from('expense_info').delete().eq('expense_id', persistedId);
-      } catch (cleanupErr) {
-        console.error('Failed to roll back expense_info row', cleanupErr);
-      }
-      throw new Error(expenseErr.message || 'Could not save expense shares.');
-    }
-
-    if (cleanedItems.length) {
-      const itemsPayload = cleanedItems.map((item) => ({
-        expense_id: persistedId,
-        name: item.name,
-        price: Math.round(item.price * 100) / 100
-      }));
-      const { error: itemsErr } = await db.from('expense_items').insert(itemsPayload);
-      if (itemsErr) {
-        console.warn('expense_items insert failed', itemsErr);
-        showAlert('Warning', 'Expense saved, but receipt items could not be stored.');
-      }
-    }
-
-    const fromModal = modalContainer.contains(form);
-    if (fromModal) {
-      modalContainer.innerHTML = '';
-    } else if (appState.currentUser?.id && appState.currentGroup?.id) {
-      navigate(`/${appState.currentUser.id}/groups/${appState.currentGroup.id}`);
-    }
-    resetPendingReceiptState();
-    showAlert('Success', 'Expense proposal created.');
-    fetchPendingProposals();
-    fetchGroupPendingExpenses(appState.currentGroup.id);
-    fetchGroupExpenseActivity(appState.currentGroup.id);
-  } catch (err) {
-    showAlert('Error', err?.message || 'Unable to create expense.');
-  } finally {
+  const { error: infoErr } = await db.from('expense_info').insert(expenseInfoPayload);
+  if (infoErr) {
     setLoading(false);
-  }
-}
-
-async function applyReceiptFile(form, file, { autoScan = false } = {}) {
-  if (!form) return;
-  const label = form.querySelector('[data-receipt-label]');
-  const previewImg = form.querySelector('[data-receipt-preview]');
-  const placeholder = form.querySelector('[data-receipt-placeholder]');
-  const statusEl = form.querySelector('[data-receipt-status]');
-  const listEl = form.querySelector('[data-receipt-items]');
-  const totalEl = form.querySelector('[data-receipt-total]');
-
-  if (!file) {
-    resetPendingReceiptState();
-    form.dataset.receiptTotal = '';
-    if (label) {
-      label.textContent = 'No file chosen';
-    }
-    if (previewImg) {
-      previewImg.removeAttribute('src');
-      previewImg.classList.add('hidden');
-    }
-    if (placeholder) placeholder.classList.remove('hidden');
-    if (statusEl) statusEl.textContent = 'Upload a receipt to scan.';
-    if (listEl) listEl.innerHTML = '';
-    if (totalEl) {
-      totalEl.textContent = '';
-      totalEl.hidden = true;
-    }
+    showAlert('Error', infoErr.message || 'Could not save expense details.');
     return;
   }
 
-  if (file.size > MAX_RECEIPT_UPLOAD_BYTES) {
-    showAlert('Error', 'Receipt image must be 10MB or smaller.');
+  const { error: expenseErr } = await db.from('expense').insert(expenseRows);
+  setLoading(false);
+  if (expenseErr) {
+    showAlert('Warning', 'Expense created, but shares could not be saved: ' + expenseErr.message);
     return;
   }
 
-  const fileType = (file.type || '').toLowerCase();
-  const fileName = (file.name || '').toLowerCase();
-  const isJpeg = fileType === 'image/jpeg' || fileType === 'image/jpg' || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
-  const isPng = fileType === 'image/png' || fileName.endsWith('.png');
-  if (!isJpeg && !isPng) {
-    showAlert('Error', 'Only JPEG and PNG files are supported for receipt scanning.');
-    return;
-  }
-
-  if (appState.pendingReceiptPreviewUrl) {
-    try {
-      URL.revokeObjectURL(appState.pendingReceiptPreviewUrl);
-    } catch (err) {
-      console.warn('Failed to revoke receipt preview URL', err);
-    }
-  }
-
-  const previewUrl = URL.createObjectURL(file);
-  appState.pendingReceiptFile = file;
-  appState.pendingReceiptPreviewUrl = previewUrl;
-  appState.pendingReceiptItems = [];
-  appState.pendingReceiptTotal = null;
-  appState.pendingReceiptGroupId = appState.currentGroup?.id || null;
-  form.dataset.receiptTotal = '';
-
-  if (label) {
-    label.textContent = file.name || 'Receipt image';
-  }
-  if (previewImg) {
-    previewImg.src = previewUrl;
-    previewImg.classList.remove('hidden');
-  }
-  if (placeholder) placeholder.classList.add('hidden');
-  if (statusEl) statusEl.textContent = 'Scanning receipt...';
-  if (listEl) listEl.innerHTML = '';
-  if (totalEl) {
-    totalEl.textContent = '';
-    totalEl.hidden = true;
-  }
-
-  if (autoScan) {
-    await handleReceiptScan(form);
-  }
-}
-
-export async function handleReceiptFileChange(inputEl, { autoScan = false } = {}) {
-  const form = inputEl?.closest('form');
-  if (!form) return;
-  const file = inputEl?.files?.[0] || null;
-  await applyReceiptFile(form, file, { autoScan });
-}
-
-export async function handleReceiptDrop(form, file) {
-  if (!form) return;
-  await applyReceiptFile(form, file, { autoScan: true });
-}
-
-export async function handleReceiptScan(form) {
-  if (!form) return;
-  const fileInput = form.querySelector('input[name="receipt_image"]');
-  const receiptFile = fileInput?.files?.[0] || appState.pendingReceiptFile || null;
-  if (!receiptFile) {
-    showAlert('Error', 'Upload a receipt image before scanning.');
-    return;
-  }
-  const fileName = (receiptFile.name || '').toLowerCase();
-  const fileType = (receiptFile.type || '').toLowerCase();
-  const isJpeg = fileType === 'image/jpeg' || fileType === 'image/jpg' || fileName.endsWith('.jpg') || fileName.endsWith('.jpeg');
-  const isPng = fileType === 'image/png' || fileName.endsWith('.png');
-  if (!isJpeg && !isPng) {
-    showAlert('Error', 'Only JPEG and PNG files are supported for receipt scanning.');
-    return;
-  }
-
-  appState.pendingReceiptFile = receiptFile;
-  if (!appState.pendingReceiptGroupId && appState.currentGroup?.id) {
-    appState.pendingReceiptGroupId = appState.currentGroup.id;
-  }
-
-  const scanButton = form.querySelector('[data-action="scan-receipt"]');
-  const useTotalButton = form.querySelector('[data-action="use-receipt-total"]');
-  const statusEl = form.querySelector('[data-receipt-status]');
-  const listEl = form.querySelector('[data-receipt-items]');
-  const totalEl = form.querySelector('[data-receipt-total]');
-
-  const scanId = `${Date.now()}`;
-  form.dataset.receiptScanId = scanId;
-  form.dataset.receiptTotal = '';
-
-  if (scanButton) scanButton.disabled = true;
-  if (useTotalButton) useTotalButton.disabled = true;
-  if (statusEl) statusEl.textContent = 'Preparing on-device OCR...';
-  if (listEl) listEl.innerHTML = '';
-  if (totalEl) {
-    totalEl.textContent = '';
-    totalEl.hidden = true;
-  }
-
-  appState.pendingReceiptItems = [];
-  appState.pendingReceiptTotal = null;
-
-  try {
-    const result = await scanReceiptImage(receiptFile, (progress) => {
-      if (statusEl) {
-        const percent = Math.round((progress || 0) * 100);
-        statusEl.textContent = `Scanning receipt... ${percent}%`;
-      }
-    });
-
-    if (form.dataset.receiptScanId !== scanId) return;
-
-    const items = result?.items || [];
-    appState.pendingReceiptItems = items;
-    if (listEl) {
-      listEl.innerHTML = '';
-      if (!items.length) {
-        const empty = document.createElement('li');
-        empty.className = 'receipt-scan__empty';
-        empty.textContent = 'No items detected. Try a sharper photo.';
-        listEl.appendChild(empty);
-      } else {
-        items.forEach((item) => {
-          const row = document.createElement('li');
-          const typeClass = item.type ? ` receipt-scan__item--${item.type}` : '';
-          row.className = `receipt-scan__item${typeClass}`;
-          const nameEl = document.createElement('span');
-          nameEl.textContent = item.name;
-          const priceEl = document.createElement('span');
-          priceEl.textContent = formatCurrency(item.price);
-          row.append(nameEl, priceEl);
-          listEl.appendChild(row);
-        });
-      }
-    }
-
-    if (statusEl) {
-      statusEl.textContent = items.length
-        ? `Found ${items.length} line item${items.length === 1 ? '' : 's'}. Review below.`
-        : 'No line items found. Try a clearer, brighter photo.';
-    }
-
-    const totalValue =
-      typeof result?.detectedTotal === 'number'
-        ? result.detectedTotal
-        : result?.itemsTotal > 0
-          ? result.itemsTotal
-          : null;
-
-    if (totalValue && Number.isFinite(totalValue)) {
-      appState.pendingReceiptTotal = totalValue;
-      form.dataset.receiptTotal = totalValue.toFixed(2);
-      if (totalEl) {
-        totalEl.textContent = `Detected total: ${formatCurrency(totalValue)}`;
-        totalEl.hidden = false;
-      }
-      if (useTotalButton) useTotalButton.disabled = false;
-    }
-  } catch (err) {
-    console.error('receipt scan failed', err);
-    const message = err?.message || 'Receipt scan failed. Try a clearer photo.';
-    showAlert('Error', message);
-    if (statusEl) statusEl.textContent = message;
-    appState.pendingReceiptItems = [];
-    appState.pendingReceiptTotal = null;
-  } finally {
-    if (scanButton) scanButton.disabled = false;
-  }
-}
-
-export function handleUseReceiptTotal(form) {
-  if (!form) return;
-  const totalInput = form.querySelector('[data-expense-total]');
-  const totalValue = Number.isFinite(appState.pendingReceiptTotal)
-    ? appState.pendingReceiptTotal
-    : parseFloat(form.dataset.receiptTotal || '');
-  if (!totalInput || !Number.isFinite(totalValue)) {
-    showAlert('Error', 'No scanned total is available yet.');
-    return;
-  }
-  totalInput.value = totalValue.toFixed(2);
-  totalInput.dispatchEvent(new Event('input', { bubbles: true }));
-}
-
-/**
- * Handles user approval/decline of an expense share. When all shares for an
- * expense are approved, the parent expense_info.proposal is marked false.
- */
-export async function handleExpenseApprovalResponse(expenseId, response) {
-  if (!appState.currentUser?.id || !expenseId) {
-    showAlert('Error', 'Missing expense or user context.');
-    return;
-  }
-  const approve = response === 'approve';
-  setLoading(true);
-  try {
-    const { error: updateErr } = await db
-      .from('expense')
-      .update({ approval: approve })
-      .eq('expense_id', expenseId)
-      .eq('user_id', appState.currentUser.id);
-    if (updateErr) throw updateErr;
-
-    if (approve) {
-      const { data: rows, error: checkErr } = await db.from('expense').select('approval').eq('expense_id', expenseId);
-      if (checkErr) throw checkErr;
-      const allApproved = (rows || []).length > 0 && rows.every((row) => row.approval === true);
-      if (allApproved) {
-        await db.from('expense_info').update({ proposal: false }).eq('expense_id', expenseId);
-      }
-    }
-
-    fetchGroupPendingExpenses(appState.currentGroup?.id);
-    fetchGroupExpenseActivity(appState.currentGroup?.id);
-    fetchPendingProposals();
-    showAlert('Success', approve ? 'Marked approved.' : 'Marked declined.');
-  } catch (err) {
-    showAlert('Error', err?.message || 'Unable to update approval.');
-  } finally {
-    setLoading(false);
-  }
+  modalContainer.innerHTML = '';
+  showAlert('Success', 'Expense proposal created.');
+  fetchPendingProposals();
+  fetchGroupPendingExpenses(appState.currentGroup.id);
+  fetchGroupExpenseActivity(appState.currentGroup.id);
 }

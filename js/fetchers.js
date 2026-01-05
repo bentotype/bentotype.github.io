@@ -23,7 +23,7 @@ export async function fetchUserGroups() {
   if (!el || !appState.currentUser) return;
 
   const { data, error } = await db
-    .from('split_groups')
+    .from('groups')
     .select('group_id, invite, group_info(group_title, description, owner_id)')
     .eq('user_id', appState.currentUser.id);
 
@@ -50,7 +50,7 @@ export async function fetchUserGroups() {
     .map((g) => {
       const title = g.group_info?.group_title || 'Untitled group';
       const description = g.group_info?.description || 'No description yet.';
-       const ownerId = g.group_info?.owner_id || '';
+      const ownerId = g.group_info?.owner_id || '';
       const safeTitle = encodeURIComponent(title);
       const safeDesc = encodeURIComponent(description);
       return `
@@ -148,7 +148,7 @@ export async function fetchFriends() {
         return `
         <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition friend-card" data-friend-id="${friendId}">
           <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
+            <div class="flex items-center gap-3 cursor-pointer" data-action="view-friend-profile" data-friend-id="${friendId}">
               <div class="friend-avatar">${avatar}</div>
               <div>
                 <div class="text-gray-900 font-semibold text-lg">${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}</div>
@@ -178,7 +178,7 @@ export async function fetchGroupInvites() {
   el.innerHTML = '<div class="text-gray-500">Loading invites...</div>';
 
   const { data, error } = await db
-    .from('split_groups')
+    .from('groups')
     .select('group_id, group_info(group_title, description)')
     .eq('user_id', user.id)
     .eq('invite', true);
@@ -232,21 +232,17 @@ export async function fetchGroupInvites() {
 
 export async function fetchGroupMembers(groupId) {
   const listEl = document.getElementById('group-members-list');
-  if (!groupId) return;
+  if (!listEl || !groupId) return;
 
-  if (listEl) {
-    listEl.innerHTML = '<p class="text-sm text-gray-500">Loading members...</p>';
-  }
+  listEl.innerHTML = '<p class="text-sm text-gray-500">Loading members...</p>';
 
   const { data, error } = await db
-    .from('split_groups')
+    .from('groups')
     .select('user_id, invite')
     .eq('group_id', groupId);
 
   if (error) {
-    if (listEl) {
-      listEl.innerHTML = '<p class="text-sm text-red-500">Unable to load members.</p>';
-    }
+    listEl.innerHTML = '<p class="text-sm text-red-500">Unable to load members.</p>';
     appState.currentGroupMembers = [];
     appState.currentGroupMemberIds = [];
     return;
@@ -256,9 +252,7 @@ export async function fetchGroupMembers(groupId) {
 
   const confirmed = (data || []).filter((row) => row.invite !== true);
   if (!confirmed.length) {
-    if (listEl) {
-      listEl.innerHTML = '<p class="text-sm text-gray-500">No members yet.</p>';
-    }
+    listEl.innerHTML = '<p class="text-sm text-gray-500">No members yet.</p>';
     appState.currentGroupMembers = [];
     return;
   }
@@ -277,24 +271,23 @@ export async function fetchGroupMembers(groupId) {
 
   const ownerId = appState.currentGroup?.owner_id;
 
-  if (listEl) {
-    listEl.innerHTML = members
-      .map((user) => {
-        const isOwner = ownerId && user.user_id === ownerId;
-        const canRemove = ownerId && appState.currentUser?.id === ownerId && !isOwner;
-        const fullName = `${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}`.trim() || escapeHtml(user.email || 'Member');
-        const initials = `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
-        const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
-        const avatarContent = user.profile_picture
-          ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
-              user.first_name || ''
-            )} ${escapeHtml(user.last_name || '')}" /></div>`
-          : `<div class="group-member__avatar">${initials}</div>`;
-        const ownerBadge = isOwner ? '<span class="group-member__owner-badge">Owner</span>' : '';
-        const removeButton = canRemove
-          ? `<button type="button" class="group-member__remove" data-action="remove-group-member" data-group-id="${appState.currentGroup?.id || ''}" data-userid="${user.user_id}" data-member-name="${fullName}" aria-label="Remove ${fullName} from group">-</button>`
-          : '';
-        return `
+  listEl.innerHTML = members
+    .map((user) => {
+      const isOwner = ownerId && user.user_id === ownerId;
+      const canRemove = ownerId && appState.currentUser?.id === ownerId && !isOwner;
+      const fullName = `${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}`.trim() || escapeHtml(user.email || 'Member');
+      const initials = `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
+      const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
+      const avatarContent = user.profile_picture
+        ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
+          user.first_name || ''
+        )} ${escapeHtml(user.last_name || '')}" /></div>`
+        : `<div class="group-member__avatar">${initials}</div>`;
+      const ownerBadge = isOwner ? '<span class="group-member__owner-badge">Owner</span>' : '';
+      const removeButton = canRemove
+        ? `<button type="button" class="group-member__remove" data-action="remove-group-member" data-group-id="${appState.currentGroup?.id || ''}" data-userid="${user.user_id}" data-member-name="${fullName}" aria-label="Remove ${fullName} from group">-</button>`
+        : '';
+      return `
         <div class="group-member${isOwner ? ' group-member--owner' : ''}">
           ${avatarContent}
           <div class="group-member__meta">
@@ -303,9 +296,8 @@ export async function fetchGroupMembers(groupId) {
           </div>
           ${removeButton}
         </div>`;
-      })
-      .join('');
-  }
+    })
+    .join('');
 }
 
 export async function fetchGroupPendingExpenses(groupId) {
@@ -335,17 +327,16 @@ export async function fetchGroupPendingExpenses(groupId) {
       const due = row.expense_info?.due_date ? new Date(row.expense_info.due_date).toLocaleDateString() : 'No due date';
       const title = escapeHtml(row.expense_info?.title || 'Expense');
       const amount = (row.individual_amount || 0) / 100;
-      return `<div class="expense-pill" data-expense-id="${row.expense_id}">
+      return `<div class="expense-pill">
         <div>
           <div class="expense-pill__title">${title}</div>
           <div class="expense-pill__meta">Due ${due}</div>
         </div>
-        <div class="expense-pill__actions">
-          <div class="expense-pill__amount">${formatCurrency(amount)}</div>
-          <div class="expense-pill__buttons">
-            <button type="button" class="expense-pill__btn approve" data-action="respond-expense" data-response="approve" data-expense-id="${row.expense_id}" aria-label="Approve expense">✔</button>
-            <button type="button" class="expense-pill__btn decline" data-action="respond-expense" data-response="decline" data-expense-id="${row.expense_id}" aria-label="Decline expense">✕</button>
-          </div>
+        <div class="text-right">
+            <div class="expense-pill__amount">${formatCurrency(amount)}</div>
+            <button class="text-xs bg-green-600 text-white px-2 py-1 rounded mt-1 hover:bg-green-500" 
+                data-action="approve-expense" 
+                data-expense-id="${row.expense_id}">Approve</button>
         </div>
       </div>`;
     })
@@ -362,7 +353,6 @@ export async function fetchGroupExpenseActivity(groupId) {
     .from('expense_info')
     .select('expense_id, title, explanation, total_amount, payer_id, date, proposal, due_date')
     .eq('group_id', groupId)
-    .eq('proposal', false)
     .order('date', { ascending: false })
     .limit(15);
 
@@ -391,14 +381,13 @@ export async function fetchGroupExpenseActivity(groupId) {
       const badge = row.proposal
         ? '<span class="expense-chip expense-chip--pending">Proposal</span>'
         : '<span class="expense-chip expense-chip--approved">Approved</span>';
-      return `<div class="expense-activity-item">
+      return `<div class="expense-activity-item cursor-pointer hover:bg-gray-700/50 transition" data-action="view-expense" data-expense-id="${row.expense_id}">
         <div>
           <div class="expense-activity-title">${escapeHtml(row.title || 'Expense')}</div>
           <div class="expense-activity-meta">${badge} <span class="expense-separator">•</span> ${escapeHtml(
         payerLabel
-      )} <span class="expense-separator">•</span> Due ${due} ${
-        created ? `<span class="expense-separator">•</span> ${created}` : ''
-      }</div>
+      )} <span class="expense-separator">•</span> Due ${due} ${created ? `<span class="expense-separator">•</span> ${created}` : ''
+        }</div>
           <div class="expense-activity-desc">${desc}</div>
         </div>
         <div class="expense-activity-amount">${formatCurrency((row.total_amount || 0) / 100)}</div>
@@ -419,8 +408,8 @@ export async function fetchPendingFriendRequests() {
 
   const { data, error } = await db
     .from('friend_request')
-    .select('id_1, id_2, created_at')
-    .eq('id_1', user.id);
+    .select('id_1, id_2')
+    .eq('id_2', user.id);
 
   if (error) {
     el.innerHTML = '<div class="text-red-500">Unable to load requests.</div>';
@@ -433,12 +422,12 @@ export async function fetchPendingFriendRequests() {
 
   const requests = await Promise.all(
     data.map(async (row) => {
-      const sender = await getUserInfo(row.id_2);
+      const sender = await getUserInfo(row.id_1);
       return {
         sender,
         created_at: row.created_at,
-        requesterId: row.id_2,
-        requesteeId: row.id_1
+        requesterId: row.id_1,
+        requesteeId: row.id_2
       };
     })
   );
@@ -448,13 +437,7 @@ export async function fetchPendingFriendRequests() {
       const avatar = sender.profile_picture
         ? `<img src="${sender.profile_picture}" alt="${escapeHtml(sender.first_name || '')} ${escapeHtml(sender.last_name || '')}" />`
         : `<span>${(sender.first_name?.[0] || '')}${(sender.last_name?.[0] || '')}</span>`;
-      let date = '';
-      if (created_at) {
-        const parsed = new Date(created_at);
-        if (!Number.isNaN(parsed.valueOf())) {
-          date = parsed.toLocaleDateString();
-        }
-      }
+      const date = created_at ? new Date(created_at).toLocaleDateString() : '';
       const usernameLabel = sender.username ? `@${sender.username}` : '';
       return `<div class="pending-item invite-card friend-request-card">
             <div class="invite-card__copy">
@@ -499,7 +482,7 @@ export async function fetchMonthlyTotal() {
   if (!target || !appState.currentUser) return;
 
   const { data: groups, error: groupsError } = await db
-    .from('split_groups')
+    .from('groups')
     .select('group_id')
     .eq('user_id', appState.currentUser.id);
   if (groupsError || !groups?.length) {
@@ -507,23 +490,172 @@ export async function fetchMonthlyTotal() {
     return;
   }
 
-  const groupIds = groups.map((g) => g.group_id);
+  // Get start of month ISO string
   const startOfMonth = new Date();
   startOfMonth.setDate(1);
   startOfMonth.setHours(0, 0, 0, 0);
+  const startStr = startOfMonth.toISOString();
 
+  // Query 'expense' table (individual_amount) joined with 'expense_info' (date, proposal)
+  // We need to fetch rows where user_id = current, expense_info.date >= startOfMonth, proposal = false
   const { data, error } = await db
-    .from('expense_info')
-    .select('total_amount, group_id, proposal, created_at')
-    .in('group_id', groupIds)
-    .eq('proposal', false)
-    .gte('created_at', startOfMonth.toISOString());
+    .from('expense')
+    .select('individual_amount, expense_info!inner(date, proposal)')
+    .eq('user_id', appState.currentUser.id)
+    .eq('expense_info.proposal', false)
+    .gte('expense_info.date', startStr);
 
   if (error) {
-    target.textContent = formatCurrency(0);
+    target.textContent = '$0.00';
     console.error('monthly total', error);
     return;
   }
-  const cents = data.reduce((sum, row) => sum + (row.total_amount || 0), 0);
+
+  const cents = data.reduce((sum, row) => sum + (row.individual_amount || 0), 0);
   target.textContent = formatCurrency(cents / 100);
+}
+
+export async function fetchExpensesForCalendar(startDate, endDate) {
+  if (!appState.currentUser) return [];
+
+  // Fetch expenses where date is within range
+  const { data, error } = await db
+    .from('expense_info')
+    .select('expense_id, title, total_amount, date, group_id, due_date, proposal')
+    .eq('proposal', false) // Only confirmed expenses for calendar? Or confirmed + pending? 
+    // App shows finalized. Let's match app: 'proposal = false'.
+    // WAIT: App's fetchExpensesForCalendar logic uses fetchExpensesForCalendar service which...
+    // In SupabaseService.swift: .eq("proposal", value: false)
+    .gte('date', startDate.toISOString())
+    .lte('date', endDate.toISOString());
+
+  // We actually need to filter by user's groups too, or use the 'expense' join logic 
+  // to ensure user is part of the expense.
+  // Simpler: Fetch 'expense' for user, join expense_info.
+  const { data: userExpenses, error: userError } = await db
+    .from('expense')
+    .select('expense_id, expense_info!inner(title, total_amount, date, due_date, proposal)')
+    .eq('user_id', appState.currentUser.id)
+    .eq('expense_info.proposal', false)
+    .gte('expense_info.date', startDate.toISOString())
+    .lte('expense_info.date', endDate.toISOString());
+
+  if (userError) return [];
+
+  // Map to flat structure
+  return userExpenses.map(row => ({
+    ...row.expense_info,
+    expense_id: row.expense_id
+  }));
+}
+
+export async function fetchBadgeCounts() {
+  if (!appState.currentUser) return { home: 0, friends: 0, groups: 0 };
+  const userId = appState.currentUser.id;
+
+  // 1. Home: Expenses due in next 3 days
+  const today = new Date();
+  const threeDays = new Date();
+  threeDays.setDate(today.getDate() + 3);
+
+  // This is rough, ideally we use 'expense' table join again
+  const { count: homeCount } = await db
+    .from('expense')
+    .select('expense_id, expense_info!inner(due_date)', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .gte('expense_info.due_date', today.toISOString())
+    .lte('expense_info.due_date', threeDays.toISOString());
+
+  // 2. Friends: Pending requests
+  const { count: friendsCount } = await db
+    .from('friend_request')
+    .select('*', { count: 'exact', head: true })
+    .eq('id_2', userId);
+
+  // 3. Groups: Invites
+  const { count: groupsCount } = await db
+    .from('groups')
+    .select('*', { count: 'exact', head: true })
+    .eq('user_id', userId)
+    .eq('invite', true);
+
+  return {
+    home: homeCount || 0,
+    friends: friendsCount || 0,
+    groups: groupsCount || 0
+  };
+}
+
+export async function fetchExpenseSplits(expenseId) {
+  // Get all splits for an expense joined with user_info
+  const { data, error } = await db
+    .from('expense')
+    .select('individual_amount, user_info(user_id, first_name, last_name, email, profile_picture)')
+    .eq('expense_id', expenseId);
+
+  if (error) {
+    console.error('fetchExpenseSplits', error);
+    return [];
+  }
+  return data;
+}
+
+/**
+ * ===============================================================
+ * DUES
+ * ===============================================================
+ */
+export async function fetchDues(user1, user2) {
+  if (!user1 || !user2) return [];
+
+  // fetch where (id_1 = u1 AND id_2 = u2) OR (id_1 = u2 AND id_2 = u1)
+  const { data, error } = await db
+    .from('dues')
+    .select('id_1, id_2, amount, expense_id, paid, received, expense_info(title, date)')
+    .or(`and(id_1.eq.${user1},id_2.eq.${user2}),and(id_1.eq.${user2},id_2.eq.${user1})`)
+    .order('created_at', { ascending: false });
+
+  if (error) {
+    console.error('fetchDues error', error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function fetchActivities() {
+  if (!appState.currentUser) return [];
+  const userId = appState.currentUser.id;
+
+  const { data, error } = await db
+    .from('activity')
+    .select('*')
+    .eq('user_id', userId)
+    .order('created_at', { ascending: false })
+    .limit(50);
+
+  if (error) {
+    console.error('fetchActivities error', error);
+    return [];
+  }
+  return data || [];
+}
+
+export async function fetchExpenseById(expenseId) {
+  const { data, error } = await db
+    .from('expense_info')
+    .select('*')
+    .eq('expense_id', expenseId)
+    .single();
+  if (error) return null;
+
+  // Get receipt signed URL if needed
+  if (data.receipt_image) {
+    const { data: signed } = await db.storage
+      .from('expense_receipts')
+      .createSignedUrl(data.receipt_image, 3600);
+    if (signed?.signedUrl) {
+      data.receipt_url = signed.signedUrl;
+    }
+  }
+  return data;
 }
