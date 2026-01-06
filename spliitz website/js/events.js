@@ -269,7 +269,23 @@ export function registerEventListeners() {
       case 'nav': {
         const targetView = t.dataset.target || e.target.dataset.target;
         if (targetView) {
-          navigate(`/${appState.currentUser?.id || ''}/${targetView}`);
+          if (['about', 'contact'].includes(targetView)) {
+            navigate(`/${targetView}`);
+          } else {
+            // Default to user-scoped routes, e.g. /:userId/:page
+            const uid = appState.currentUser?.id || '';
+            if (uid) {
+              navigate(`/${uid}/${targetView}`);
+            } else {
+              // If not logged in and trying to go to a user page, contextually redirect to auth
+              // But if target is explicitly auth/signin, go there.
+              if (targetView === 'auth' || targetView === 'signin') {
+                navigate('/signin');
+              } else {
+                navigate('/signin');
+              }
+            }
+          }
         }
         break;
       }
