@@ -166,35 +166,68 @@ function renderAuth() {
     </section>
   </main>
 </div>
-    <div class="mt-8 text-center space-x-4 text-sm text-gray-500">
-      <button data-action="nav" data-target="about" class="hover:text-indigo-400 transition">About Us</button>
-      <span>•</span>
-      <button data-action="nav" data-target="contact" class="hover:text-indigo-400 transition">Contact Us</button>
+    <div class="mt-12 py-8 text-center space-x-8 text-base font-medium text-gray-600">
+      <button data-action="nav" data-target="about" class="hover:text-indigo-600 transition">About Us</button>
+      <span class="text-gray-400">•</span>
+      <button data-action="nav" data-target="contact" class="hover:text-indigo-600 transition">Contact Us</button>
     </div>`;
 }
 
 
 function renderAbout() {
   app.innerHTML = `
-<div class="home-shell bg-gray-900 text-white h-full">
-  <div class="w-full max-w-4xl mx-auto p-8 flex flex-col h-full">
-    <div class="mb-8">
-      <button data-action="nav" data-target="auth" class="text-indigo-400 hover:text-indigo-300 font-medium">← Back to Sign In</button>
+<div class="home-shell bg-gray-900 text-white min-h-full">
+  <div class="w-full max-w-4xl mx-auto p-8 flex flex-col">
+    <div class="mb-10">
+      <button data-action="nav" data-target="auth" class="text-indigo-400 hover:text-indigo-300 font-medium text-lg">← Back to Sign In</button>
     </div>
-    <h1 class="text-4xl font-bold mb-6">About Spliitz</h1>
-    <div class="prose prose-invert max-w-none space-y-6 text-gray-300">
-      <p class="text-lg text-gray-200">
-        Keeping expenses split shouldn't be a splitting headache.
-      </p>
-      <p>
-        Whether you’re sharing a ski trip, splitting rent with roommates, or just paying someone back for lunch, 
-        Spliitz makes life easier. We store your data securely in the cloud so that you can access it anywhere: 
-        on your phone, your tablet, or your desktop.
-      </p>
-      <h3 class="text-xl font-semibold text-white mt-4">Our Mission</h3>
-      <p>
-        To reduce the stress and awkwardness that money places on our most important relationships.
-      </p>
+    
+    <div class="space-y-12">
+      <!-- Hero -->
+      <section>
+        <p class="text-indigo-400 font-semibold tracking-wide uppercase mb-2">About Spliitz</p>
+        <h1 class="text-5xl font-bold mb-6 leading-tight">Splitting expenses shouldn't be a splitting headache.</h1>
+        <p class="text-xl text-gray-300 max-w-2xl leading-relaxed">
+          We built Spliitz because we were tired of the "who paid for what?" dance. 
+          Whether it's a ski trip, a shared apartment, or Saturday night dinner, we keep the math invisible so the fun stays visible.
+        </p>
+      </section>
+
+      <!-- Mission -->
+      <section class="grid md:grid-cols-2 gap-8 items-center bg-gray-800 rounded-2xl p-8 border border-gray-700">
+        <div>
+          <h3 class="text-2xl font-bold mb-4 text-white">Our Mission</h3>
+          <p class="text-gray-300 leading-relaxed">
+            To reduce the stress and awkwardness that money places on our most important relationships. 
+            We believe you shouldn't have to choose between being generous and being fair.
+          </p>
+        </div>
+        <div class="bg-gray-700 h-48 rounded-xl flex items-center justify-center">
+            <span class="text-4xl">🤝</span>
+        </div>
+      </section>
+
+      <!-- Why Us -->
+      <section>
+        <h3 class="text-3xl font-bold mb-8 text-white">Why Choose Spliitz?</h3>
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+            <div class="w-12 h-12 bg-indigo-900/50 rounded-lg flex items-center justify-center text-2xl mb-4">⚡️</div>
+            <h4 class="text-lg font-bold mb-2">Real-time Sync</h4>
+            <p class="text-gray-400">Changes update instantly across everyone's devices. No more "did you add that yet?"</p>
+          </div>
+          <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+            <div class="w-12 h-12 bg-indigo-900/50 rounded-lg flex items-center justify-center text-2xl mb-4">🧠</div>
+            <h4 class="text-lg font-bold mb-2">Smart Math</h4>
+            <p class="text-gray-400">We optimize debts so you pay back the right people with the fewest transfers.</p>
+          </div>
+          <div class="bg-gray-800 p-6 rounded-xl border border-gray-700">
+             <div class="w-12 h-12 bg-indigo-900/50 rounded-lg flex items-center justify-center text-2xl mb-4">🔒</div>
+            <h4 class="text-lg font-bold mb-2">Secure Cloud</h4>
+            <p class="text-gray-400">Your data is encrypted and stored safely. Access it from anywhere, anytime.</p>
+          </div>
+        </div>
+      </section>
     </div>
   </div>
 </div>`;
@@ -202,26 +235,75 @@ function renderAbout() {
 
 function renderContact() {
   app.innerHTML = `
-<div class="home-shell bg-gray-900 text-white h-full">
-  <div class="w-full max-w-4xl mx-auto p-8 flex flex-col h-full">
-    <div class="mb-8">
-      <button data-action="nav" data-target="auth" class="text-indigo-400 hover:text-indigo-300 font-medium">← Back to Sign In</button>
+<div class="home-shell bg-gray-900 text-white min-h-full">
+  <div class="w-full max-w-4xl mx-auto p-8 flex flex-col">
+    <div class="mb-10">
+      <button data-action="nav" data-target="auth" class="text-indigo-400 hover:text-indigo-300 font-medium text-lg">← Back to Sign In</button>
     </div>
-    <h1 class="text-4xl font-bold mb-6">Contact Us</h1>
-    <div class="bg-gray-800 rounded-lg p-8 shadow-xl border border-gray-700">
-      <p class="text-lg text-gray-300 mb-6">
-        Have questions, feedback, or need support? We'd love to hear from you.
-      </p>
-      <div class="space-y-6">
-        <div class="flex items-start space-x-4">
+    
+    <div class="grid md:grid-cols-2 gap-12">
+      <!-- Contact Info -->
+      <div>
+        <h1 class="text-4xl font-bold mb-6">Contact Us</h1>
+        <p class="text-lg text-gray-300 mb-8 leading-relaxed">
+          Have questions, feedback, or need support? We'd love to hear from you. 
+          Fill out the form or send us an email directly.
+        </p>
+
+        <div class="space-y-6">
+          <div class="flex items-start space-x-4 bg-gray-800 p-4 rounded-xl border border-gray-700">
             <div class="bg-indigo-900/50 p-3 rounded-lg">
-            <span class="text-2xl">📧</span>
+              <span class="text-2xl">📧</span>
             </div>
             <div>
-            <h3 class="text-lg font-semibold text-white">Email Support</h3>
-            <p class="text-gray-400">support@spliitz.com</p>
+              <h3 class="text-lg font-semibold text-white">Email Support</h3>
+              <p class="text-gray-400 mb-1">For general inquiries and technical help:</p>
+              <a href="mailto:support@spliitz.com" class="text-indigo-400 hover:text-indigo-300 font-medium">support@spliitz.com</a>
             </div>
+          </div>
+          
+           <div class="flex items-start space-x-4 bg-gray-800 p-4 rounded-xl border border-gray-700">
+            <div class="bg-indigo-900/50 p-3 rounded-lg">
+              <span class="text-2xl">💼</span>
+            </div>
+            <div>
+              <h3 class="text-lg font-semibold text-white">Partnerships</h3>
+              <p class="text-gray-400 mb-1">Interested in working with us?</p>
+              <a href="mailto:partners@spliitz.com" class="text-indigo-400 hover:text-indigo-300 font-medium">partners@spliitz.com</a>
+            </div>
+          </div>
         </div>
+      </div>
+
+      <!-- Contact Form -->
+      <div class="bg-gray-800 rounded-2xl p-8 shadow-xl border border-gray-700">
+        <h3 class="text-xl font-bold mb-6">Send a message</h3>
+        <form class="space-y-5" onsubmit="event.preventDefault(); alert('Thanks! We will get back to you soon.');">
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Your Name</label>
+            <input type="text" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="John Doe">
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Email Address</label>
+            <input type="email" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="john@example.com">
+          </div>
+           <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Subject</label>
+             <select class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition">
+                <option>General Inquiry</option>
+                <option>Technical Support</option>
+                <option>Feature Request</option>
+                <option>Other</option>
+             </select>
+          </div>
+          <div>
+            <label class="block text-sm font-medium text-gray-400 mb-1">Message</label>
+            <textarea rows="4" class="w-full bg-gray-900 border border-gray-600 rounded-lg px-4 py-2.5 text-white focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="How can we help?"></textarea>
+          </div>
+          <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3 rounded-xl transition shadow-lg shadow-indigo-500/20">
+            Send Message
+          </button>
+        </form>
       </div>
     </div>
   </div>
