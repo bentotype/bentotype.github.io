@@ -2,53 +2,52 @@ import { appState } from './state.js';
 import { render } from './views.js';
 
 /**
- * Simple History Router
+ * Hash Router for GitHub Pages compatibility.
+ * Uses /#/path instead of /path.
  */
 
 const AUTH_PATH = '/signin';
 
 export function initRouter() {
-    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('hashchange', handleRouteChange);
     window.addEventListener('load', handleRouteChange);
     handleRouteChange();
 }
 
 export function navigate(path, { replace = false } = {}) {
-    const target = normalizePath(path);
-    const current = normalizePath(window.location.pathname);
-    if (target === current) {
+    // Ensure path starts with /
+    let target = path.startsWith('/') ? path : `/${path}`;
+
+    // In hash routing, we just set the hash. 
+    // replacement isn't strictly 'replaceState' in the same way, but 
+    // we can use location.replace for that effect if needed.
+    const fullHash = `#${target}`;
+
+    if (window.location.hash === fullHash) {
         handleRouteChange();
         return;
     }
-    if (replace) {
-        window.history.replaceState({}, '', target);
-    } else {
-        window.history.pushState({}, '', target);
-    }
-    handleRouteChange();
-}
 
-function normalizePath(path) {
-    if (!path) return '/';
-    let next = String(path).trim();
-    const hashIndex = next.indexOf('#');
-    if (hashIndex !== -1) next = next.slice(0, hashIndex);
-    const queryIndex = next.indexOf('?');
-    if (queryIndex !== -1) next = next.slice(0, queryIndex);
-    if (!next.startsWith('/')) next = `/${next}`;
-    if (next.length > 1) next = next.replace(/\/+$/, '');
-    if (next === '/index.html') return '/';
-    return next;
+    if (replace) {
+        const url = new URL(window.location.href);
+        url.hash = fullHash;
+        window.location.replace(url.toString());
+    } else {
+        window.location.hash = fullHash;
+    }
 }
 
 function getRoutePath() {
-    const hash = window.location.hash;
-    if (hash && hash.startsWith('#/')) {
-        const legacyPath = normalizePath(hash.slice(1));
-        window.history.replaceState({}, '', legacyPath);
-        return legacyPath;
-    }
-    return normalizePath(window.location.pathname);
+    let hash = window.location.hash.slice(1); // remove '#'
+    if (!hash) return '/';
+    // If we have a query string in the hash (e.g. #/path?foo=bar), strip or handle it.
+    // For now, simple path normalization:
+    const qIndex = hash.indexOf('?');
+    if (qIndex !== -1) hash = hash.slice(0, qIndex);
+
+    if (!hash.startsWith('/')) hash = `/${hash}`;
+    if (hash.length > 1) hash = hash.replace(/\/+$/, '');
+    return hash;
 }
 
 function handleRouteChange() {
@@ -71,12 +70,14 @@ function handleRouteChange() {
     if (path === '/about') {
         appState.currentView = 'about';
         render();
+        window.scrollTo(0, 0);
         return;
     }
 
     if (path === '/contact') {
         appState.currentView = 'contact';
         render();
+        window.scrollTo(0, 0);
         return;
     }
 
@@ -87,6 +88,7 @@ function handleRouteChange() {
         }
         appState.currentView = 'auth';
         render();
+        window.scrollTo(0, 0);
         return;
     }
 
