@@ -14,19 +14,31 @@ db.auth.onAuthStateChange((event, session) => {
   if (session && session.user) {
     appState.currentUser = session.user;
     // If we are on the auth page or root, go to user dashboard
-    const path = window.location.pathname;
-    if (!path || path === '/' || path === '/signin' || path === '/auth') {
+    // If we are on the auth page or root, go to user dashboard
+    const hash = window.location.hash;
+    const isAuthPage = !hash || hash === '#/' || hash === '#/signin' || hash === '#/auth';
+
+    if (isAuthPage) {
       navigate(`/${session.user.id}/home`, { replace: true });
     } else {
       // Just re-render to ensure state is correct
       render();
     }
   } else {
+    // If not logged in:
+    const hash = window.location.hash;
+    const isPublicPage = hash === '#/about' || hash === '#/contact';
+
     appState.currentUser = null;
     appState.userCache.clear();
     appState.pendingProfilePicturePath = '';
     appState.pendingProfilePictureUrl = '';
-    navigate('/signin', { replace: true });
+
+    if (!isPublicPage) {
+      navigate('/signin', { replace: true });
+    } else {
+      render(); // render public page if we're on one
+    }
   }
 });
 
