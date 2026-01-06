@@ -2,56 +2,59 @@ import { appState } from './state.js';
 import { render } from './views.js';
 
 /**
- * Hash Router for GitHub Pages compatibility.
- * Uses /#/path instead of /path.
+ * Valid history-based router for Clean URLs.
+ * Works with 404.html hack on GitHub Pages.
  */
 
 const AUTH_PATH = '/signin';
 
 export function initRouter() {
-    window.addEventListener('hashchange', handleRouteChange);
-    window.addEventListener('load', handleRouteChange);
+    window.addEventListener('popstate', handleRouteChange);
+    window.addEventListener('load', () => {
+        // CF-like 404 hack: Check if we were redirected from 404.html
+        // e.g. /?redirect=/about
+        const params = new URLSearchParams(window.location.search);
+        const redirect = params.get('redirect');
+        if (redirect) {
+            // Restore the clean URL
+            window.history.replaceState({}, '', redirect);
+        }
+        handleRouteChange();
+    });
     handleRouteChange();
 }
 
 export function navigate(path, { replace = false } = {}) {
-    // Ensure path starts with /
-    let target = path.startsWith('/') ? path : `/${path}`;
-
-    // In hash routing, we just set the hash. 
-    // replacement isn't strictly 'replaceState' in the same way, but 
-    // we can use location.replace for that effect if needed.
-    const fullHash = `#${target}`;
-
-    if (window.location.hash === fullHash) {
+    const target = normalizePath(path);
+    const current = normalizePath(window.location.pathname);
+    if (target === current) {
         handleRouteChange();
         return;
     }
-
     if (replace) {
-        const url = new URL(window.location.href);
-        url.hash = fullHash;
-        window.location.replace(url.toString());
+        window.history.replaceState({}, '', target);
     } else {
-        window.location.hash = fullHash;
+        window.history.pushState({}, '', target);
     }
+    handleRouteChange();
 }
 
-function getRoutePath() {
-    let hash = window.location.hash.slice(1); // remove '#'
-    if (!hash) return '/';
-    // If we have a query string in the hash (e.g. #/path?foo=bar), strip or handle it.
-    // For now, simple path normalization:
-    const qIndex = hash.indexOf('?');
-    if (qIndex !== -1) hash = hash.slice(0, qIndex);
-
-    if (!hash.startsWith('/')) hash = `/${hash}`;
-    if (hash.length > 1) hash = hash.replace(/\/+$/, '');
-    return hash;
+function normalizePath(path) {
+    if (!path) return '/';
+    let next = String(path).trim();
+    const hashIndex = next.indexOf('#');
+    if (hashIndex !== -1) next = next.slice(0, hashIndex);
+    const queryIndex = next.indexOf('?');
+    if (queryIndex !== -1) next = next.slice(0, queryIndex);
+    if (!next.startsWith('/')) next = `/${next}`;
+    if (next.length > 1) next = next.replace(/\/+$/, '');
+    // Ensure index.html doesn't mess up routing
+    if (next === '/index.html') return '/';
+    return next;
 }
 
 function handleRouteChange() {
-    const path = getRoutePath();
+    const path = normalizePath(window.location.pathname);
 
     if (path === '/' || path === '') {
         if (appState.currentUser) {
@@ -62,8 +65,26 @@ function handleRouteChange() {
         return;
     }
 
-    if (path === '/auth') {
-        navigate(AUTH_PATH, { replace: true });
+    // Explicit Home -> Auth/Dashboard
+    if (path === '/home') {
+        if (appState.currentUser) {
+            navigate(`/${appState.currentUser.id}/home`, { replace: true });
+        } else {
+            // If user wants /home but isn't logged in, usually we show landing/signin
+            appState.currentView = 'auth';
+            render();
+        }
+        return;
+    }
+
+    if (path === '/auth' || path === '/signin') {
+        if (appState.currentUser) {
+            navigate(`/${appState.currentUser.id}/home`, { replace: true });
+            return;
+        }
+        appState.currentView = 'auth';
+        render();
+        window.scrollTo(0, 0);
         return;
     }
 
@@ -81,18 +102,8 @@ function handleRouteChange() {
         return;
     }
 
-    if (path === AUTH_PATH) {
-        if (appState.currentUser) {
-            navigate(`/${appState.currentUser.id}/home`, { replace: true });
-            return;
-        }
-        appState.currentView = 'auth';
-        render();
-        window.scrollTo(0, 0);
-        return;
-    }
-
     if (!appState.currentUser) {
+        // Public routes handled above. Everything else requires auth.
         navigate(AUTH_PATH, { replace: true });
         return;
     }
