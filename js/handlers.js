@@ -184,29 +184,26 @@ export async function handleSignUp(form) {
     }
   }
 
-  const { data: authData, error: authErr } = await db.auth.signUp({ email, password });
+  const { data: authData, error: authErr } = await db.auth.signUp({
+    email,
+    password,
+    options: {
+      data: { first_name, last_name, username, phone_number }
+    }
+  });
   if (authErr) {
     setLoading(false);
     showAlert('Error', mapPasswordPolicyMessage(authErr.message));
     return;
   }
-  if (!authData?.session) {
-    if (authData?.user?.id) {
-      storePendingSignupProfile(authData.user.id, { email, first_name, last_name, username, phone_number });
-    }
-    setLoading(false);
-    window.location.href = 'confirmation/';
-    return;
+  if (authData?.user?.id) {
+    storePendingSignupProfile(authData.user.id, { email, first_name, last_name, username, phone_number });
   }
-  const { error: infoErr } = await db
-    .from('user_info')
-    .insert({ user_id: authData.user.id, email, first_name, last_name, username, phone_number });
   setLoading(false);
-  if (infoErr) {
-    showAlert('Error', 'Could not save user_info ' + infoErr.message);
-    return;
+  if (!authData?.session) {
+    window.location.href = 'confirmation/';
   }
-  window.location.href = 'confirmation/';
+  // If a session exists, auth state listener will handle navigation and user_info creation.
 }
 
 export async function handleAppleLogin() {
