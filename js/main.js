@@ -3,6 +3,7 @@ import { appState } from './state.js';
 import { render } from './views.js';
 import { registerEventListeners } from './events.js';
 import { initRouter, navigate } from './router.js';
+import { ensureUserInfoForSession } from './users.js';
 
 /**
  * Bootstraps UI listeners and keeps the app in sync with Supabase auth state.
@@ -13,6 +14,7 @@ initRouter();
 db.auth.onAuthStateChange((event, session) => {
   if (session && session.user) {
     appState.currentUser = session.user;
+    void ensureUserInfoForSession(session.user);
     // If we are on the auth page or root, go to user dashboard
     const path = window.location.pathname;
     const isAuthPage = !path || path === '/' || path === '/signin' || path === '/auth';
