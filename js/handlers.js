@@ -21,10 +21,18 @@ const PROFILE_PICTURE_BUCKET = 'profile_pictures';
 const MAX_PROFILE_UPLOAD_BYTES = 5 * 1024 * 1024;
 const RECEIPT_BUCKET = 'expense_receipts';
 const MAX_RECEIPT_UPLOAD_BYTES = 10 * 1024 * 1024;
+const PASSWORD_POLICY_MESSAGE =
+  'Error: Password should contain atleast one uppercase letter, one lowercase letter, and one symbol';
 
 const orderUserIds = (idA, idB) => {
   if (!idA || !idB) return [idA, idB];
   return String(idA) < String(idB) ? [idA, idB] : [idB, idA];
+};
+
+const mapPasswordPolicyMessage = (message) => {
+  if (!message) return message;
+  if (/password should contain/i.test(message)) return PASSWORD_POLICY_MESSAGE;
+  return message;
 };
 
 async function getBlockSetsForCurrentUser() {
@@ -179,7 +187,7 @@ export async function handleSignUp(form) {
   const { data: authData, error: authErr } = await db.auth.signUp({ email, password });
   if (authErr) {
     setLoading(false);
-    showAlert('Error', authErr.message);
+    showAlert('Error', mapPasswordPolicyMessage(authErr.message));
     return;
   }
   if (!authData?.session) {
@@ -297,7 +305,8 @@ export async function handleChangePassword(form) {
     modalContainer.innerHTML = '';
     showAlert('Success', 'Password changed successfully.');
   } catch (err) {
-    showAlert('Error', err?.message || 'Unable to change password.');
+    const message = mapPasswordPolicyMessage(err?.message) || 'Unable to change password.';
+    showAlert('Error', message);
   } finally {
     setLoading(false);
   }
