@@ -1,5 +1,14 @@
 import { loadingOverlay, modalContainer } from './state.js';
 
+const PASSWORD_POLICY_MESSAGE =
+  'Error: Password should contain atleast one uppercase letter, one lowercase letter, and one symbol';
+
+const normalizeAlertMessage = (message) => {
+  if (!message) return message;
+  if (/password should contain/i.test(message)) return PASSWORD_POLICY_MESSAGE;
+  return message;
+};
+
 /**
  * Toggles the global loading overlay.
  */
@@ -17,12 +26,13 @@ export function setLoading(show) {
  * Basic modal alert helper used across the app.
  */
 export function showAlert(title, message) {
+  const safeMessage = normalizeAlertMessage(message);
   const id = 'modal-' + Date.now();
   modalContainer.innerHTML = `
         <div id="${id}" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
             <div class="bg-gray-800 p-4 rounded-md">
                 <h3 class="font-medium text-white">${title}</h3>
-                <p class="text-sm text-gray-400">${message}</p>
+                <p class="text-sm text-gray-400">${safeMessage}</p>
                 <div class="mt-3 text-right">
                     <button data-action="close-modal" data-target="${id}" class="px-3 py-1 bg-indigo-600 text-white rounded-md">OK</button>
                 </div>
