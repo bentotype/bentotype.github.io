@@ -56,6 +56,17 @@ function normalizePath(path) {
 function handleRouteChange() {
     const path = normalizePath(window.location.pathname);
 
+    // Check for Admin Route
+    if (path.startsWith('/admin')) {
+        import('./adminRouter.js').then(module => {
+            module.handleAdminRoute(path, appState.currentUser);
+        });
+        return;
+    } else {
+        // If we are navigating AWAY from admin, remove the admin body class
+        document.body.classList.remove('admin-body');
+    }
+
     if (path === '/' || path === '') {
         if (appState.currentUser) {
             navigate(`/${appState.currentUser.id}/home`, { replace: true });
