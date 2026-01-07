@@ -13,7 +13,7 @@ import {
 } from './fetchers.js';
 import { render } from './views.js';
 import { navigate } from './router.js';
-import { getUserInfo } from './users.js';
+import { getUserInfo, storePendingSignupProfile } from './users.js';
 import { formatCurrency } from './format.js';
 import { scanReceiptImage } from './receiptScan.js';
 
@@ -182,6 +182,14 @@ export async function handleSignUp(form) {
     showAlert('Error', authErr.message);
     return;
   }
+  if (!authData?.session) {
+    if (authData?.user?.id) {
+      storePendingSignupProfile(authData.user.id, { email, first_name, last_name, username, phone_number });
+    }
+    setLoading(false);
+    window.location.href = 'confirmation/';
+    return;
+  }
   const { error: infoErr } = await db
     .from('user_info')
     .insert({ user_id: authData.user.id, email, first_name, last_name, username, phone_number });
@@ -190,7 +198,7 @@ export async function handleSignUp(form) {
     showAlert('Error', 'Could not save user_info ' + infoErr.message);
     return;
   }
-  window.location.href = '/confirmation/';
+  window.location.href = 'confirmation/';
 }
 
 export async function handleAppleLogin() {

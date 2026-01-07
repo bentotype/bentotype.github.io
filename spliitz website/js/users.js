@@ -4,6 +4,125 @@ import { appState } from './state.js';
 const PROFILE_PICTURE_BUCKET = 'profile_pictures';
 const PROFILE_PICTURE_SIGNED_URL_TTL = 60 * 60; // seconds
 
+const pendingSignupKey = (userId) => `spliitz_pending_signup_${userId}`;
+const normalizeUsername = (value) =>
+  String(value || '')
+    .trim()
+    .replace(/[^a-z0-9._-]/gi, '')
+    .toLowerCase();
+
+export function storePendingSignupProfile(userId, profile) {
+  if (!userId) return;
+  try {
+    localStorage.setItem(pendingSignupKey(userId), JSON.stringify(profile));
+  } catch (err) {
+    console.warn('Unable to store pending signup profile', err);
+  }
+}
+
+export function getPendingSignupProfile(userId) {
+  if (!userId) return null;
+  try {
+    const raw = localStorage.getItem(pendingSignupKey(userId));
+    if (!raw) return null;
+    return JSON.parse(raw);
+  } catch (err) {
+    console.warn('Unable to read pending signup profile', err);
+    return null;
+  }
+}
+
+export function clearPendingSignupProfile(userId) {
+  if (!userId) return;
+  try {
+    localStorage.removeItem(pendingSignupKey(userId));
+  } catch (err) {
+    console.warn('Unable to clear pending signup profile', err);
+  }
+}
+
+async function isUsernameAvailable(username) {
+  if (!username) return false;
+  const { data, error } = await db
+    .from('user_info')
+    .select('user_id')
+    .eq('username', username)
+    .maybeSingle();
+  if (error) throw error;
+  return !data;
+}
+
+async function findAvailableUsername(base) {
+  const safeBase = normalizeUsername(base) || 'user';
+  let candidate = safeBase;
+  let suffix = 0;
+  while (suffix < 5) {
+    const available = await isUsernameAvailable(candidate);
+    if (available) return candidate;
+    suffix += 1;
+    candidate = `${safeBase}${suffix}`;
+  }
+  return '';
+}
+
+export async function ensureUserInfoForSession(user) {
+  if (!user?.id) return;
+  try {
+    const { data: existing, error } = await db
+      .from('user_info')
+      .select('user_id')
+      .eq('user_id', user.id)
+      .maybeSingle();
+    if (error) throw error;
+    if (existing) {
+      clearPendingSignupProfile(user.id);
+      return;
+    }
+
+    const metadata = user.user_metadata || {};
+    const pending = getPendingSignupProfile(user.id);
+    const email = pending?.email || user.email || metadata.email || '';
+    if (!email) {
+      console.warn('Unable to create user_info without email for user', user.id);
+      return;
+    }
+
+    let username = normalizeUsername(pending?.username || metadata.preferred_username || metadata.username || '');
+    if (username) {
+      const available = await isUsernameAvailable(username);
+      if (!available) username = '';
+    }
+    if (!username) {
+      const base =
+        normalizeUsername(pending?.username) ||
+        normalizeUsername(metadata.preferred_username) ||
+        normalizeUsername(metadata.username) ||
+        normalizeUsername(email.split('@')[0]) ||
+        normalizeUsername(metadata.name) ||
+        normalizeUsername(metadata.full_name) ||
+        `user${user.id.slice(0, 6)}`;
+      username = (await findAvailableUsername(base)) || `user${user.id.slice(0, 6)}`;
+    }
+
+    const payload = {
+      user_id: user.id,
+      email,
+      first_name: pending?.first_name || metadata.first_name || metadata.given_name || '',
+      last_name: pending?.last_name || metadata.last_name || metadata.family_name || '',
+      username,
+      phone_number: pending?.phone_number || null
+    };
+    const { error: insertErr } = await db.from('user_info').insert(payload);
+    if (insertErr) {
+      console.warn('Unable to create user_info', insertErr);
+      return;
+    }
+    clearPendingSignupProfile(user.id);
+  } catch (err) {
+    console.error('ensureUserInfoForSession failed', err);
+  }
+}
+
 
 export const UserTier = {
   FREE: 1,
