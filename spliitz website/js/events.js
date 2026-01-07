@@ -224,6 +224,9 @@ export function registerEventListeners() {
       case 'show-create-group-modal':
         showCreateGroupModal();
         break;
+      case 'show-tier-alert-groups':
+        showAlert('Upgrade Required', 'Free tier users cannot create or join groups. Please upgrade to use this feature.');
+        break;
       case 'view-group':
         appState.currentGroup = {
           id: t.dataset.groupId,

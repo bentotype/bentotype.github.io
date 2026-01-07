@@ -4,6 +4,22 @@ import { appState } from './state.js';
 const PROFILE_PICTURE_BUCKET = 'profile_pictures';
 const PROFILE_PICTURE_SIGNED_URL_TTL = 60 * 60; // seconds
 
+
+export const UserTier = {
+  FREE: 1,
+  PAID: 2,
+  TESTING: 3,
+  ADMIN: 4
+};
+
+export function canUseCamera(tier) {
+  return tier !== UserTier.FREE;
+}
+
+export function canJoinGroups(tier) {
+  return tier !== UserTier.FREE;
+}
+
 /**
  * Fetches + caches profile metadata for the supplied user id.
  */
@@ -11,12 +27,12 @@ export async function getUserInfo(userId) {
   if (appState.userCache.has(userId)) return appState.userCache.get(userId);
   const { data, error } = await db
     .from('user_info')
-    .select('first_name,last_name,email,username,profile_picture')
+    .select('first_name,last_name,email,username,profile_picture,tier')
     .eq('user_id', userId)
     .single();
 
   if (error) {
-    return { first_name: 'Unknown', last_name: 'User', email: '', username: '', profile_picture: '', profile_picture_path: '' };
+    return { first_name: 'Unknown', last_name: 'User', email: '', username: '', profile_picture: '', profile_picture_path: '', tier: 1 };
   }
 
   let signedUrl = '';

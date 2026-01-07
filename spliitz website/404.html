@@ -14,7 +14,7 @@
     <script>
         // GitHub Pages SPA Hack
         // Redirects 404s to index.html with the path as a query param
-        (function(){
+        (function () {
             sessionStorage.redirect = location.pathname;
         })();
         // Simpler redirect if we want:
@@ -28,7 +28,7 @@
     <div id="loading-overlay" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-50">
         <div class="spinner"></div>
     </div>
-    <script type="module" src="js/main.js"></script>
+    <script type="module" src="js/main.js?v=2"></script>
 </body>
 
 </html>

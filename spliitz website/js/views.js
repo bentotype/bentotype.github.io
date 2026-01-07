@@ -1,6 +1,6 @@
 import { appState, app, modalContainer, resetPendingReceiptState } from './state.js';
 import { setLoading } from './ui.js';
-import { getUserInfo, getFriendsForUser } from './users.js';
+import { getUserInfo, getFriendsForUser, UserTier, canJoinGroups, canUseCamera } from './users.js';
 import { formatCurrency } from './format.js';
 import {
   fetchMonthlyTotal,
@@ -99,7 +99,6 @@ function renderAuth() {
         <div class="auth-card__header">
           <p class="auth-card__eyebrow">Account</p>
           <h2 class="auth-card__title">Sign in to Spliitz</h2>
-          <p class="auth-card__subtitle">Use your email to sign in or create a new account.</p>
         </div>
         <div class="auth-tabs">
           <button data-action="show-tab" data-target="login-form" class="tab-button auth-tab border-b-2 border-indigo-400 text-indigo-400 font-semibold">Sign In</button>
@@ -108,7 +107,6 @@ function renderAuth() {
         <div class="auth-oauth">
           <button type="button" class="auth-oauth__button auth-oauth__button--apple" data-action="apple-login">Continue with Apple</button>
           <button type="button" class="auth-oauth__button auth-oauth__button--google" data-action="google-login">Continue with Google</button>
-          <p class="auth-oauth__note">Use Apple ID or Google across web, iOS, and macOS.</p>
         </div>
         <div id="login-form" class="tab-content">
           <form data-form-action="login" class="auth-form">
@@ -423,6 +421,11 @@ async function renderProfile() {
     appState.pendingProfilePictureUrl ||
     (info?.profile_picture ? escapeHtml(info.profile_picture) : '');
   const hasPendingAvatar = Boolean(appState.pendingProfilePictureUrl);
+  const tierLabel = info.tier === UserTier.FREE ? 'Free Tier' :
+    info.tier === UserTier.PAID ? 'Paid Tier' :
+      info.tier === UserTier.TESTING ? 'Testing Tier' :
+        info.tier === UserTier.ADMIN ? 'Admin' : 'Free Tier';
+
   app.innerHTML = `
 <div class="home-shell">
   ${renderTopNav('profile', info)}
@@ -434,6 +437,7 @@ async function renderProfile() {
             <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Account</p>
             <h2 class="text-3xl font-bold text-gray-900 mt-2">Your Profile</h2>
             <p class="text-gray-500 mt-1">Keep your details up to date so your friends can find you.</p>
+            <span class="inline-block mt-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100">${tierLabel}</span>
           </div>
           <button type="button" data-action="change-password" class="px-4 py-2 rounded-full bg-gray-900 text-white hover:bg-gray-800 transition text-sm font-semibold">Change Password</button>
         </div>
@@ -506,7 +510,7 @@ async function renderGroups() {
           <p class="text-sm uppercase tracking-[0.2em] text-indigo-400 font-semibold">My Groups</p>
           <h2 class="text-3xl font-bold text-gray-900">Organize your crews</h2>
           <p class="text-gray-500 max-w-xl mx-auto">Create new groups for every trip, house share, or project. Everything stays in sync across members.</p>
-          <button data-action="show-create-group-modal" class="primary-action mt-2">+ New Group</button>
+          <button data-action="${canJoinGroups(info.tier || 1) ? 'show-create-group-modal' : 'show-tier-alert-groups'}" class="primary-action mt-2">+ New Group</button>
         </div>
       </div>
       <div class="card full-span groups-list-card">
@@ -696,9 +700,21 @@ async function renderReceiptUploadPage() {
           <div class="expense-file receipt-upload-file">
             <input id="receipt-upload-input" type="file" name="receipt_image" accept="image/png,image/jpeg" class="expense-file__input">
             <label for="receipt-upload-input" class="expense-file__button">Upload receipt</label>
-            <span class="expense-file__name" data-receipt-label>${escapeHtml(fileLabel)}</span>
+          <p class="expense-file__name" data-receipt-label>${escapeHtml(fileLabel)}</p>
           </div>
         </label>
+        
+        ${!canUseCamera(info.tier || 1) ? `
+        <div style="position:absolute; inset:0; background:rgba(255,255,255,0.85); backdrop-filter:blur(4px); display:flex; align-items:center; justify-content:center; padding:1.5rem; text-align:center; border-radius:0.75rem; z-index:20;">
+            <div>
+                 <div style="font-size:2.5rem; margin-bottom:0.5rem;">🔒</div>
+                <h3 class="text-lg font-bold text-gray-900">Upgrade Required</h3>
+                <p class="text-gray-600 mt-1 mb-4">Receipt scanning is available on paid plans.</p>
+                <button type="button" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition" onclick="alert('Please upgrade your plan to use this feature.')">Upgrade Plan</button>
+            </div>
+        </div>
+        ` : ''}
+
         <div class="receipt-preview">
           <img class="receipt-preview__image${hasPreview ? '' : ' hidden'}" data-receipt-preview src="${hasPreview ? appState.pendingReceiptPreviewUrl : ''}" alt="Receipt preview">
           <div class="receipt-preview__placeholder${hasPreview ? ' hidden' : ''}" data-receipt-placeholder>Drag & drop or paste a receipt here, or use Upload receipt.</div>
