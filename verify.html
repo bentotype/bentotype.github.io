@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Account - Spliitz</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link href="styles.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
@@ -81,15 +82,6 @@
         <div class="spinner border-4 border-indigo-200 border-t-indigo-600 rounded-full w-12 h-12 animate-spin"></div>
     </div>
 
-    <script>
-        window.onerror = function (msg, url, line, col, error) {
-            const div = document.createElement('div');
-            div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:1rem;z-index:9999;font-family:sans-serif;font-size:14px;';
-            div.textContent = 'JS Error: ' + msg + ' at line ' + line;
-            document.body.appendChild(div);
-            return false;
-        };
-    </script>
     <script type="module">
         import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=4';
 
