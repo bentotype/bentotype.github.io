@@ -201,9 +201,54 @@ export async function handleSignUp(form) {
   }
   setLoading(false);
   if (!authData?.session) {
-    window.location.href = 'confirmation/';
+    localStorage.setItem('spliitz_pending_email', email);
+    window.location.href = `/verify.html?email=${encodeURIComponent(email)}`;
   }
   // If a session exists, auth state listener will handle navigation and user_info creation.
+}
+
+export async function handleVerifyOtp(form) {
+  const fd = new FormData(form);
+  const email = (fd.get('email') || '').trim();
+  const token = (fd.get('token') || '').trim();
+  const submitBtn = form.querySelector('button[type="submit"]');
+
+  if (!email || !token) {
+    alert('Email and Code are required.');
+    return;
+  }
+
+  if (submitBtn) {
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Verifying...';
+  }
+
+  try {
+    const { data, error } = await db.auth.verifyOtp({
+      email,
+      token,
+      type: 'signup'
+    });
+
+    if (error) throw error;
+
+    if (data?.session?.user) {
+      // Critical: Ensure profile exists
+      await import('./users.js').then(m => m.ensureUserInfoForSession(data.session.user));
+      alert('Verification successful! Redirecting...');
+      window.location.href = '/';
+    } else {
+      // Should not happen on success usually
+      throw new Error('Verification failed. Please try again.');
+    }
+
+  } catch (err) {
+    alert(err.message || 'Verification failed');
+    if (submitBtn) {
+      submitBtn.disabled = false;
+      submitBtn.textContent = 'Verify Account';
+    }
+  }
 }
 
 export async function handleAppleLogin() {
