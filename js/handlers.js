@@ -1,6 +1,7 @@
 import { db } from './supabaseClient.js';
 import { appState, modalContainer, resetPendingReceiptState } from './state.js';
 import { setLoading, showAlert, showConfirm } from './ui.js';
+import { handleError } from './errors/index.js';
 import {
   fetchFriends,
   fetchPendingFriendRequests,
@@ -193,7 +194,7 @@ export async function handleSignUp(form) {
   });
   if (authErr) {
     setLoading(false);
-    showAlert('Error', mapPasswordPolicyMessage(authErr.message));
+    showAlert('Error', handleError(authErr, 'signup'));
     return;
   }
   if (authData?.user?.id) {
@@ -243,7 +244,7 @@ export async function handleVerifyOtp(form) {
     }
 
   } catch (err) {
-    alert(err.message || 'Verification failed');
+    alert(handleError(err, 'verify'));
     if (submitBtn) {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Verify Account';
@@ -299,7 +300,7 @@ export async function handleResendOtp() {
     startResendTimer();
 
   } catch (err) {
-    alert(err.message || 'Failed to resend code. Please try again later.');
+    alert(handleError(err, 'resendOtp'));
   }
 }
 
@@ -345,7 +346,7 @@ export async function handleLogin(form) {
   const { data, error } = await db.auth.signInWithPassword({ email, password });
   setLoading(false);
   if (error) {
-    showAlert('Login Error', error.message);
+    showAlert('Login Error', handleError(error, 'login'));
     return;
   }
   if (data?.user) {
