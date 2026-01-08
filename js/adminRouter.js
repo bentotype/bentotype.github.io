@@ -37,7 +37,6 @@ export async function handleAdminRoute(path, currentUser) {
 
     if (subpath === 'users') renderUsers();
     else if (subpath === 'groups') renderGroups();
-    else if (subpath === 'logs') renderLogs();
     else renderUsers(); // default
 }
 
@@ -52,7 +51,6 @@ function renderAdminShell(activeTab) {
             <nav>
                 <a href="#/admin/users" class="admin-nav-item ${activeTab === 'users' ? 'active' : ''}">USERS</a>
                 <a href="#/admin/groups" class="admin-nav-item ${activeTab === 'groups' ? 'active' : ''}">GROUPS</a>
-                <a href="#/admin/logs" class="admin-nav-item ${activeTab === 'logs' ? 'active' : ''}">DEBUG LOGS</a>
                 <div style="margin-top: 2rem; border-top: 1px solid #333; padding-top: 1rem;">
                      <a href="javascript:void(0)" class="admin-nav-item" onclick="document.body.classList.remove('admin-body'); import('./supabaseClient.js').then(m=>m.db.auth.signOut());">LOG OUT</a>
                 </div>
@@ -166,36 +164,6 @@ async function renderGroups() {
     });
     html += '</tbody></table>';
     viewPort.innerHTML = '<div class="admin-title">GROUP INSPECTOR</div>' + html;
-}
-
-async function renderLogs() {
-    const viewPort = document.getElementById('admin-view-port');
-    viewPort.innerHTML = '<div class="admin-title">SYSTEM LOGS</div><div>Fetching debug logs...</div>';
-
-    const { data: logs, error } = await db
-        .from('debugging')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
-
-    if (error) {
-        viewPort.innerHTML = `<div style="color:red;">Error: ${error.message}</div>`;
-        return;
-    }
-
-    let html = `<div style="max-height:80vh; overflow-y:auto; font-size:0.8rem; background:#111; padding:10px; border:1px solid #333;">`;
-    logs.forEach(l => {
-        html += `
-        <div class="admin-log-entry">
-            <span style="color:#888;">[${new Date(l.created_at).toLocaleString()}]</span>
-            <span style="color:#0f0;">${l.level || 'INFO'}</span>
-            <span style="color:#fff;">${l.message}</span>
-            <div style="color:#666; margin-left:20px;">User: ${l.id} | ${l.comments || ''}</div>
-        </div>
-        `;
-    });
-    html += '</div>';
-    viewPort.innerHTML = '<div class="admin-title">SYSTEM LOGS</div>' + html;
 }
 
 // --- GLOBAL ADMIN ACTIONS (Exposed to window for inline onclicks) ---
