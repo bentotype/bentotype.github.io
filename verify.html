@@ -81,8 +81,18 @@
         <div class="spinner border-4 border-indigo-200 border-t-indigo-600 rounded-full w-12 h-12 animate-spin"></div>
     </div>
 
+    <script>
+        window.onerror = function (msg, url, line, col, error) {
+            const div = document.createElement('div');
+            div.style.cssText = 'position:fixed;top:0;left:0;right:0;background:red;color:white;padding:1rem;z-index:9999;font-family:sans-serif;font-size:14px;';
+            div.textContent = 'JS Error: ' + msg + ' at line ' + line;
+            document.body.appendChild(div);
+            return false;
+        };
+    </script>
     <script type="module">
-        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=3';
+        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=4';
+
         window.handleVerifyOtp = handleVerifyOtp;
         window.handleResendOtp = handleResendOtp;
 
@@ -97,14 +107,30 @@
             document.getElementById('verify-email-display').textContent = email;
             document.getElementById('verify-email-input').value = email;
             // Start the timer on load
-            startResendTimer();
+            if (startResendTimer) startResendTimer();
         } else {
             // If no email, redirect back to signin
             window.location.href = '/signin';
         }
 
+        // Setup form listener safely
+        const form = document.getElementById('verify-form');
+        if (form) {
+            form.addEventListener('submit', (e) => {
+                e.preventDefault();
+                if (typeof window.handleVerifyOtp === 'function') {
+                    window.handleVerifyOtp(e.target);
+                } else {
+                    alert('Error: Verification function not loaded yet. Please refresh.');
+                }
+            });
+            // Remove the inline onsubmit to avoid conflict
+            form.removeAttribute('onsubmit');
+        }
+
         // Auto-focus input
-        document.getElementById('token').focus();
+        const tokenInput = document.getElementById('token');
+        if (tokenInput) tokenInput.focus();
     </script>
 </body>
 
