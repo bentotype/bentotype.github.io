@@ -10,11 +10,17 @@ const adminState = {
     primaryKeys: {
         'user_info': 'user_id',
         'group_info': 'group_id',
-        'friends': 'id',
-        'expenses': 'expense_id',
         'activities': 'id',
+        'dues': 'id', // Needs verification if composite, but 'id' is safe default if single PK
+        'expense_info': 'expense_id',
+        'expense': 'expense_id',
+        'expense_items': 'id',
+        'friend_list': 'id',
+        'friend_request': 'id',
+        'block_list': 'id',
+        'split_groups': 'id',
         'user_devices': 'id',
-        'settlements': 'id'
+        'debugging': 'id'
     }
 };
 
@@ -93,7 +99,12 @@ window.adminSignOut = async () => {
 
 function renderTablesMenu() {
     const viewPort = document.getElementById('admin-view-port');
-    const tables = ['user_info', 'group_info', 'activities', 'expenses', 'friends', 'user_devices', 'settlements'];
+    const tables = [
+        'user_info', 'group_info', 'activities',
+        'expense_info', 'expense', 'expense_items', 'dues',
+        'friend_list', 'friend_request', 'split_groups',
+        'user_devices', 'debugging', 'block_list'
+    ];
 
     let html = `<div class="admin-title">SELECT TABLE</div>
     <div style="margin-top:1rem; margin-bottom:2rem;">
