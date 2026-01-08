@@ -8,7 +8,7 @@ import { ensureUserInfoForSession } from './users.js';
 /**
  * Bootstraps UI listeners and keeps the app in sync with Supabase auth state.
  */
-console.log('%cApp Version: 1.1.2', 'background: #222; color: #bada55; padding: 4px; border-radius: 4px;');
+console.log('%cApp Version: 1.1.3', 'background: #222; color: #bada55; padding: 4px; border-radius: 4px;');
 
 registerEventListeners();
 initRouter();
@@ -33,7 +33,7 @@ db.auth.onAuthStateChange((event, session) => {
           }
         }
 
-        // 2. Normal Rendering (only if not redirected)
+        // 2. Normal Rendering (only if not redirected and not on admin)
         if (!window.location.pathname.startsWith('/admin')) {
           const path = window.location.pathname;
           const isAuthPage = !path || path === '/' || path === '/signin' || path === '/auth';
@@ -42,17 +42,8 @@ db.auth.onAuthStateChange((event, session) => {
           } else {
             render();
           }
-        } else {
-          // We are on admin path, router handles it? 
-          // actually router might need to be kicked if we don't call render.
-          // But adminRouter is separate.
-          // If we are on /admin, we probably should let the router/adminRouter take over.
-          // The adminRouter is usually invoked by router.js checking path.
-          // If we don't call render(), router might not run?
-          // actually initRouter calls render() on route change.
-          // But valid point: if we are at /admin refresh, we want to render Admin.
-          render(); // This will eventually delegate to adminRouter if mapped, or we need to check router.js
         }
+        // If on /admin, we do NOTHING here. router.js handles the Admin UI rendering independent of the main app render loop.
       });
     });
   } else {
