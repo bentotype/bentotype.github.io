@@ -54,7 +54,7 @@ function renderAdminShell(activeTab) {
                 <a href="#/admin/groups" class="admin-nav-item ${activeTab === 'groups' ? 'active' : ''}">GROUPS</a>
                 <a href="#/admin/logs" class="admin-nav-item ${activeTab === 'logs' ? 'active' : ''}">DEBUG LOGS</a>
                 <div style="margin-top: 2rem; border-top: 1px solid #333; padding-top: 1rem;">
-                     <a href="#/" class="admin-nav-item" onclick="document.body.classList.remove('admin-body')">EXIT (USER MODE)</a>
+                     <a href="javascript:void(0)" class="admin-nav-item" onclick="document.body.classList.remove('admin-body'); import('./supabaseClient.js').then(m=>m.db.auth.signOut());">LOG OUT</a>
                 </div>
             </nav>
         </aside>
@@ -75,10 +75,11 @@ async function renderUsers() {
     // If it's "Users can read their own", Admin SELECT might fail without a policy.
     // Assuming for now user_info is public readable OR we added a policy.
 
+    // We update order to generic column since created_at is missing
     const { data: users, error } = await db
         .from('user_info')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('user_id', { ascending: false })
         .limit(50); // Cap for performance for now
 
     if (error) {

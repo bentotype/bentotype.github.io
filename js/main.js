@@ -19,7 +19,17 @@ db.auth.onAuthStateChange((event, session) => {
     appState.userCache.delete(session.user.id);
     import('./users.js').then(m => {
       m.ensureUserInfoForSession(session.user);
-      m.getUserInfo(session.user.id); // Primes cache with fresh Tier
+      m.getUserInfo(session.user.id).then(info => {
+        // Auto-redirect Tier 4 (Admin) to Admin Panel
+        if (info && info.tier === 4) {
+          const path = window.location.pathname;
+          if (!path.startsWith('/admin')) {
+            console.log('Tier 4 Detected: Redirecting to Admin...');
+            navigate('/admin', { replace: true });
+            return;
+          }
+        }
+      });
     });
 
     // If we are on the auth page or root, go to user dashboard

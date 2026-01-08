@@ -31,7 +31,8 @@ function renderTopNav(activeTab, info) {
   // Show Admin Tab if Tier 4
   console.log('[renderTopNav] Tier Check:', info?.tier, 'Is Admin?', info?.tier == UserTier.ADMIN);
   if (info?.tier == UserTier.ADMIN) {
-    navItems.push({ id: 'admin', label: 'Admin', action: 'nav-link' });
+    // Admin-only mode: Clear standard tabs
+    navItems.length = 0;
   }
 
   const initials =
