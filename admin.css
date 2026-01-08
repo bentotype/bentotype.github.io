@@ -1,121 +1,182 @@
-/* Admin Dashboard - Manual Override Theme */
+/* Admin Theme: "The Grid" (Dark/Console) */
 .admin-body {
-    background-color: #000000;
-    color: #00ff00;
-    /* Classic terminal green or just white */
-    color: #ffffff;
-    font-family: 'Courier New', Courier, monospace;
-    height: 100vh;
-    width: 100vw;
-    margin: 0;
+    background: #000;
+    color: #eee;
+    font-family: 'Berkeley Mono', 'Courier New', monospace;
+    /* Monospace vibe */
     overflow: hidden;
+    /* App shell handles scroll */
 }
 
 .admin-container {
-    display: flex;
-    height: 100%;
-    width: 100%;
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    grid-template-rows: 1fr 50px;
+    /* Main content + Console Bar */
+    height: 100vh;
 }
 
+/* Sidebar */
 .admin-sidebar {
-    width: 250px;
+    background: #111;
     border-right: 1px solid #333;
-    padding: 20px;
-    background-color: #000;
-}
-
-.admin-content {
-    flex: 1;
-    padding: 20px;
-    overflow-y: auto;
-    background-color: #0a0a0a;
+    padding: 1.5rem;
+    grid-row: 1 / -1;
+    /* Full height including console bar left side? No, bar spans full width usually */
+    /* Let's keep sidebar full height, console bar on right section bottom */
+    grid-row: 1 / 3;
+    display: flex;
+    flex-direction: column;
 }
 
 .admin-header {
-    margin-bottom: 2rem;
-    border-bottom: 1px solid #333;
+    margin-bottom: 3rem;
+    border-bottom: 2px solid #333;
     padding-bottom: 1rem;
 }
 
 .admin-title {
-    font-size: 1.5rem;
-    font-weight: bold;
+    font-size: 1.25rem;
+    font-weight: 700;
+    letter-spacing: 0.1em;
+    color: #fff;
     text-transform: uppercase;
-    letter-spacing: 2px;
 }
 
 .admin-nav-item {
     display: block;
-    padding: 10px;
-    margin-bottom: 5px;
     color: #888;
     text-decoration: none;
-    border: 1px solid transparent;
+    padding: 0.75rem 0;
+    font-size: 0.9rem;
+    border-bottom: 1px solid #222;
+    transition: color 0.2s, padding-left 0.2s;
     cursor: pointer;
 }
 
 .admin-nav-item:hover,
 .admin-nav-item.active {
+    color: #6366f1;
+    padding-left: 0.5rem;
+    border-color: #333;
+}
+
+/* Main Content */
+.admin-content {
+    background: #000;
+    padding: 2rem;
+    overflow-y: auto;
+    grid-column: 2;
+    grid-row: 1;
+}
+
+/* Console Bar */
+.admin-console-bar {
+    grid-column: 2;
+    grid-row: 2;
+    background: #0a0a0a;
+    border-top: 1px solid #333;
+    display: flex;
+    align-items: center;
+    padding: 0 1rem;
+    font-family: monospace;
+}
+
+.console-prompt {
+    color: #16a34a;
+    /* Green */
+    font-weight: bold;
+    margin-right: 0.5rem;
+}
+
+#admin-console-input {
+    flex: 1;
+    background: transparent;
+    border: none;
     color: #fff;
-    border: 1px solid #fff;
-    background-color: #222;
+    font-family: monospace;
+    font-size: 0.95rem;
+    outline: none;
+}
+
+#admin-console-input::placeholder {
+    color: #444;
+    font-style: italic;
+}
+
+/* Table Selector Grid */
+.table-selector-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.table-select-btn {
+    background: #111;
+    border: 1px solid #333;
+    color: #ddd;
+    padding: 1rem;
+    font-family: monospace;
+    cursor: pointer;
+    transition: background 0.2s, border-color 0.2s;
+    text-align: left;
+}
+
+.table-select-btn:hover {
+    background: #1a1a1a;
+    border-color: #6366f1;
+    color: #fff;
+}
+
+/* Table Styles */
+.admin-table-wrapper {
+    margin-top: 1.5rem;
+    overflow-x: auto;
+    border: 1px solid #333;
 }
 
 .admin-table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 1rem;
-    font-size: 0.9rem;
-}
-
-.admin-table th,
-.admin-table td {
-    border: 1px solid #333;
-    padding: 8px;
-    text-align: left;
+    font-size: 0.85rem;
 }
 
 .admin-table th {
-    background-color: #222;
+    background: #111;
+    color: #888;
+    text-align: left;
+    padding: 0.75rem;
+    border-bottom: 2px solid #333;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.admin-table td {
+    border-bottom: 1px solid #222;
+    padding: 0.5rem 0.75rem;
+    color: #ccc;
+    white-space: nowrap;
+    max-width: 300px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.admin-table tr:hover td {
+    background: #0f0f0f;
     color: #fff;
 }
 
-.admin-table tr:hover {
-    background-color: #111;
+/* Null Value */
+.null-val {
+    color: #ef4444;
+    /* Red */
+    font-style: italic;
+    opacity: 0.7;
 }
 
-.admin-btn {
-    background: transparent;
-    border: 1px solid #fff;
-    color: #fff;
-    padding: 4px 8px;
-    cursor: pointer;
-    font-family: inherit;
-    font-size: 0.8rem;
-    margin-right: 5px;
-}
-
-.admin-btn:hover {
-    background: #fff;
-    color: #000;
-}
-
-.admin-btn.danger {
-    border-color: #ff4444;
-    color: #ff4444;
-}
-
-.admin-btn.danger:hover {
-    background: #ff4444;
-    color: #fff;
-}
-
-.admin-section {
-    margin-bottom: 3rem;
-}
-
-.admin-log-entry {
-    border-bottom: 1px solid #333;
-    padding: 5px 0;
-    font-size: 0.85rem;
+.admin-title-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
