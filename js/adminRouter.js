@@ -4,34 +4,30 @@ import { getUserInfo } from './users.js';
 
 // --- STATE ---
 const adminState = {
-    currentTable: null,
-    data: [], // Raw data of current table
-    filteredData: [], // Data after filters
+    currentTable: localStorage.getItem('admin_last_table') || null, // Persist table selection
+    data: [],
+    filteredData: [],
     primaryKeys: {
         'user_info': 'user_id',
         'group_info': 'group_id',
-        'friends': 'id', // composite usually, needs handling
+        'friends': 'id',
         'expenses': 'expense_id',
         'activities': 'id',
-        'user_devices': 'id'
+        'user_devices': 'id',
+        'settlements': 'id'
     }
 };
 
 export async function handleAdminRoute(path, currentUser) {
-    // 1. Security Check
-    if (!currentUser) {
-        window.location.hash = '/signin';
-        return;
-    }
+    if (!currentUser) return window.location.href = '/'; // Hard redirect to clear any state
 
     const info = await getUserInfo(currentUser.id);
     if (!info || info.tier !== 4) {
         alert('ACCESS DENIED: Admin privileges required.');
-        window.location.hash = '/';
-        return;
+        return window.location.href = '/';
     }
 
-    // 2. Load Styles
+    // Load Styles
     if (!document.getElementById('admin-css')) {
         const link = document.createElement('link');
         link.id = 'admin-css';
@@ -41,15 +37,18 @@ export async function handleAdminRoute(path, currentUser) {
         document.body.classList.add('admin-body');
     }
 
-    // 3. Render Shell (if not already there)
-    // We re-render if we are coming from fresh load
+    // Render Shell
     if (!document.getElementById('admin-console-input')) {
         renderAdminShell();
         setupConsoleListener();
     }
 
-    // 4. Default View
-    renderTablesMenu();
+    // Restore State or Show Menu
+    if (adminState.currentTable) {
+        window.adminLoadTable(adminState.currentTable);
+    } else {
+        renderTablesMenu();
+    }
 }
 
 function renderAdminShell() {
@@ -63,7 +62,7 @@ function renderAdminShell() {
             <nav>
                 <a href="javascript:void(0)" onclick="window.adminGoHome()" class="admin-nav-item active">TABLES</a>
                 <div style="margin-top: 2rem; border-top: 1px solid #333; padding-top: 1rem;">
-                     <a href="javascript:void(0)" class="admin-nav-item" onclick="document.body.classList.remove('admin-body'); import('./supabaseClient.js').then(m=>m.db.auth.signOut());">LOG OUT</a>
+                     <a href="javascript:void(0)" class="admin-nav-item" onclick="window.adminSignOut()">LOG OUT</a>
                 </div>
             </nav>
         </aside>
@@ -81,14 +80,27 @@ function renderAdminShell() {
 // --- GLOBAL NAVIGATION ---
 window.adminGoHome = () => {
     adminState.currentTable = null;
+    localStorage.removeItem('admin_last_table');
     renderTablesMenu();
+};
+
+window.adminSignOut = async () => {
+    localStorage.removeItem('admin_last_table');
+    document.body.classList.remove('admin-body');
+    await db.auth.signOut();
+    window.location.href = '/';
 };
 
 function renderTablesMenu() {
     const viewPort = document.getElementById('admin-view-port');
-    const tables = ['user_info', 'group_info', 'activities', 'expenses', 'friends', 'user_devices'];
+    const tables = ['user_info', 'group_info', 'activities', 'expenses', 'friends', 'user_devices', 'settlements'];
 
-    let html = `<div class="admin-title">SELECT TABLE</div><div class="table-selector-grid">`;
+    let html = `<div class="admin-title">SELECT TABLE</div>
+    <div style="margin-top:1rem; margin-bottom:2rem;">
+        <input type="text" id="custom-table-input" placeholder="Type table name..." style="background:#111; border:1px solid #333; color:#fff; padding:0.5rem; font-family:monospace;">
+        <button onclick="window.adminLoadTable(document.getElementById('custom-table-input').value)" style="background:#333; color:#fff; border:none; padding:0.5rem 1rem; cursor:pointer;">GO</button>
+    </div>
+    <div class="table-selector-grid">`;
     tables.forEach(t => {
         html += `<button class="table-select-btn" onclick="window.adminLoadTable('${t}')">${t}</button>`;
     });
@@ -98,19 +110,34 @@ function renderTablesMenu() {
 }
 
 window.adminLoadTable = async (tableName) => {
+    if (!tableName) return;
     adminState.currentTable = tableName;
+    localStorage.setItem('admin_last_table', tableName); // Persist
+
     const viewPort = document.getElementById('admin-view-port');
     viewPort.innerHTML = `<div class="admin-title">${tableName} (Loading...)</div>`;
 
-    const { data, error } = await db.from(tableName).select('*').limit(100); // hard limit 100 for safety
+    const { data, error } = await db.from(tableName).select('*').limit(200); // Increased limit
 
     if (error) {
-        viewPort.innerHTML = `<div style="color:#ef4444">Error: ${error.message}</div>`;
+        viewPort.innerHTML = `<div style="color:#ef4444">Error loading ${tableName}: ${error.message}</div>
+        <br><button onclick="window.adminGoHome()" style="color:#6366f1; background:none; border:none; text-decoration:underline; cursor:pointer;">Back</button>`;
         return;
     }
 
     adminState.data = data || [];
     adminState.filteredData = [...adminState.data];
+
+    // Auto-detect PK if possible (fallback to 'id')
+    if (!adminState.primaryKeys[tableName]) {
+        // Try to guess from data keys?
+        if (data && data.length > 0) {
+            const keys = Object.keys(data[0]);
+            if (keys.includes('id')) adminState.primaryKeys[tableName] = 'id';
+            else if (keys.includes(tableName + '_id')) adminState.primaryKeys[tableName] = tableName + '_id';
+        }
+    }
+
     renderDataGrid();
 };
 
