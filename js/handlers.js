@@ -267,8 +267,8 @@ export async function handleVerifyOtp(form) {
     if (data?.session?.user) {
       // Critical: Ensure profile exists
       await import('./users.js').then(m => m.ensureUserInfoForSession(data.session.user));
-      alert('Verification successful! You can now sign in.');
-      window.location.href = '/signin';
+      // Redirect to success page instead of alert
+      window.location.href = '/verified.html';
     } else {
       // Should not happen on success usually
       throw new Error('Verification failed. Please try again.');
