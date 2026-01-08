@@ -180,7 +180,7 @@ function renderDataGrid() {
         viewPort.innerHTML = `
             <div class="admin-title-row">
                 <div class="admin-title">${tableName}</div>
-                <button onclick="window.adminGoHome()" style="background:#333; color:#fff; border:none; padding:0.5rem; cursor:pointer; font-size:0.8rem;">Back</button>
+                <button onclick="window.adminGoHome()" class="admin-back-btn">← Back to Tables</button>
             </div>
             <div style="color:#666; margin-top:20px;">[No Data]</div>`;
         return;
