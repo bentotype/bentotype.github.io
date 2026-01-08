@@ -8,7 +8,7 @@ import { ensureUserInfoForSession } from './users.js';
 /**
  * Bootstraps UI listeners and keeps the app in sync with Supabase auth state.
  */
-console.log('%cApp Version: 1.1.1', 'background: #222; color: #bada55; padding: 4px; border-radius: 4px;');
+console.log('%cApp Version: 1.1.2', 'background: #222; color: #bada55; padding: 4px; border-radius: 4px;');
 
 registerEventListeners();
 initRouter();
@@ -19,34 +19,42 @@ db.auth.onAuthStateChange((event, session) => {
 
     // Force clear cache and fetch fresh profile (Tier check)
     appState.userCache.delete(session.user.id);
+
+    // Defer rendering until we know the Tier
     import('./users.js').then(m => {
       m.ensureUserInfoForSession(session.user);
       m.getUserInfo(session.user.id).then(info => {
-        // Auto-redirect Tier 4 (Admin) to Admin Panel
+        // 1. Admin Redirect
         if (info && info.tier == 4) {
-          const path = window.location.pathname;
-          if (!path.startsWith('/admin')) {
+          if (!window.location.pathname.startsWith('/admin')) {
             console.log('Tier 4 Detected: Redirecting to Admin...');
             navigate('/admin', { replace: true });
             return;
           }
         }
+
+        // 2. Normal Rendering (only if not redirected)
+        if (!window.location.pathname.startsWith('/admin')) {
+          const path = window.location.pathname;
+          const isAuthPage = !path || path === '/' || path === '/signin' || path === '/auth';
+          if (isAuthPage) {
+            navigate(`/${session.user.id}/home`, { replace: true });
+          } else {
+            render();
+          }
+        } else {
+          // We are on admin path, router handles it? 
+          // actually router might need to be kicked if we don't call render.
+          // But adminRouter is separate.
+          // If we are on /admin, we probably should let the router/adminRouter take over.
+          // The adminRouter is usually invoked by router.js checking path.
+          // If we don't call render(), router might not run?
+          // actually initRouter calls render() on route change.
+          // But valid point: if we are at /admin refresh, we want to render Admin.
+          render(); // This will eventually delegate to adminRouter if mapped, or we need to check router.js
+        }
       });
     });
-
-    // If we are on the auth page or root, go to user dashboard
-    const path = window.location.pathname;
-    const isAuthPage = !path || path === '/' || path === '/signin' || path === '/auth';
-
-    // We want to redirect to home if on auth pages.
-    // If we are on a public page (about/contact) we can stay there (or redirect? Usually stay).
-
-    if (isAuthPage) {
-      navigate(`/${session.user.id}/home`, { replace: true });
-    } else {
-      // Just re-render to ensure state is correct
-      render();
-    }
   } else {
     // If not logged in:
     const path = window.location.pathname;
