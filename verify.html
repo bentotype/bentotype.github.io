@@ -5,71 +5,77 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Verify Account - Spliitz</title>
-    <link href="index.css" rel="stylesheet" />
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="styles.css" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .glass-card {
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.6);
+            box-shadow: 0 8px 32px rgba(99, 102, 241, 0.1);
+        }
+    </style>
 </head>
 
-<body class="bg-gray-50 flex flex-col justify-center py-12 sm:px-6 lg:px-8 min-h-screen">
-    <div class="sm:mx-auto sm:w-full sm:max-w-md">
-        <div class="text-center">
-            <h1 class="text-4xl font-extrabold text-indigo-600 tracking-tight"
-                style="font-family: 'Inter', sans-serif;">Spliitz</h1>
-            <h2 class="mt-6 text-3xl font-bold text-gray-900">Verify your account</h2>
-            <p class="mt-2 text-sm text-gray-600">
-                Enter the 6-digit code sent to <span id="verify-email-display" class="font-medium text-gray-900">your
-                    email</span>
-            </p>
+<body class="min-h-screen flex flex-col">
+    <!-- Header with Logo -->
+    <header class="w-full p-6 sm:p-8">
+        <div class="text-3xl font-bold text-indigo-600 tracking-tighter cursor-pointer"
+            onclick="window.location.href='/'">
+            Spliitz
         </div>
+    </header>
 
-        <div class="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-            <div class="bg-white py-8 px-4 shadow sm:rounded-lg sm:px-10 border border-gray-100">
-                <form id="verify-form" class="space-y-6"
-                    onsubmit="event.preventDefault(); window.handleVerifyOtp(this);">
-                    <input type="hidden" name="email" id="verify-email-input">
+    <!-- Main Content -->
+    <main class="flex-grow flex items-center justify-center p-4 sm:px-6 lg:px-8 -mt-20">
+        <div class="w-full max-w-md glass-card rounded-2xl p-8 sm:p-10">
+            <div class="text-center mb-8">
+                <h2 class="text-2xl font-bold text-gray-900">Verify your account</h2>
+                <p class="mt-2 text-sm text-gray-600">
+                    Enter the 6-digit code sent to <br>
+                    <span id="verify-email-display" class="font-medium text-indigo-600">your email</span>
+                </p>
+            </div>
 
-                    <div>
-                        <label for="token" class="block text-sm font-medium text-gray-700">Verification Code</label>
-                        <div class="mt-1">
-                            <input id="token" name="token" type="text" required
-                                class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-lg text-center tracking-widest"
-                                placeholder="123456" maxlength="6" pattern="[0-9]*" inputmode="numeric">
-                        </div>
-                    </div>
+            <form id="verify-form" class="space-y-6" onsubmit="event.preventDefault(); window.handleVerifyOtp(this);">
+                <input type="hidden" name="email" id="verify-email-input">
 
-                    <div>
-                        <button type="submit"
-                            class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-colors duration-200">
-                            Verify Account
-                        </button>
-                    </div>
-                </form>
-
-                <div class="mt-6">
+                <div>
+                    <label for="token" class="block text-sm font-medium text-gray-700 mb-2">Verification Code</label>
                     <div class="relative">
-                        <div class="absolute inset-0 flex items-center">
-                            <div class="w-full border-t border-gray-300"></div>
-                        </div>
-                        <div class="relative flex justify-center text-sm">
-                            <span class="px-2 bg-white text-gray-500">
-                                Didn't receive the code?
-                            </span>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 flex justify-center text-sm">
-                        <button onclick="window.history.back()"
-                            class="font-medium text-indigo-600 hover:text-indigo-500 bg-transparent border-none cursor-pointer">
-                            Go back
-                        </button>
+                        <input id="token" name="token" type="text" required
+                            class="block w-full px-4 py-3 bg-white/50 border border-gray-300 rounded-xl text-center text-2xl tracking-[0.5em] font-bold text-gray-900 placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
+                            placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric"
+                            autocomplete="one-time-code">
                     </div>
                 </div>
+
+                <button type="submit"
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:-translate-y-0.5">
+                    Verify Account
+                </button>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-sm text-gray-500 mb-4">
+                    Didn't receive the code?
+                    <button
+                        class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none transition-colors">Resend</button>
+                </p>
+                <button onclick="window.history.back()"
+                    class="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
+                    ← Go back
+                </button>
             </div>
         </div>
-    </div>
+    </main>
 
+    <!-- Loading Overlay -->
     <div id="loading-overlay"
-        class="modal fixed inset-0 bg-gray-900 bg-opacity-50 items-center justify-center z-50 hidden flex">
-        <div class="spinner"></div>
+        class="fixed inset-0 bg-gray-900/50 backdrop-blur-sm items-center justify-center z-50 hidden flex">
+        <div class="spinner border-4 border-indigo-200 border-t-indigo-600 rounded-full w-12 h-12 animate-spin"></div>
     </div>
 
     <script type="module">
