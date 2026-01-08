@@ -34,8 +34,8 @@
             <div class="text-center mb-8">
                 <h2 class="text-2xl font-bold text-gray-900">Verify your account</h2>
                 <p class="mt-2 text-sm text-gray-600">
-                    Enter the 6-digit code sent to <br>
-                    <span id="verify-email-display" class="font-medium text-indigo-600">your email</span>
+                    Enter the 6-digit code sent to <span id="verify-email-display"
+                        class="font-medium text-indigo-600">your email</span>
                 </p>
             </div>
 
@@ -82,7 +82,7 @@
     </div>
 
     <script type="module">
-        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js';
+        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=3';
         window.handleVerifyOtp = handleVerifyOtp;
         window.handleResendOtp = handleResendOtp;
 
