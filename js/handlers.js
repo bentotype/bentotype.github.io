@@ -235,8 +235,8 @@ export async function handleVerifyOtp(form) {
     if (data?.session?.user) {
       // Critical: Ensure profile exists
       await import('./users.js').then(m => m.ensureUserInfoForSession(data.session.user));
-      alert('Verification successful! Redirecting...');
-      window.location.href = '/';
+      alert('Verification successful! You can now sign in.');
+      window.location.href = '/signin';
     } else {
       // Should not happen on success usually
       throw new Error('Verification failed. Please try again.');
@@ -248,6 +248,58 @@ export async function handleVerifyOtp(form) {
       submitBtn.disabled = false;
       submitBtn.textContent = 'Verify Account';
     }
+  }
+}
+
+export function startResendTimer() {
+  let timeLeft = 60;
+  const timerEl = document.getElementById('resend-timer');
+  const btnEl = document.getElementById('resend-btn');
+  if (!timerEl || !btnEl) return;
+
+  timerEl.classList.remove('hidden');
+  btnEl.classList.add('hidden');
+  timerEl.textContent = `Resend in ${timeLeft}s`;
+
+  const interval = setInterval(() => {
+    timeLeft--;
+    if (timeLeft <= 0) {
+      clearInterval(interval);
+      timerEl.classList.add('hidden');
+      btnEl.classList.remove('hidden');
+    } else {
+      timerEl.textContent = `Resend in ${timeLeft}s`;
+    }
+  }, 1000);
+}
+
+export async function handleResendOtp() {
+  const emailInput = document.getElementById('verify-email-input');
+  const email = (emailInput?.value || '').trim();
+  const msgEl = document.getElementById('resend-msg');
+
+  if (!email) {
+    alert('Email not found. Please restart sign up.');
+    return;
+  }
+
+  try {
+    const { error } = await db.auth.resend({
+      type: 'signup',
+      email: email
+    });
+
+    if (error) throw error;
+
+    if (msgEl) {
+      msgEl.textContent = 'Code resent successfully!';
+      msgEl.classList.remove('hidden');
+      setTimeout(() => msgEl.classList.add('hidden'), 5000);
+    }
+    startResendTimer();
+
+  } catch (err) {
+    alert(err.message || 'Failed to resend code. Please try again later.');
   }
 }
 

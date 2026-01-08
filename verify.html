@@ -61,8 +61,11 @@
             <div class="mt-8 text-center">
                 <p class="text-sm text-gray-500 mb-4">
                     Didn't receive the code?
-                    <button
-                        class="font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none transition-colors">Resend</button>
+                    <span id="resend-timer" class="text-gray-400 font-medium ml-1">Resend in 60s</span>
+                    <button id="resend-btn" onclick="window.handleResendOtp()"
+                        class="hidden font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none transition-colors ml-1">Resend
+                        Code</button>
+                <p id="resend-msg" class="text-xs text-green-600 mt-2 hidden"></p>
                 </p>
                 <button onclick="window.history.back()"
                     class="text-sm font-medium text-gray-400 hover:text-gray-600 transition-colors">
@@ -79,8 +82,9 @@
     </div>
 
     <script type="module">
-        import { handleVerifyOtp } from './js/handlers.js';
+        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js';
         window.handleVerifyOtp = handleVerifyOtp;
+        window.handleResendOtp = handleResendOtp;
 
         // Auto-fill email from URL or LocalStorage
         const params = new URLSearchParams(window.location.search);
@@ -92,6 +96,8 @@
         if (email) {
             document.getElementById('verify-email-display').textContent = email;
             document.getElementById('verify-email-input').value = email;
+            // Start the timer on load
+            startResendTimer();
         } else {
             // If no email, redirect back to signin
             window.location.href = '/signin';
