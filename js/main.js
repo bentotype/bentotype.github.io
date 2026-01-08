@@ -21,7 +21,7 @@ db.auth.onAuthStateChange((event, session) => {
       m.ensureUserInfoForSession(session.user);
       m.getUserInfo(session.user.id).then(info => {
         // Auto-redirect Tier 4 (Admin) to Admin Panel
-        if (info && info.tier === 4) {
+        if (info && info.tier == 4) {
           const path = window.location.pathname;
           if (!path.startsWith('/admin')) {
             console.log('Tier 4 Detected: Redirecting to Admin...');

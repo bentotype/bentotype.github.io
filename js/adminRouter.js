@@ -129,7 +129,7 @@ async function renderGroups() {
     const { data: groups, error } = await db
         .from('group_info')
         .select('*')
-        .order('created_at', { ascending: false })
+        .order('group_id', { ascending: false })
         .limit(20);
 
     if (error) {
