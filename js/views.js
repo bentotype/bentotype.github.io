@@ -27,6 +27,12 @@ function renderTopNav(activeTab, info) {
     { id: 'friends', label: 'Friends', action: 'nav' },
     { id: 'groups', label: 'Groups', action: 'nav' }
   ];
+
+  // Show Admin Tab if Tier 4
+  if (info?.tier === UserTier.ADMIN) {
+    navItems.push({ id: 'admin', label: 'Admin', action: 'nav-link' });
+  }
+
   const initials =
     `${info?.first_name?.[0] ?? ''}${info?.last_name?.[0] ?? ''}`.trim() ||
     (appState.currentUser?.email?.[0] ?? '').toUpperCase() ||

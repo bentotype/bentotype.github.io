@@ -269,6 +269,13 @@ export function registerEventListeners() {
         }
         break;
       }
+      case 'nav-link': {
+        const target = t.dataset.target || e.target.dataset.target;
+        if (target) {
+          navigate(`/${target}`);
+        }
+        break;
+      }
       case 'nav': {
         const targetView = t.dataset.target || e.target.dataset.target;
         if (targetView) {
