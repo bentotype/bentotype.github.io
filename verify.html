@@ -34,9 +34,12 @@
             <div class="text-center mb-8">
                 <h2 class="text-2xl font-bold text-gray-900">Verify your account</h2>
                 <p class="mt-2 text-sm text-gray-600">
-                    Enter the 6-digit code sent to <span id="verify-email-display"
-                        class="font-medium text-indigo-600">your email</span>
+                    Enter the 6-digit code sent to:
                 </p>
+                <div id="verify-email-display"
+                    class="mt-1 font-medium text-indigo-600 bg-indigo-50 py-1 px-3 rounded-full inline-block">
+                    <!-- Email inserted here -->
+                </div>
             </div>
 
             <form id="verify-form" class="space-y-6" onsubmit="event.preventDefault(); window.handleVerifyOtp(this);">

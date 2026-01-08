@@ -11,7 +11,7 @@ export function handleAuthError(error) {
 
     // Known Supabase/Auth errors
     if (/Error confirming user/i.test(msg)) {
-        return "We couldn't verify your account. The link may have expired or is invalid. Please try signing up again or request a new code.";
+        return "Verification failed. The code may have expired, or you might already be verified. Please try Signing In.";
     }
     if (/User already registered/i.test(msg)) {
         return "This email is already currently in use. Please sign in instead.";
