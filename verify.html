@@ -22,10 +22,9 @@
 
 <body class="min-h-screen flex flex-col">
     <!-- Header with Logo -->
-    <header class="w-full p-6 sm:p-8">
-        <div class="text-3xl font-bold text-indigo-600 tracking-tighter cursor-pointer"
-            onclick="window.location.href='/'">
-            Spliitz
+    <header class="app-header auth-header">
+        <div class="app-header__left">
+            <div class="app-logo cursor-pointer" onclick="window.location.href='/'">Spliitz</div>
         </div>
     </header>
 
@@ -83,16 +82,21 @@
     </div>
 
     <script type="module">
-        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=4';
+        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=5';
 
         window.handleVerifyOtp = handleVerifyOtp;
         window.handleResendOtp = handleResendOtp;
 
-        // Auto-fill email from URL or LocalStorage
+        // Auto-fill email from LocalStorage only (Clean URL)
+        let email = localStorage.getItem('spliitz_pending_email');
+
+        // Clean URL if email param exists
         const params = new URLSearchParams(window.location.search);
-        let email = params.get('email');
-        if (!email) {
-            email = localStorage.getItem('spliitz_pending_email');
+        if (params.has('email')) {
+            if (!email) email = params.get('email'); // Capture it before cleaning if missing
+            const url = new URL(window.location);
+            url.searchParams.delete('email');
+            window.history.replaceState({}, '', url);
         }
 
         if (email) {

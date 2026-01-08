@@ -192,7 +192,32 @@ export async function handleSignUp(form) {
       data: { first_name, last_name, username, phone_number }
     }
   });
+
   if (authErr) {
+    // Handle "User already registered" specifically
+    if (authErr.message && /User already registered/i.test(authErr.message)) {
+      // Check if they have a profile (user_info)
+      const { data: existingProfile } = await db.from('user_info').select('user_id').eq('email', email).maybeSingle();
+
+      if (!existingProfile) {
+        // CASE: Auth user exists (unverified) but no profile.
+        // Treat as "restart signup/verification".
+        // 1. Resend code
+        const { error: resendErr } = await db.auth.resend({ type: 'signup', email });
+
+        if (!resendErr) {
+          // We can't easily get the ID here, but verify page will handle it or user_info creation will happen after login.
+          // However, storePending requires an ID usually, but here we might only have email. 
+          // Let's rely on localStorage pending email.
+          localStorage.setItem('spliitz_pending_email', email);
+          setLoading(false);
+          // clean URL redirect
+          window.location.href = '/verify.html';
+          return;
+        }
+      }
+    }
+
     setLoading(false);
     showAlert('Error', handleError(authErr, 'signup'));
     return;
@@ -203,7 +228,7 @@ export async function handleSignUp(form) {
   setLoading(false);
   if (!authData?.session) {
     localStorage.setItem('spliitz_pending_email', email);
-    window.location.href = `/verify.html?email=${encodeURIComponent(email)}`;
+    window.location.href = '/verify.html';
   }
   // If a session exists, auth state listener will handle navigation and user_info creation.
 }
