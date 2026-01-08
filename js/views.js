@@ -46,7 +46,7 @@ function renderTopNav(activeTab, info) {
   const navMarkup = navItems
     .map(
       ({ id, label, action }) =>
-        `<button class="app-nav__item${activeTab === id ? ' is-active' : ''}" data-action="${action}" data-target="${id}">${label}</button>`
+        `<button id="nav-item-${id}" class="app-nav__item${activeTab === id ? ' is-active' : ''}" data-action="${action}" data-target="${id}">${label}</button>`
     )
     .join('');
 

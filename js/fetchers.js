@@ -50,7 +50,7 @@ export async function fetchUserGroups() {
     .map((g) => {
       const title = g.group_info?.group_title || 'Untitled group';
       const description = g.group_info?.description || 'No description yet.';
-       const ownerId = g.group_info?.owner_id || '';
+      const ownerId = g.group_info?.owner_id || '';
       const safeTitle = encodeURIComponent(title);
       const safeDesc = encodeURIComponent(description);
       return `
@@ -287,8 +287,8 @@ export async function fetchGroupMembers(groupId) {
         const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
         const avatarContent = user.profile_picture
           ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
-              user.first_name || ''
-            )} ${escapeHtml(user.last_name || '')}" /></div>`
+            user.first_name || ''
+          )} ${escapeHtml(user.last_name || '')}" /></div>`
           : `<div class="group-member__avatar">${initials}</div>`;
         const ownerBadge = isOwner ? '<span class="group-member__owner-badge">Owner</span>' : '';
         const removeButton = canRemove
@@ -396,9 +396,8 @@ export async function fetchGroupExpenseActivity(groupId) {
           <div class="expense-activity-title">${escapeHtml(row.title || 'Expense')}</div>
           <div class="expense-activity-meta">${badge} <span class="expense-separator">•</span> ${escapeHtml(
         payerLabel
-      )} <span class="expense-separator">•</span> Due ${due} ${
-        created ? `<span class="expense-separator">•</span> ${created}` : ''
-      }</div>
+      )} <span class="expense-separator">•</span> Due ${due} ${created ? `<span class="expense-separator">•</span> ${created}` : ''
+        }</div>
           <div class="expense-activity-desc">${desc}</div>
         </div>
         <div class="expense-activity-amount">${formatCurrency((row.total_amount || 0) / 100)}</div>
@@ -419,7 +418,7 @@ export async function fetchPendingFriendRequests() {
 
   const { data, error } = await db
     .from('friend_request')
-    .select('id_1, id_2, created_at')
+    .select('id_1, id_2')
     .eq('id_1', user.id);
 
   if (error) {
