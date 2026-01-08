@@ -14,7 +14,14 @@ initRouter();
 db.auth.onAuthStateChange((event, session) => {
   if (session && session.user) {
     appState.currentUser = session.user;
-    void ensureUserInfoForSession(session.user);
+
+    // Force clear cache and fetch fresh profile (Tier check)
+    appState.userCache.delete(session.user.id);
+    import('./users.js').then(m => {
+      m.ensureUserInfoForSession(session.user);
+      m.getUserInfo(session.user.id); // Primes cache with fresh Tier
+    });
+
     // If we are on the auth page or root, go to user dashboard
     const path = window.location.pathname;
     const isAuthPage = !path || path === '/' || path === '/signin' || path === '/auth';
