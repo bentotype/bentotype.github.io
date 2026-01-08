@@ -15,15 +15,15 @@ BEGIN
 END;
 $$;
 
--- 2. Drop the recursive policies (We guess standard names, but also generically if possible)
--- Note: You might see "policy does not exist" warnings, which is fine.
-
+-- 2. Drop the recursive policies to prevent "policy already exists" errors
 DROP POLICY IF EXISTS "Admins can view all" ON user_info;
 DROP POLICY IF EXISTS "Admins can update all" ON user_info;
+DROP POLICY IF EXISTS "Admins can do everything" ON user_info; -- <--- Added this drop
 DROP POLICY IF EXISTS "Users can view own profile" ON user_info;
 DROP POLICY IF EXISTS "Users can update own profile" ON user_info;
 DROP POLICY IF EXISTS "Users can insert own profile" ON user_info;
 DROP POLICY IF EXISTS "Public profiles are viewable" ON user_info;
+DROP POLICY IF EXISTS "Authenticated can view all profiles" ON user_info;
 
 -- 3. Re-create the Policies using the non-recursive function
 
@@ -49,9 +49,7 @@ USING ( get_my_tier() = 4 );
 -- Note: 4 = Admin Tier
 
 -- E. Public read access (Optional - for searching friends)
--- Usually we allow authenticated users to read basic info of others
 CREATE POLICY "Authenticated can view all profiles"
 ON user_info FOR SELECT
 TO authenticated
 USING ( true );
--- (If you prefer strict privacy, remove E and stick to A+D, but usually app needs to see friends)
