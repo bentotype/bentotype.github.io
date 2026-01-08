@@ -1,0 +1,524 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "Create Account" : {
+      "comment" : "Sign Up View Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "إنشاء حساب" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অ্যাকাউন্ট তৈরি করুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Crear cuenta" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Créer un compte" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "खाता बनाएं" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Criar conta" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Создать аккаунт" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "创建账户" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "建立帳戶" } }
+      }
+    },
+    "First name" : {
+      "comment" : "Text Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الاسم الأول" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "নামের প্রথম অংশ" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Nombre" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Prénom" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पहला नाम" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Nome" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Имя" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "名字" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "名字" } }
+      }
+    },
+    "Last name" : {
+      "comment" : "Text Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "اسم العائلة" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "নামের শেষাংশ" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Apellido" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nom" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उपनाम" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Sobrenome" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Фамилия" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "姓氏" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "姓氏" } }
+      }
+    },
+    "Username" : {
+      "comment" : "Text Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "اسم المستخدم" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ব্যবহারকারীর নাম" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Nombre de usuario" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nom d'utilisateur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उपयोगकर्ता नाम" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Nome de usuário" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Имя пользователя" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用户名" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "使用者名稱" } }
+      }
+    },
+    "Email" : {
+      "comment" : "Text Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "بريد إلكتروني" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ইমেল" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Correo electrónico" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "E-mail" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "ईमेल" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "E-mail" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Электронная почта" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "电子邮件" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "電子郵件" } }
+      }
+    },
+    "Phone number (optional)" : {
+      "comment" : "Text Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "رقم الهاتف (اختياري)" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ফোন নম্বর (ঐচ্ছিক)" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Número de teléfono (opcional)" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Numéro de téléphone (facultatif)" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "फ़ोन नंबर (वैकल्पिक)" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Número de telefone (opcional)" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Номер телефона (необязательно)" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "电话号码（可选）" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "電話號碼（可選）" } }
+      }
+    },
+    "Password" : {
+      "comment" : "Secure Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "كلمة المرور" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "পাসওয়ার্ড" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Contraseña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mot de passe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पासवर्ड" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Senha" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пароль" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "密码" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "密碼" } }
+      }
+    },
+    "Confirm Password" : {
+      "comment" : "Secure Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "تأكيد كلمة المرور" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "পাসওয়ার্ড নিশ্চিত করুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Confirmar contraseña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Confirmer le mot de passe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पासवर्ड की पुष्टि करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Confirmar senha" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Подтвердите пароль" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "确认密码" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "確認密碼" } }
+      }
+    },
+    "Sign Up" : {
+      "comment" : "Button Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "للتسجيل" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "সাইন আপ" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Registrarse" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "S'inscrire" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "साइन अप करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Inscrever-se" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Зарегистрироваться" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "注册" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "註冊" } }
+      }
+    },
+    "Welcome Back" : {
+      "comment" : "Sign In View Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "مرحبًا بعودتك" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "স্বাগতম" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Bienvenido de nuevo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Bon retour" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "वापसी पर स्वागत है" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Bem-vindo de volta" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "С возвращением" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "欢迎回来" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "歡迎回來" } }
+      }
+    },
+    "Email or Username" : {
+      "comment" : "Text Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "البريد الإلكتروني أو اسم المستخدم" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ইমেল বা ব্যবহারকারীর নাম" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Correo electrónico o usuario" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "E-mail ou nom d'utilisateur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "ईमेल या उपयोगकर्ता नाम" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "E-mail ou nome de usuário" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Email или имя пользователя" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "电子邮件或用户名" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "電子郵件或使用者名稱" } }
+      }
+    },
+    "Forgot Password?" : {
+      "comment" : "Button Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "هل نسيت كلمة المرور؟" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "পাসওয়ার্ড ভুলে গেছেন?" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "¿Olvidaste tu contraseña?" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Mot de passe oublié ?" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पासवर्ड भूल गए?" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Esqueceu a senha?" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Забыли пароль?" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "忘记密码？" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "忘記密碼？" } }
+      }
+    },
+    "Log In" : {
+      "comment" : "Button Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "تسجيل الدخول" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "লগ ইন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Iniciar sesión" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Se connecter" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "लॉग इन करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Entrar" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Войти" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "登录" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "登入" } }
+      }
+    },
+    "Reset Password" : {
+      "comment" : "Alert Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "إعادة تعيين كلمة المرور" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "পাসওয়ার্ড রিসেট করুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Restablecer contraseña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Réinitialiser le mot de passe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पासवर्ड रीसेट करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Redefinir senha" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Сброс пароля" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "重置密码" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "重設密碼" } }
+      }
+    },
+    "Enter your email" : {
+      "comment" : "Text Field Placeholder",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "أدخل بريدك الإلكتروني" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "আপনার ইমেল লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Introduce tu correo electrónico" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entrez votre e-mail" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अपना ईमेल दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Digite seu e-mail" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Введите ваш email" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "输入您的电子邮箱" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "輸入您的電子郵件" } }
+      }
+    },
+    "Cancel" : {
+      "comment" : "Button Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "إلغاء" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "বাতিল করুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Cancelar" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Annuler" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रद्द करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Cancelar" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отмена" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "取消" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "取消" } }
+      }
+    },
+    "Send Reset Link" : {
+      "comment" : "Button Title",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "إرسال رابط إعادة التعيين" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "রিসেট লিঙ্ক পাঠান" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Enviar enlace" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Envoyer le lien" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "रीसेट लिंक भेजें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Enviar link de redefinição" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Отправить ссылку" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "发送重置链接" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "發送重設連結" } }
+      }
+    },
+    "Enter the email address associated with your account." : {
+      "comment" : "Alert Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "أدخل عنوان البريد الإلكتروني المرتبط بحسابك." } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "আপনার অ্যাকাউন্টের সাথে যুক্ত ইমেল ঠিকানা লিখুন।" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Introduce la dirección de correo asociada a tu cuenta." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Entrez l'adresse e-mail associée à votre compte." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "अपने खाते से जुड़ा ईमेल पता दर्ज करें।" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Digite o endereço de e-mail associado à sua conta." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Введите адрес электронной почты, связанный с вашей учетной записью." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "输入与您的帐户关联的电子邮件地址。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "輸入與您的帳戶關聯的電子郵件地址。" } }
+      }
+    },
+    "Please enter email/username and password" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال البريد الإلكتروني/اسم المستخدم وكلمة المرور" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে ইমেল/ব্যবহারকারীর নাম এবং পাসওয়ার্ড লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, introduce correo/usuario y contraseña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer l'e-mail/nom d'utilisateur et le mot de passe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया ईमेल/उपयोगकर्ता नाम और पासवर्ड दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira e-mail/usuário e senha" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите email/имя пользователя и пароль" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入电子邮件/用户名和密码" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入電子郵件/使用者名稱和密碼" } }
+      }
+    },
+    "Username not found" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "اسم المستخدم غير موجود" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ব্যবহারকারীর নাম পাওয়া যায়নি" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Usuario no encontrado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Nom d'utilisateur introuvable" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उपयोगकर्ता नाम नहीं मिला" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Usuário não encontrado" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пользователь не найден" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用户名不存在" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "使用者名稱不存在" } }
+      }
+    },
+    "Incorrect email/username or password." : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "البريد الإلكتروني/اسم المستخدم أو كلمة المرور غير صحيحة." } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ভুল ইমেল/ব্যবহারকারীর নাম বা পাসওয়ার্ড।" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Correo/usuario o contraseña incorrectos." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "E-mail/nom d'utilisateur ou mot de passe incorrect." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "गलत ईमेल/उपयोगकर्ता नाम या पासवर्ड।" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "E-mail/usuário ou senha incorretos." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Неверный email/имя пользователя или пароль." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "电子邮件/用户名或密码不正确。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "電子郵件/使用者名稱或密碼不正確。" } }
+      }
+    },
+    "Please enter an email" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال بريد إلكتروني" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে একটি ইমেল লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, introduce un correo" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer un e-mail" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया एक ईमेल दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira um e-mail" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите email" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入电子邮件" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入電子郵件" } }
+      }
+    },
+    "Please enter a valid email address" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال عنوان بريد إلكتروني صالح" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে একটি বৈধ ইমেল ঠিকানা লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Introduce una dirección de correo válida" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer une adresse e-mail valide" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया एक मान्य ईमेल पता दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira um endereço de e-mail válido" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите действительный адрес электронной почты" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入有效的电子邮件地址" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入有效的電子郵件地址" } }
+      }
+    },
+    "Please enter a password" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال كلمة مرور" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে একটি পাসওয়ার্ড লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, introduce una contraseña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer un mot de passe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया एक पासवर्ड दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira uma senha" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите пароль" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入密码" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入密碼" } }
+      }
+    },
+    "Passwords do not match" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "كلمتا المرور غير متطابقتين" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "পাসওয়ার্ড মেলে না" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Las contraseñas no coinciden" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les mots de passe ne correspondent pas" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पासवर्ड मेल नहीं खाते" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "As senhas não coincidem" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пароли не совпадают" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "密码不匹配" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "密碼不符" } }
+      }
+    },
+    "Please enter your first name" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال اسمك الأول" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে আপনার নামের প্রথম অংশ লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, introduce tu nombre" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer votre prénom" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया अपना पहला नाम दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira seu primeiro nome" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите ваше имя" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入您的名字" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入您的名字" } }
+      }
+    },
+    "Please enter your last name" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال اسم العائلة" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে আপনার নামের শেষাংশ লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, introduce tu apellido" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer votre nom" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया अपना उपनाम दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira seu sobrenome" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите вашу фамилию" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入您的姓氏" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入您的姓氏" } }
+      }
+    },
+    "Please enter a username" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال اسم مستخدم" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে একটি ব্যবহারকারীর নাম লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, introduce un nombre de usuario" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer un nom d'utilisateur" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया एक उपयोगकर्ता नाम दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira um nome de usuário" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите имя пользователя" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入用户名" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入使用者名稱" } }
+      }
+    },
+    "Username must be longer than 3 characters" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يجب أن يكون اسم المستخدم أطول من 3 أحرف" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ব্যবহারকারীর নাম অবশ্যই ৩ অক্ষরের বেশি হতে হবে" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "El usuario debe tener más de 3 caracteres" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le nom d'utilisateur doit dépasser 3 caractères" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "उपयोगकर्ता नाम 3 वर्णों से लंबा होना चाहिए" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "O nome de usuário deve ter mais de 3 caracteres" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Имя пользователя должно быть длиннее 3 символов" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用户名必须超过3个字符" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "使用者名稱必須超過3個字元" } }
+      }
+    },
+    "Email has been taken" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "البريد الإلكتروني مستخدم بالفعل" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ইমেলটি ইতিমধ্যে ব্যবহৃত হয়েছে" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "El correo ya está registrado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Cet e-mail est déjà pris" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "यह ईमेल पहले से ही उपयोग में है" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "E-mail já está em uso" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Email уже занят" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "电子邮件已被占用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "電子郵件已被使用" } }
+      }
+    },
+    "Username has been taken" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "اسم المستخدم مستخدم بالفعل" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "ব্যবহারকারীর নাম ইতিমধ্যে ব্যবহৃত হয়েছে" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "El nombre de usuario ya está registrado" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Ce nom d'utilisateur est déjà pris" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "यह उपयोगकर्ता नाम पहले से ही उपयोग में है" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Nome de usuário já está em uso" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Имя пользователя уже занято" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "用户名已被占用" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "使用者名稱已被使用" } }
+      }
+    },
+    "Sign-up requires email confirmation. Check your inbox." : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "التسجيل يتطلب تأكيد البريد الإلكتروني. تفقد صندوق الوارد الخاص بك." } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "সাইন-আপের জন্য ইমেল নিশ্চিতকরণ প্রয়োজন। আপনার ইনবক্স চেক করুন." } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "El registro requiere confirmación por correo. Revisa tu bandeja de entrada." } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "L'inscription nécessite une confirmation par e-mail. Vérifiez votre boîte de réception." } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "साइन-अप के लिए ईमेल पुष्टिकरण की आवश्यकता है। अपना इनबॉक्स चेक करें।" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "O cadastro requer confirmação por e-mail. Verifique sua caixa de entrada." } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Регистрация требует подтверждения по электронной почте. Проверьте ваш почтовый ящик." } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "注册需要电子邮件确认。请检查您的收件箱。" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "註冊需要電子郵件確認。請檢查您的收件匣。" } }
+      }
+    },
+    "Please fill out all password fields" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يرجى ملء جميع حقول كلمة المرور" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "অনুগ্রহ করে সব পাসওয়ার্ড ফিল্ড পূরণ করুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, completa todos los campos de contraseña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez remplir tous les champs de mot de passe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "कृपया सभी पासवर्ड फ़ील्ड भरें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, preencha todos os campos de senha" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, заполните все поля пароля" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请填写所有密码字段" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請填寫所有密碼欄位" } }
+      }
+    },
+    "New password must be at least 6 characters" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يجب أن تتكون كلمة المرور الجديدة من 6 أحرف على الأقل" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "নতুন পাসওয়ার্ড কমপক্ষে ৬ অক্ষরের হতে হবে" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La nueva contraseña debe tener al menos 6 caracteres" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le nouveau mot de passe doit contenir au moins 6 caractères" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "नया पासवर्ड कम से कम 6 वर्णों का होना चाहिए" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "A nova senha deve ter pelo menos 6 caracteres" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Новый пароль должен содержать не менее 6 символов" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新密码必须至少6个字符" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新密碼必須至少6個字元" } }
+      }
+    },
+    "New passwords do not match" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "كلمتا المرور الجديدتان غير متطابقتين" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "নতুন পাসওয়ার্ডগুলি মেলে না" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Las nuevas contraseñas no coinciden" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Les nouveaux mots de passe ne correspondent pas" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "नए पासवर्ड मेल नहीं खाते" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "As novas senhas não coincidem" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Новые пароли не совпадают" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新密码不匹配" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新密碼不符" } }
+      }
+    },
+    "New password must be different from old password" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "يجب أن تكون كلمة المرور الجديدة مختلفة عن القديمة" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "নতুন পাসওয়ার্ড অবশ্যই পুরানো পাসওয়ার্ড থেকে আলাদা হতে হবে" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "La nueva contraseña debe ser diferente de la anterior" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Le nouveau mot de passe doit être différent de l'ancien" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "नया पासवर्ड पुराने पासवर्ड से अलग होना चाहिए" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "A nova senha deve ser diferente da antiga" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Новый пароль должен отличаться от старого" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "新密码必须与旧密码不同" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "新密碼必須與舊密碼不同" } }
+      }
+    },
+    "Please enter your email to reset password" : {
+      "comment" : "Error Message",
+      "localizations" : {
+        "ar" : { "stringUnit" : { "state" : "translated", "value" : "الرجاء إدخال بريدك الإلكتروني لإعادة تعيين كلمة المرور" } },
+        "bn" : { "stringUnit" : { "state" : "translated", "value" : "পাসওয়ার্ড রিসেট করতে আপনার ইমেল লিখুন" } },
+        "es" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, introduce tu correo para restablecer la contraseña" } },
+        "fr" : { "stringUnit" : { "state" : "translated", "value" : "Veuillez entrer votre e-mail pour réinitialiser le mot de passe" } },
+        "hi" : { "stringUnit" : { "state" : "translated", "value" : "पासवर्ड रीसेट करने के लिए कृपया अपना ईमेल दर्ज करें" } },
+        "pt" : { "stringUnit" : { "state" : "translated", "value" : "Por favor, insira seu e-mail para redefinir a senha" } },
+        "ru" : { "stringUnit" : { "state" : "translated", "value" : "Пожалуйста, введите ваш email для сброса пароля" } },
+        "zh-Hans" : { "stringUnit" : { "state" : "translated", "value" : "请输入您的电子邮件以重置密码" } },
+        "zh-Hant" : { "stringUnit" : { "state" : "translated", "value" : "請輸入您的電子郵件以重設密碼" } }
+      }
+    }
+  },
+  "version" : "1.0"
+}
