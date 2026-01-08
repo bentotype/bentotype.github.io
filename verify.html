@@ -40,6 +40,13 @@
                     class="mt-1 font-medium text-indigo-600 bg-indigo-50 py-1 px-3 rounded-full inline-block">
                     <!-- Email inserted here -->
                 </div>
+                <div class="mt-2">
+                    <a href="#"
+                        onclick="localStorage.removeItem('spliitz_pending_email'); window.location.href='/signin'; return false;"
+                        class="text-xs text-indigo-500 hover:text-indigo-700">
+                        Not your email? Change it
+                    </a>
+                </div>
             </div>
 
             <form id="verify-form" class="space-y-6" onsubmit="event.preventDefault(); window.handleVerifyOtp(this);">
@@ -85,7 +92,7 @@
     </div>
 
     <script type="module">
-        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=5';
+        import { handleVerifyOtp, handleResendOtp, startResendTimer } from './js/handlers.js?v=6';
 
         window.handleVerifyOtp = handleVerifyOtp;
         window.handleResendOtp = handleResendOtp;

@@ -249,6 +249,9 @@ export async function handleVerifyOtp(form) {
     submitBtn.textContent = 'Verifying...';
   }
 
+  // Debug log
+  console.log('Attempting verifyOtp:', { email, token, type: 'signup' });
+
   try {
     const { data, error } = await db.auth.verifyOtp({
       email,
@@ -256,7 +259,10 @@ export async function handleVerifyOtp(form) {
       type: 'signup'
     });
 
-    if (error) throw error;
+    if (error) {
+      console.error('verifyOtp error object:', error);
+      throw error;
+    }
 
     if (data?.session?.user) {
       // Critical: Ensure profile exists
