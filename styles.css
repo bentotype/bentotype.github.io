@@ -419,7 +419,7 @@ body {
   color: #0f172a;
 }
 
-.auth-field > span {
+.auth-field>span {
   font-size: 0.85rem;
   color: #475569;
   font-weight: 600;
@@ -1835,4 +1835,72 @@ body {
   .expense-member-inputs input[type="range"] {
     width: 100%;
   }
+}
+
+/* Social Login Buttons */
+.auth-oauth {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.auth-oauth__button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.75rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  border: 1px solid transparent;
+}
+
+.auth-oauth__button--apple {
+  background-color: #000;
+  color: #fff;
+}
+
+.auth-oauth__button--apple:hover {
+  background-color: #333;
+}
+
+.auth-oauth__button--apple::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 384 512'%3E%3Cpath fill='%23fff' d='M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-54.5-144-61.7-171.9zm-24.8-150.9c17.5-22.3 27-53.4 23.2-83.8-24.3 1.2-54.2 16.5-72.2 38.3-15.6 18.8-27.6 48.7-24 81.3 27.6 2.6 57-14.7 73-35.8z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.auth-oauth__button--google {
+  background-color: #fff;
+  color: #374151;
+  border: 1px solid #e5e7eb;
+}
+
+.auth-oauth__button--google:hover {
+  background-color: #f9fafb;
+  border-color: #d1d5db;
+}
+
+.auth-oauth__button--google::before {
+  content: "";
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  margin-right: 10px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 488 512'%3E%3Cpath fill='%234285F4' d='M488 261.8C488 403.3 391.1 504 248 504 110.8 504 0 393.2 0 256S110.8 8 248 8c66.8 0 123 24.5 166.3 64.9l-67.5 64.9C258.5 52.6 94.3 116.6 94.3 256c0 86.5 69.1 156.6 153.7 156.6 98.2 0 135-70.4 140.8-106.9H248v-85.3h236.1c2.3 12.7 3.9 24.9 3.9 41.4z'/%3E%3C/svg%3E");
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
 }
