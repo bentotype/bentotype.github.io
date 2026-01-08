@@ -8,6 +8,8 @@ import { ensureUserInfoForSession } from './users.js';
 /**
  * Bootstraps UI listeners and keeps the app in sync with Supabase auth state.
  */
+console.log('%cApp Version: 1.1.1', 'background: #222; color: #bada55; padding: 4px; border-radius: 4px;');
+
 registerEventListeners();
 initRouter();
 
