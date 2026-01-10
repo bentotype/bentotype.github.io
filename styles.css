@@ -1,23 +1,29 @@
 :root {
   /* Brand Colors */
-  --primary-color: #216656;
-  --primary-rgb: 33, 102, 86;
+  --primary-color: #198068;
+  --primary-rgb: 25, 128, 104;
 
   /* Light Mode Defaults */
   --bg-color: #FFFFFF;
-  --surface-color: #FFFFFF;
-  --text-color: #0F172A;
+  --surface-color: #F8FAFC;
+  /* Slate 50 */
+  --text-color: #198068;
+  /* Emerald Text per request */
   --text-muted: #64748B;
   --border-color: #E2E8F0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #09090B;
-    --surface-color: #1E293B;
-    --text-color: #F8FAFC;
-    --text-muted: #94A3B8;
-    --border-color: #27272A;
+    --bg-color: #198068;
+    /* Emerald Background per request */
+    --surface-color: #000000;
+    /* Black Bubbles per request */
+    --text-color: #FFFFFF;
+    /* White Text per request */
+    --text-muted: #E2E8F0;
+    --border-color: #216656;
+    /* Slightly lighter emerald for borders */
   }
 }
 
