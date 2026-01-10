@@ -1,52 +1,45 @@
 :root {
   /* Palette Definitions */
-  --emerald-black: #020403;
-  /* Deepest Black-Green */
-  --emerald-deep: #091F18;
-  /* Surface Dark Emerald */
-  --emerald-primary: #10B981;
-  /* Vibrant Emerald (Brand) */
-  --emerald-soft: #A7F3D0;
-  /* Mint (Subtitles) */
-  --emerald-faint: #ECFDF5;
-  /* Light Mode Background */
-  --emerald-text-dark: #064E3B;
-  /* Light Mode Text */
+  --indigo-primary: #4f46e5;
+  --indigo-dark: #3730a3;
+  --sky-light: #e0f2fe;
+  --sky-white: #f0f9ff;
 
-  --gold-amber: #FBBF24;
-  /* Soft Gold/Amber */
+  --gold-accent: #FFD700;
 
   /* Shared Defaults */
-  --primary-color: var(--emerald-primary);
-  --accent-gold: var(--gold-amber);
+  --primary-color: var(--indigo-primary);
+  --accent-gold: var(--gold-accent);
 
   /* Light Mode Defaults */
-  --bg-color: #FFFFFF;
+  --bg-color: #f8fafc;
+  --bg-gradient: linear-gradient(135deg, #eff6ff 0%, #e0f2fe 100%);
   --surface-color: #FFFFFF;
-  --surface-secondary: var(--emerald-faint);
-  --text-color: var(--emerald-text-dark);
-  --text-muted: #374151;
-  --border-color: var(--emerald-primary);
+  --surface-secondary: #f1f5f9;
+  --text-color: #0f172a;
+  --text-muted: #64748b;
+  --border-color: #e2e8f0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Dark Mode (High Contrast Premium) */
-    --bg-color: var(--emerald-black);
-    --surface-color: var(--emerald-deep);
-    --surface-secondary: #0F2922;
-    --text-color: #FFFFFF;
-    --text-muted: #D1D5DB;
-    --border-color: #1f4236;
+    /* Dark Mode (State/Indigo) */
+    --bg-color: #0f172a;
+    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+    --surface-color: #1e293b;
+    --surface-secondary: #334155;
+    --text-color: #f8fafc;
+    --text-muted: #94a3b8;
+    --border-color: #334155;
 
-    /* Re-enforce primary readability */
-    --primary-color: var(--emerald-primary);
+    --primary-color: #6366f1;
   }
 }
 
 body {
   font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial;
-  background: var(--bg-color);
+  background: var(--bg-gradient);
+  background-attachment: fixed;
   color: var(--text-color);
   min-height: 100vh;
   min-height: 100dvh;

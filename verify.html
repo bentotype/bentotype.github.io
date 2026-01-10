@@ -35,13 +35,13 @@
                     Enter the 6-digit code sent to:
                 </p>
                 <div id="verify-email-display"
-                    class="mt-1 font-medium text-emerald-600 bg-emerald-50 py-1 px-3 rounded-full inline-block">
+                    class="mt-1 font-medium text-indigo-600 bg-indigo-50 py-1 px-3 rounded-full inline-block">
                     <!-- Email inserted here -->
                 </div>
                 <div class="mt-2">
                     <a href="#"
                         onclick="localStorage.removeItem('spliitz_pending_email'); window.location.href='/signin'; return false;"
-                        class="text-xs text-emerald-500 hover:text-emerald-700">
+                        class="text-xs text-indigo-500 hover:text-indigo-700">
                         Not your email? Change it
                     </a>
                 </div>
@@ -56,14 +56,14 @@
                         Code</label>
                     <div class="relative">
                         <input id="token" name="token" type="text" required
-                            class="block w-full px-4 py-3 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-xl text-center text-2xl tracking-[0.5em] font-bold text-gray-900 dark:text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:border-transparent transition-all duration-200"
+                            class="block w-full px-4 py-3 bg-white/50 dark:bg-gray-700/50 border border-gray-300 dark:border-gray-600 rounded-xl text-center text-2xl tracking-[0.5em] font-bold text-gray-900 dark:text-white placeholder-gray-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200"
                             placeholder="000000" maxlength="6" pattern="[0-9]*" inputmode="numeric"
                             autocomplete="one-time-code">
                     </div>
                 </div>
 
                 <button type="submit"
-                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-emerald-600 hover:bg-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 transition-all duration-200 transform hover:-translate-y-0.5">
+                    class="w-full flex justify-center py-3 px-4 border border-transparent rounded-xl shadow-sm text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 transition-all duration-200 transform hover:-translate-y-0.5">
                     Verify Account
                 </button>
             </form>
@@ -73,7 +73,7 @@
                     Didn't receive the code?
                     <span id="resend-timer" class="text-gray-400 font-medium ml-1">Resend in 60s</span>
                     <button id="resend-btn" onclick="window.handleResendOtp()"
-                        class="hidden font-medium text-emerald-600 hover:text-emerald-500 focus:outline-none transition-colors ml-1">Resend
+                        class="hidden font-medium text-indigo-600 hover:text-indigo-500 focus:outline-none transition-colors ml-1">Resend
                         Code</button>
                 <p id="resend-msg" class="text-xs text-green-600 mt-2 hidden"></p>
                 </p>
