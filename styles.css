@@ -1,29 +1,28 @@
 :root {
   /* Brand Colors */
-  --primary-color: #198068;
-  --primary-rgb: 25, 128, 104;
+  --primary-color: #004D40;
+  /* Midnight Teal */
+  --primary-rgb: 0, 77, 64;
+  --accent-gold: #FFD700;
+  /* Gold */
 
   /* Light Mode Defaults */
   --bg-color: #FFFFFF;
   --surface-color: #F8FAFC;
-  /* Slate 50 */
-  --text-color: #198068;
-  /* Emerald Text per request */
+  --text-color: #004D40;
   --text-muted: #64748B;
   --border-color: #E2E8F0;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #198068;
-    /* Emerald Background per request */
+    --bg-color: #004D40;
+    /* Midnight Teal Background */
     --surface-color: #000000;
-    /* Black Bubbles per request */
+    /* Black Bubbles */
     --text-color: #FFFFFF;
-    /* White Text per request */
     --text-muted: #E2E8F0;
-    --border-color: #216656;
-    /* Slightly lighter emerald for borders */
+    --border-color: #115e59;
   }
 }
 
@@ -519,14 +518,16 @@ body {
   border: none;
   border-radius: 12px;
   padding: 0.8rem 1.2rem;
-  background: linear-gradient(90deg, #4f46e5, #6366f1);
-  color: #fff;
+  background: var(--accent-gold);
+  color: #000000;
+  /* Black text on Gold */
   font-weight: 700;
   cursor: pointer;
+  transition: filter 0.2s ease;
 }
 
 .auth-submit:hover {
-  filter: brightness(0.95);
+  filter: brightness(1.1);
 }
 
 .auth-oauth {
@@ -537,13 +538,14 @@ body {
 
 .auth-oauth__button {
   width: 100%;
-  border: 1px solid #111827;
+  border: 1px solid #333;
   border-radius: 12px;
   padding: 0.8rem 1.2rem;
-  background: #111827;
+  background: #000000;
   color: #fff;
   font-weight: 700;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
 .auth-oauth__button--google {
