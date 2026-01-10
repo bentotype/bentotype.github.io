@@ -4,8 +4,6 @@ import { fetchUserGroups, fetchGroupInvites, fetchGroupMembers, fetchGroupPendin
 import { formatCurrency } from '../format.js';
 import { renderTopNav, escapeHtml } from './components.js';
 import { render } from './index.js';
-import { SupabaseManager } from '../../ios spliitz app/Split/SupabaseService.swift'; // Wait, this is JS, I cannot import Swift. 
-// Just kidding, that was a hallucination check. 
 import { db } from '../supabaseClient.js';
 
 export async function renderGroups() {
