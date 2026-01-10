@@ -1,38 +1,46 @@
 :root {
   /* Palette Definitions */
-  --emerald-darkest: #022C22;
-  /* Black/Green mix */
-  --emerald-dark: #064E3B;
+  --emerald-black: #020403;
+  /* Deepest Black-Green */
+  --emerald-deep: #091F18;
+  /* Surface Dark Emerald */
   --emerald-primary: #10B981;
-  --emerald-light: #D1FAE5;
+  /* Vibrant Emerald (Brand) */
+  --emerald-soft: #A7F3D0;
+  /* Mint (Subtitles) */
   --emerald-faint: #ECFDF5;
-  --gold: #FFD700;
+  /* Light Mode Background */
+  --emerald-text-dark: #064E3B;
+  /* Light Mode Text */
+
+  --gold-amber: #FBBF24;
+  /* Soft Gold/Amber */
 
   /* Shared Defaults */
-  --primary-color: var(--emerald-dark);
-  --accent-gold: var(--gold);
+  --primary-color: var(--emerald-primary);
+  --accent-gold: var(--gold-amber);
 
-  /* Light Mode (White, Dark Emerald, Light Emerald, Gold) */
+  /* Light Mode Defaults */
   --bg-color: #FFFFFF;
   --surface-color: #FFFFFF;
-  /* High contrast card */
   --surface-secondary: var(--emerald-faint);
-  --text-color: var(--emerald-dark);
-  /* Dark Emerald Text */
+  --text-color: var(--emerald-text-dark);
   --text-muted: #374151;
-  /* Neutral Gray */
-  --border-color: var(--emerald-light);
+  --border-color: var(--emerald-primary);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Dark Mode (Pure Black, Dark Emerald Cards, White Text, Gold Buttons) */
-    --bg-color: #000000;
-    --surface-color: var(--emerald-darkest);
-    --surface-secondary: #111111;
+    /* Dark Mode (High Contrast Premium) */
+    --bg-color: var(--emerald-black);
+    --surface-color: var(--emerald-deep);
+    --surface-secondary: #0F2922;
     --text-color: #FFFFFF;
     --text-muted: #D1D5DB;
-    --border-color: var(--emerald-dark);
+    --border-color: #1f4236;
+
+    /* Re-enforce primary readability */
+    --primary-color: var(--emerald-primary);
   }
 }
 
