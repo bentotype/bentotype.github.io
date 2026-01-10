@@ -402,12 +402,12 @@ body {
 .auth-card__title {
   font-size: 1.75rem;
   font-weight: 700;
-  color: #0f172a;
+  color: var(--text-color);
   margin-top: 0.35rem;
 }
 
 .auth-card__subtitle {
-  color: #6b7280;
+  color: var(--text-muted);
   margin-top: 0.35rem;
 }
 
@@ -424,7 +424,19 @@ body {
   padding: 0.4rem 0 0.65rem;
   cursor: pointer;
   font-size: 1rem;
-  transition: color 0.2s ease;
+  font-weight: 600;
+  color: var(--text-muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s ease;
+}
+
+.auth-tab:hover {
+  color: var(--primary-color);
+}
+
+.auth-tab.is-active {
+  color: var(--primary-color);
+  border-bottom-color: var(--primary-color);
 }
 
 .auth-form {
