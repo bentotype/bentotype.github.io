@@ -1,34 +1,38 @@
 :root {
-  /* Brand Colors */
-  --teal-deep: #0D3B36;
-  --teal-card: #164E48;
-  --gold-accent: #F59E0B;
+  /* Palette Definitions */
+  --emerald-darkest: #022C22;
+  /* Black/Green mix */
+  --emerald-dark: #064E3B;
+  --emerald-primary: #10B981;
+  --emerald-light: #D1FAE5;
+  --emerald-faint: #ECFDF5;
+  --gold: #FFD700;
 
-  --primary-color: var(--teal-deep);
-  --primary-rgb: 13, 59, 54;
-  --accent-gold: var(--gold-accent);
+  /* Shared Defaults */
+  --primary-color: var(--emerald-dark);
+  --accent-gold: var(--gold);
 
-  /* "Light Mode" (User wants Image 1 - Deep Teal Theme) */
-  --bg-color: var(--teal-deep);
-  --surface-color: var(--teal-card);
-  --text-color: #FFFFFF;
-  --text-muted: #94A3B8;
-  --border-color: #2D6A62;
+  /* Light Mode (White, Dark Emerald, Light Emerald, Gold) */
+  --bg-color: #FFFFFF;
+  --surface-color: #FFFFFF;
+  /* High contrast card */
+  --surface-secondary: var(--emerald-faint);
+  --text-color: var(--emerald-dark);
+  /* Dark Emerald Text */
+  --text-muted: #374151;
+  /* Neutral Gray */
+  --border-color: var(--emerald-light);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* "Dark Mode" (User wants Image 2 structure + Image 1 Color) 
-       Black Background + Teal Cards */
+    /* Dark Mode (Pure Black, Dark Emerald Cards, White Text, Gold Buttons) */
     --bg-color: #000000;
-    --surface-color: #111111;
-    /* Or use Teal cards? Let's use dark grey cards like Img 2 but with teal borders/text maybe? 
-                                User said "Color from image one". Let's use Teal for the cards to make them pop on black. */
-    --surface-color: #082623;
-    /* Very dark teal for cards on black */
+    --surface-color: var(--emerald-darkest);
+    --surface-secondary: #111111;
     --text-color: #FFFFFF;
-    --text-muted: #9CA3AF;
-    --border-color: #164E48;
+    --text-muted: #D1D5DB;
+    --border-color: var(--emerald-dark);
   }
 }
 
