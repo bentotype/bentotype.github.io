@@ -14,7 +14,9 @@ export const appState = {
   pendingReceiptPreviewUrl: '',
   pendingReceiptItems: [],
   pendingReceiptTotal: null,
-  pendingReceiptGroupId: null
+  pendingReceiptGroupId: null,
+  expenseItems: [],
+  isItemizedMode: false
 };
 
 export const app = document.getElementById('app');

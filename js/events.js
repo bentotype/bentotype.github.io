@@ -179,6 +179,52 @@ function updateExpenseSplitPreview(form, changedTarget = null) {
   }
 }
 
+function renderItemizedList(form) {
+  const container = form.querySelector('#expense-items-list');
+  if (!container) return;
+
+  container.innerHTML = appState.expenseItems.map(item => `
+        <div class="expense-item-row" data-item-id="${item.id}">
+            <input class="expense-item-name" placeholder="Item name" value="${(item.name || '').replace(/"/g, '&quot;')}" data-action="update-item-name" />
+            <div class="expense-item-price-box">
+                <input type="number" step="0.01" placeholder="0.00" value="${item.price}" class="expense-item-price" data-action="update-item-price" />
+                <button type="button" class="remove-item-btn" data-action="remove-expense-item" data-item-id="${item.id}">×</button>
+            </div>
+        </div>
+    `).join('');
+
+  // Update Total
+  const total = appState.expenseItems.reduce((sum, item) => sum + (Number(item.price) || 0), 0);
+  const totalInput = form.querySelector('[data-expense-total]');
+  if (totalInput) {
+    totalInput.value = total.toFixed(2);
+    // Trigger input event to update splits
+    totalInput.dispatchEvent(new Event('input', { bubbles: true }));
+  }
+}
+
+function toggleItemizedMode(form, enabled) {
+  appState.isItemizedMode = enabled;
+  const listContainer = form.querySelector('#itemized-list-container');
+  const totalInput = form.querySelector('[data-expense-total]');
+
+  if (enabled) {
+    listContainer.classList.remove('hidden');
+    totalInput.readOnly = true;
+    totalInput.classList.add('bg-gray-100');
+
+    if (appState.expenseItems.length === 0) {
+      // Seed with one item if empty
+      appState.expenseItems.push({ id: crypto.randomUUID(), name: '', price: 0 });
+    }
+    renderItemizedList(form);
+  } else {
+    listContainer.classList.add('hidden');
+    totalInput.readOnly = false;
+    totalInput.classList.remove('bg-gray-100');
+  }
+}
+
 /**
  * Wires up global click/submit listeners for the SPA shell and modal layer.
  */
@@ -404,6 +450,22 @@ export function registerEventListeners() {
         input?.click();
         break;
       }
+      case 'add-expense-item': {
+        const form = t.closest('form');
+        if (form) {
+          appState.expenseItems.push({ id: crypto.randomUUID(), name: '', price: 0 });
+          renderItemizedList(form);
+        }
+        break;
+      }
+      case 'remove-expense-item': {
+        const form = t.closest('form');
+        if (form && t.dataset.itemId) {
+          appState.expenseItems = appState.expenseItems.filter(i => i.id !== t.dataset.itemId);
+          renderItemizedList(form);
+        }
+        break;
+      }
     }
   });
 
@@ -444,6 +506,9 @@ export function registerEventListeners() {
       handleProfilePictureFileChange(target);
     } else if (target?.name === 'receipt_image') {
       handleReceiptFileChange(target, { autoScan: true });
+    } else if (target.dataset.action === 'toggle-itemized-mode') {
+      const form = target.closest('form');
+      if (form) toggleItemizedMode(form, target.checked);
     } else if (
       target.classList.contains('expense-percent-input') ||
       target.classList.contains('expense-amount-input') ||
@@ -498,6 +563,31 @@ export function registerEventListeners() {
 
   app.addEventListener('input', (e) => {
     const target = e.target;
+    if (target.dataset.action === 'update-item-name') {
+      const row = target.closest('.expense-item-row');
+      const id = row?.dataset.itemId;
+      const item = appState.expenseItems.find(i => i.id === id);
+      if (item) item.name = target.value;
+    }
+    if (target.dataset.action === 'update-item-price') {
+      const row = target.closest('.expense-item-row');
+      const id = row?.dataset.itemId;
+      const item = appState.expenseItems.find(i => i.id === id);
+      if (item) {
+        item.price = target.value; // Store as string for input
+        // Re-render only total
+        const form = target.closest('form');
+        if (form) {
+          const total = appState.expenseItems.reduce((sum, i) => sum + (parseFloat(i.price) || 0), 0);
+          const totalInput = form.querySelector('[data-expense-total]');
+          if (totalInput) {
+            totalInput.value = total.toFixed(2);
+            totalInput.dispatchEvent(new Event('input', { bubbles: true }));
+          }
+        }
+      }
+    }
+
     if (target.classList.contains('expense-amount-input')) {
       sanitizeDecimalInput(target);
     }

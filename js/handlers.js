@@ -1175,15 +1175,17 @@ export async function handleCreateExpense(form) {
     return;
   }
 
-  const receiptItems =
-    appState.pendingReceiptGroupId && appState.currentGroup?.id === appState.pendingReceiptGroupId
-      ? appState.pendingReceiptItems || []
-      : [];
+  let receiptItems = [];
+  if (appState.isItemizedMode) {
+    receiptItems = appState.expenseItems || [];
+  } else if (appState.pendingReceiptGroupId && appState.currentGroup?.id === appState.pendingReceiptGroupId) {
+    receiptItems = appState.pendingReceiptItems || [];
+  }
   const cleanedItems = receiptItems
-    .filter((item) => Number.isFinite(item?.price))
+    .filter((item) => Number.isFinite(Number(item?.price)))
     .map((item) => ({
       name: (item?.name || 'Item').replace(/,/g, '').trim() || 'Item',
-      price: item.price
+      price: Number(item.price)
     }));
 
   let receiptPath = null;
