@@ -1,7 +1,7 @@
 import { app } from '../state.js';
 
 export function renderAuth() {
-    app.innerHTML = `
+  app.innerHTML = `
 <div class="home-shell auth-page">
   <header class="app-header auth-header">
     <div class="app-header__left">
@@ -46,8 +46,8 @@ export function renderAuth() {
           <h2 class="auth-card__title">Sign in to Spliitz</h2>
         </div>
         <div class="auth-tabs">
-          <button data-action="show-tab" data-target="login-form" class="tab-button auth-tab border-b-2 border-indigo-400 text-indigo-400 font-semibold">Sign In</button>
-          <button data-action="show-tab" data-target="signup-form" class="tab-button auth-tab text-gray-400">Sign Up</button>
+          <button data-action="show-tab" data-target="login-form" class="tab-button auth-tab is-active">Sign In</button>
+          <button data-action="show-tab" data-target="signup-form" class="tab-button auth-tab">Sign Up</button>
         </div>
         <div class="auth-oauth">
           <button type="button" class="auth-oauth__button auth-oauth__button--apple" data-action="apple-login">Continue with Apple</button>
@@ -117,7 +117,7 @@ export function renderAuth() {
 }
 
 export function renderAbout() {
-    app.innerHTML = `
+  app.innerHTML = `
 <div class="home-shell">
   <header class="app-header auth-header">
     <div class="app-header__left">
@@ -185,7 +185,7 @@ export function renderAbout() {
 }
 
 export function renderContact() {
-    app.innerHTML = `
+  app.innerHTML = `
 <div class="home-shell">
   <header class="app-header auth-header">
     <div class="app-header__left">
