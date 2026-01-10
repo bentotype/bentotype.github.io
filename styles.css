@@ -1,28 +1,34 @@
 :root {
   /* Brand Colors */
-  --primary-color: #004D40;
-  /* Midnight Teal */
-  --primary-rgb: 0, 77, 64;
-  --accent-gold: #FFD700;
-  /* Gold */
+  --teal-deep: #0D3B36;
+  --teal-card: #164E48;
+  --gold-accent: #F59E0B;
 
-  /* Light Mode Defaults */
-  --bg-color: #FFFFFF;
-  --surface-color: #F8FAFC;
-  --text-color: #004D40;
-  --text-muted: #64748B;
-  --border-color: #E2E8F0;
+  --primary-color: var(--teal-deep);
+  --primary-rgb: 13, 59, 54;
+  --accent-gold: var(--gold-accent);
+
+  /* "Light Mode" (User wants Image 1 - Deep Teal Theme) */
+  --bg-color: var(--teal-deep);
+  --surface-color: var(--teal-card);
+  --text-color: #FFFFFF;
+  --text-muted: #94A3B8;
+  --border-color: #2D6A62;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg-color: #004D40;
-    /* Midnight Teal Background */
-    --surface-color: #000000;
-    /* Black Bubbles */
+    /* "Dark Mode" (User wants Image 2 structure + Image 1 Color) 
+       Black Background + Teal Cards */
+    --bg-color: #000000;
+    --surface-color: #111111;
+    /* Or use Teal cards? Let's use dark grey cards like Img 2 but with teal borders/text maybe? 
+                                User said "Color from image one". Let's use Teal for the cards to make them pop on black. */
+    --surface-color: #082623;
+    /* Very dark teal for cards on black */
     --text-color: #FFFFFF;
-    --text-muted: #E2E8F0;
-    --border-color: #115e59;
+    --text-muted: #9CA3AF;
+    --border-color: #164E48;
   }
 }
 
@@ -305,7 +311,7 @@ body {
 .card-title {
   font-size: 1.125rem;
   font-weight: 600;
-  color: #0f172a;
+  color: var(--text-color);
 }
 
 .card-body {
