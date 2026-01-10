@@ -70,7 +70,7 @@ body {
   font-size: 3rem;
   font-weight: 700;
   letter-spacing: -0.04em;
-  color: var(--primary-color);
+  color: var(--text-color);
 }
 
 .app-nav {
@@ -389,8 +389,38 @@ body {
   margin-top: 0.2rem;
 }
 
+.app-logo {
+  font-family: 'Space Grotesk', sans-serif;
+  /* Brand Font */
+  font-size: 3rem;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  color: var(--text-color);
+  /* Was primary-color, invisible on Emerald bg */
+}
+
+/* ... existing code ... */
+
+.summary-card.auth-summary {
+  background: var(--surface-color);
+  /* Ensure contrast */
+  color: var(--text-color);
+  border-radius: 20px;
+  padding: 2rem;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
+}
+
+.auth-highlight__title {
+  font-weight: 600;
+  color: var(--text-color);
+}
+
 .auth-card {
   padding: 2rem;
+  background: var(--surface-color);
+  /* Ensure contrast */
+  border-radius: 20px;
+  box-shadow: 0 10px 40px -10px rgba(0, 0, 0, 0.1);
 }
 
 .auth-card__header {
