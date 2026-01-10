@@ -21,8 +21,8 @@ export async function renderGroups() {
     <section class="content-section">
       <div class="card centered-card full-span">
         <div class="card-header" style="flex-direction: column; gap: 0.75rem; text-align: center;">
-          <p class="text-sm uppercase tracking-[0.2em] text-indigo-400 font-semibold">My Groups</p>
-          <h2 class="text-3xl font-bold text-gray-900">Organize your crews</h2>
+          <p class="text-sm uppercase tracking-[0.2em] text-emerald-400 font-semibold">My Groups</p>
+          <h2 class="text-3xl font-bold text-gray-900 grid-text-fix">Organize your crews</h2>
           <p class="text-gray-500 max-w-xl mx-auto">Create new groups for every trip, house share, or project. Everything stays in sync across members.</p>
           <button data-action="${canJoinGroups(info.tier || 1) ? 'show-create-group-modal' : 'show-tier-alert-groups'}" class="primary-action mt-2">+ New Group</button>
         </div>
@@ -177,7 +177,7 @@ export async function renderReceiptUploadPage() {
                  <div style="font-size:2.5rem; margin-bottom:0.5rem;">🔒</div>
                 <h3 class="text-lg font-bold text-gray-900">Upgrade Required</h3>
                 <p class="text-gray-600 mt-1 mb-4">Receipt scanning is available on paid plans.</p>
-                <button type="button" class="px-4 py-2 bg-indigo-600 text-white rounded-lg font-medium hover:bg-indigo-700 transition" onclick="alert('Please upgrade your plan to use this feature.')">Upgrade Plan</button>
+                <button type="button" class="px-4 py-2 bg-emerald-600 text-white rounded-lg font-medium hover:bg-emerald-700 transition" onclick="alert('Please upgrade your plan to use this feature.')">Upgrade Plan</button>
             </div>
         </div>
         ` : ''}
@@ -293,7 +293,7 @@ export async function renderExpenseInfoPage() {
                 <div id="expense-items-list" class="space-y-2">
                     ${itemsListMarkup}
                 </div>
-                <button type="button" class="text-indigo-600 text-sm font-medium hover:text-indigo-700" data-action="add-expense-item">+ Add Item</button>
+                <button type="button" class="text-emerald-600 text-sm font-medium hover:text-emerald-700" data-action="add-expense-item">+ Add Item</button>
             </div>
 
             <label class="expense-field">
@@ -408,7 +408,7 @@ export async function showCreateGroupModal() {
         <textarea name="description" placeholder="Description" class="w-full rounded-md border border-gray-600 bg-gray-900 text-white px-3 py-2 mb-2"></textarea>
         <div class="text-right">
             <button data-action="close-modal" data-target="${id}" class="px-3 py-1 bg-gray-700 text-white rounded-md mr-2">Cancel</button>
-            <button class="px-3 py-1 bg-indigo-600 text-white rounded-md">Create</button>
+            <button class="px-3 py-1 bg-emerald-600 text-white rounded-md">Create</button>
         </div>
     </form>
 </div>`;
@@ -426,16 +426,16 @@ export function showEditGroupModal({ id, title, description, ownerId }) {
     <h3 class="text-lg font-semibold text-gray-900">Edit Group</h3>
     <label class="block text-sm font-medium text-gray-700">
       Title
-      <input name="group_title" required value="${safeTitle}" class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+      <input name="group_title" required value="${safeTitle}" class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
     </label>
     <label class="block text-sm font-medium text-gray-700">
       Description
-      <textarea name="description" rows="4" class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500">${safeDesc}</textarea>
+      <textarea name="description" rows="4" class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500">${safeDesc}</textarea>
     </label>
     <div class="flex justify-between items-center gap-3 pt-2">
       <div class="flex gap-3">
         <button type="button" class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100" data-action="close-modal" data-target="${modalId}">Cancel</button>
-        <button class="px-4 py-2 rounded-md bg-indigo-600 text-white font-semibold hover:bg-indigo-500">Save changes</button>
+        <button class="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold hover:bg-emerald-500">Save changes</button>
       </div>
       ${isOwner
       ? `<button type="button" class="px-3 py-2 rounded-md bg-red-100 text-red-700 font-semibold hover:bg-red-200" data-action="delete-group" data-group-id="${id}">Delete</button>`

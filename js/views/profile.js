@@ -4,27 +4,27 @@ import { renderTopNav, escapeHtml } from './components.js';
 import { render } from './index.js';
 
 export async function renderProfile() {
-    const user = appState.currentUser;
-    if (!user) {
-        appState.currentView = 'auth';
-        render();
-        return;
-    }
-    const info = await getUserInfo(user.id);
-    const initials =
-        `${info?.first_name?.[0] ?? ''}${info?.last_name?.[0] ?? ''}`.trim() ||
-        (appState.currentUser?.email?.[0] ?? '').toUpperCase() ||
-        'U';
-    const avatarUrl =
-        appState.pendingProfilePictureUrl ||
-        (info?.profile_picture ? escapeHtml(info.profile_picture) : '');
-    const hasPendingAvatar = Boolean(appState.pendingProfilePictureUrl);
-    const tierLabel = info.tier === UserTier.FREE ? 'Free Tier' :
-        info.tier === UserTier.PAID ? 'Paid Tier' :
-            info.tier === UserTier.TESTING ? 'Testing Tier' :
-                info.tier === UserTier.ADMIN ? 'Admin' : 'Free Tier';
+  const user = appState.currentUser;
+  if (!user) {
+    appState.currentView = 'auth';
+    render();
+    return;
+  }
+  const info = await getUserInfo(user.id);
+  const initials =
+    `${info?.first_name?.[0] ?? ''}${info?.last_name?.[0] ?? ''}`.trim() ||
+    (appState.currentUser?.email?.[0] ?? '').toUpperCase() ||
+    'U';
+  const avatarUrl =
+    appState.pendingProfilePictureUrl ||
+    (info?.profile_picture ? escapeHtml(info.profile_picture) : '');
+  const hasPendingAvatar = Boolean(appState.pendingProfilePictureUrl);
+  const tierLabel = info.tier === UserTier.FREE ? 'Free Tier' :
+    info.tier === UserTier.PAID ? 'Paid Tier' :
+      info.tier === UserTier.TESTING ? 'Testing Tier' :
+        info.tier === UserTier.ADMIN ? 'Admin' : 'Free Tier';
 
-    app.innerHTML = `
+  app.innerHTML = `
 <div class="home-shell">
   ${renderTopNav('profile', info)}
   <main class="home-main">
@@ -32,19 +32,19 @@ export async function renderProfile() {
       <div class="card p-8">
         <div class="flex items-start justify-between mb-6">
           <div>
-            <p class="text-sm uppercase tracking-wide text-indigo-500 font-semibold">Account</p>
+            <p class="text-sm uppercase tracking-wide text-emerald-500 font-semibold">Account</p>
             <h2 class="text-3xl font-bold text-gray-900 mt-2">Your Profile</h2>
             <p class="text-gray-500 mt-1">Keep your details up to date so your friends can find you.</p>
-            <span class="inline-block mt-2 px-3 py-1 rounded-full bg-indigo-50 text-indigo-700 text-sm font-medium border border-indigo-100">${tierLabel}</span>
+            <span class="inline-block mt-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium border border-emerald-100">${tierLabel}</span>
           </div>
           <button type="button" data-action="change-password" class="px-4 py-2 rounded-full bg-gray-900 text-white hover:bg-gray-800 transition text-sm font-semibold">Change Password</button>
         </div>
         <div class="profile-photo-card">
           <div class="profile-photo-preview">
             ${avatarUrl
-            ? `<img src="${avatarUrl}" alt="Current profile picture">`
-            : `<span>${initials}</span>`
-        }
+      ? `<img src="${avatarUrl}" alt="Current profile picture">`
+      : `<span>${initials}</span>`
+    }
           </div>
           <div class="profile-photo-content">
             <h3 class="profile-photo-title">Profile picture</h3>
@@ -80,7 +80,7 @@ export async function renderProfile() {
             </div>
           </div>
           <div class="flex flex-wrap gap-3 pt-2">
-            <button class="px-6 py-2.5 rounded-full bg-indigo-600 text-white font-semibold hover:bg-indigo-500 transition">Save Changes</button>
+            <button class="px-6 py-2.5 rounded-full bg-emerald-600 text-white font-semibold hover:bg-emerald-500 transition">Save Changes</button>
             <button type="button" data-action="logout" class="px-6 py-2.5 rounded-full bg-gray-200 text-gray-900 font-semibold hover:bg-gray-300 transition">Sign Out</button>
           </div>
         </form>
@@ -91,28 +91,28 @@ export async function renderProfile() {
 }
 
 export function showChangePasswordModal() {
-    const modalId = 'change-password-modal';
-    modalContainer.innerHTML = `
+  const modalId = 'change-password-modal';
+  modalContainer.innerHTML = `
 <div id="${modalId}" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
   <form data-form-action="change-password" class="bg-white p-6 rounded-2xl shadow-2xl w-full max-w-md space-y-4">
     <h3 class="text-lg font-semibold text-gray-900">Change password</h3>
     <label class="block text-sm font-medium text-gray-700">
       Old password
-      <input name="old_password" type="password" required class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+      <input name="old_password" type="password" required class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
     </label>
     <label class="block text-sm font-medium text-gray-700">
       New password
-      <input name="new_password" type="password" minlength="6" required class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+      <input name="new_password" type="password" minlength="6" required class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
     </label>
     <label class="block text-sm font-medium text-gray-700">
       Confirm new password
-      <input name="confirm_password" type="password" minlength="6" required class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500" />
+      <input name="confirm_password" type="password" minlength="6" required class="w-full rounded-md border border-gray-300 px-3 py-2 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500" />
     </label>
     <div class="flex justify-end gap-3 pt-2">
       <button type="button" class="px-4 py-2 rounded-md border border-gray-300 text-gray-700 hover:bg-gray-100" data-action="close-modal" data-target="${modalId}">Cancel</button>
-      <button class="px-4 py-2 rounded-md bg-indigo-600 text-white font-semibold hover:bg-indigo-500">Update password</button>
+      <button class="px-4 py-2 rounded-md bg-emerald-600 text-white font-semibold hover:bg-emerald-500">Update password</button>
     </div>
   </form>
 </div>`;
-    setTimeout(() => document.getElementById(modalId)?.classList.add('flex', 'show'), 10);
+  setTimeout(() => document.getElementById(modalId)?.classList.add('flex', 'show'), 10);
 }

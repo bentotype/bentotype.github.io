@@ -110,9 +110,9 @@ export function renderAuth() {
   </main>
 </div>
     <div class="mt-12 py-8 text-center space-x-8 text-base font-medium text-gray-600">
-      <button data-action="nav" data-target="about" class="hover:text-indigo-600 transition">About Us</button>
+      <button data-action="nav" data-target="about" class="hover:text-emerald-600 transition">About Us</button>
       <span class="text-gray-400">•</span>
-      <button data-action="nav" data-target="contact" class="hover:text-indigo-600 transition">Contact Us</button>
+      <button data-action="nav" data-target="contact" class="hover:text-emerald-600 transition">Contact Us</button>
     </div>`;
 }
 
@@ -127,7 +127,7 @@ export function renderAbout() {
   <main class="home-main">
     <section class="max-w-4xl mx-auto w-full p-4 md:p-8">
       <div class="mb-8">
-        <button data-action="nav" data-target="auth" class="text-indigo-600 hover:text-indigo-500 font-medium text-lg flex items-center gap-2">
+        <button data-action="nav" data-target="auth" class="text-emerald-600 hover:text-emerald-500 font-medium text-lg flex items-center gap-2">
           <span>←</span> Back
         </button>
       </div>
@@ -135,8 +135,8 @@ export function renderAbout() {
       <div class="space-y-12">
         <!-- Hero -->
         <section>
-          <p class="text-indigo-600 font-bold tracking-wide uppercase mb-2">About Spliitz</p>
-          <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight text-gray-900">Splitting expenses shouldn't be a splitting headache.</h1>
+          <p class="text-emerald-600 font-bold tracking-wide uppercase mb-2">About Spliitz</p>
+          <h1 class="text-4xl md:text-5xl font-bold mb-6 leading-tight text-gray-900 grid-text-fix">Splitting expenses shouldn't be a splitting headache.</h1>
           <p class="text-xl text-gray-600 max-w-2xl leading-relaxed">
             We built Spliitz because we were tired of the "who paid for what?" dance. 
             Whether it's a ski trip, a shared apartment, or Saturday night dinner, we keep the math invisible so the fun stays visible.
@@ -146,34 +146,34 @@ export function renderAbout() {
         <!-- Mission -->
         <section class="grid md:grid-cols-2 gap-8 items-center bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
           <div>
-            <h3 class="text-2xl font-bold mb-4 text-gray-900">Our Mission</h3>
+            <h3 class="text-2xl font-bold mb-4 text-gray-900 grid-text-fix">Our Mission</h3>
             <p class="text-gray-600 leading-relaxed">
               To reduce the stress and awkwardness that money places on our most important relationships. 
               We believe you shouldn't have to choose between being generous and being fair.
             </p>
           </div>
-          <div class="bg-indigo-50 h-48 rounded-xl flex items-center justify-center text-6xl">
+          <div class="bg-emerald-50 h-48 rounded-xl flex items-center justify-center text-6xl">
               🤝
           </div>
         </section>
 
         <!-- Why Us -->
         <section>
-          <h3 class="text-3xl font-bold mb-8 text-gray-900">Why Choose Spliitz?</h3>
+          <h3 class="text-3xl font-bold mb-8 text-gray-900 grid-text-fix">Why Choose Spliitz?</h3>
           <div class="grid md:grid-cols-3 gap-6">
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-indigo-600">⚡️</div>
-              <h4 class="text-lg font-bold mb-2 text-gray-900">Real-time Sync</h4>
+              <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">⚡️</div>
+              <h4 class="text-lg font-bold mb-2 text-gray-900 grid-text-fix">Real-time Sync</h4>
               <p class="text-gray-600">Changes update instantly across everyone's devices. No more "did you add that yet?"</p>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-indigo-600">🧠</div>
-              <h4 class="text-lg font-bold mb-2 text-gray-900">Smart Math</h4>
+              <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">🧠</div>
+              <h4 class="text-lg font-bold mb-2 text-gray-900 grid-text-fix">Smart Math</h4>
               <p class="text-gray-600">We optimize debts so you pay back the right people with the fewest transfers.</p>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-               <div class="w-12 h-12 bg-indigo-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-indigo-600">🔒</div>
-              <h4 class="text-lg font-bold mb-2 text-gray-900">Secure Cloud</h4>
+               <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">🔒</div>
+              <h4 class="text-lg font-bold mb-2 text-gray-900 grid-text-fix">Secure Cloud</h4>
               <p class="text-gray-600">Your data is encrypted and stored safely. Access it from anywhere, anytime.</p>
             </div>
           </div>
@@ -195,7 +195,7 @@ export function renderContact() {
   <main class="home-main">
     <section class="max-w-4xl mx-auto w-full p-4 md:p-8">
       <div class="mb-8">
-        <button data-action="nav" data-target="auth" class="text-indigo-600 hover:text-indigo-500 font-medium text-lg flex items-center gap-2">
+        <button data-action="nav" data-target="auth" class="text-emerald-600 hover:text-emerald-500 font-medium text-lg flex items-center gap-2">
           <span>←</span> Back
         </button>
       </div>
@@ -204,8 +204,8 @@ export function renderContact() {
         <!-- Contact Info -->
         <div class="space-y-8">
           <div>
-            <p class="text-indigo-600 font-bold tracking-wide uppercase mb-2">Get in touch</p>
-            <h1 class="text-4xl font-bold mb-6 text-gray-900">Contact Us</h1>
+            <p class="text-emerald-600 font-bold tracking-wide uppercase mb-2">Get in touch</p>
+            <h1 class="text-4xl font-bold mb-6 text-gray-900 grid-text-fix">Contact Us</h1>
             <p class="text-lg text-gray-600 leading-relaxed">
               Have questions, feedback, or need support? We'd love to hear from you. 
               Fill out the form or send us an email directly.
@@ -214,20 +214,20 @@ export function renderContact() {
 
           <div class="space-y-6">
             <div class="flex items-start space-x-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-              <div class="bg-indigo-50 p-3 rounded-lg text-2xl">📧</div>
+              <div class="bg-emerald-50 p-3 rounded-lg text-2xl">📧</div>
               <div>
-                <h3 class="text-lg font-bold text-gray-900">Email Support</h3>
+                <h3 class="text-lg font-bold text-gray-900 grid-text-fix">Email Support</h3>
                 <p class="text-gray-500 mb-1 text-sm">For general inquiries and technical help:</p>
-                <a href="mailto:support@spliitz.com" class="text-indigo-600 hover:text-indigo-500 font-medium">support@spliitz.com</a>
+                <a href="mailto:support@spliitz.com" class="text-emerald-600 hover:text-emerald-500 font-medium">support@spliitz.com</a>
               </div>
             </div>
             
              <div class="flex items-start space-x-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-              <div class="bg-indigo-50 p-3 rounded-lg text-2xl">💼</div>
+              <div class="bg-emerald-50 p-3 rounded-lg text-2xl">💼</div>
               <div>
-                <h3 class="text-lg font-bold text-gray-900">Partnerships</h3>
+                <h3 class="text-lg font-bold text-gray-900 grid-text-fix">Partnerships</h3>
                 <p class="text-gray-500 mb-1 text-sm">Interested in working with us?</p>
-                <a href="mailto:partners@spliitz.com" class="text-indigo-600 hover:text-indigo-500 font-medium">partners@spliitz.com</a>
+                <a href="mailto:partners@spliitz.com" class="text-emerald-600 hover:text-emerald-500 font-medium">partners@spliitz.com</a>
               </div>
             </div>
           </div>
@@ -235,19 +235,19 @@ export function renderContact() {
 
         <!-- Contact Form -->
         <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <h3 class="text-xl font-bold mb-6 text-gray-900">Send a message</h3>
+          <h3 class="text-xl font-bold mb-6 text-gray-900 grid-text-fix">Send a message</h3>
           <form class="space-y-5" onsubmit="event.preventDefault(); alert('Thanks! We will get back to you soon.');">
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-1">Your Name</label>
-              <input type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="John Doe">
+              <input type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition" placeholder="John Doe">
             </div>
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-              <input type="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="john@example.com">
+              <input type="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition" placeholder="john@example.com">
             </div>
              <div>
               <label class="block text-sm font-semibold text-gray-700 mb-1">Subject</label>
-               <select class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition">
+               <select class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition">
                   <option>General Inquiry</option>
                   <option>Technical Support</option>
                   <option>Feature Request</option>
@@ -256,9 +256,9 @@ export function renderContact() {
             </div>
             <div>
               <label class="block text-sm font-semibold text-gray-700 mb-1">Message</label>
-              <textarea rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none transition" placeholder="How can we help?"></textarea>
+              <textarea rows="4" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition" placeholder="How can we help?"></textarea>
             </div>
-            <button class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-indigo-500/20">
+            <button class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20">
               Send Message
             </button>
           </form>
