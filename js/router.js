@@ -10,17 +10,17 @@ const AUTH_PATH = '/signin';
 
 export function initRouter() {
     window.addEventListener('popstate', handleRouteChange);
-    window.addEventListener('load', () => {
-        // CF-like 404 hack: Check if we were redirected from 404.html
-        // e.g. /?redirect=/about
-        const params = new URLSearchParams(window.location.search);
-        const redirect = params.get('redirect');
-        if (redirect) {
-            // Restore the clean URL
-            window.history.replaceState({}, '', redirect);
-        }
-        handleRouteChange();
-    });
+
+    // CF-like 404 hack: Check if we were redirected from 404.html
+    // e.g. /?redirect=/about
+    // We check this immediately to ensure router sees the correct path before initial render.
+    const params = new URLSearchParams(window.location.search);
+    const redirect = params.get('redirect');
+    if (redirect) {
+        // Restore the clean URL
+        window.history.replaceState({}, '', redirect);
+    }
+
     handleRouteChange();
 }
 
