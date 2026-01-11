@@ -22,8 +22,8 @@ export async function renderGroups() {
       <div class="card centered-card full-span">
         <div class="card-header" style="flex-direction: column; gap: 0.75rem; text-align: center;">
           <p class="text-sm uppercase tracking-[0.2em] text-emerald-400 font-semibold">My Groups</p>
-          <h2 class="text-3xl font-bold text-gray-900 grid-text-fix">Organize your crews</h2>
-          <p class="text-gray-500 max-w-xl mx-auto">Create new groups for every trip, house share, or project. Everything stays in sync across members.</p>
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white grid-text-fix">Organize your crews</h2>
+          <p class="text-gray-500 dark:text-gray-400 max-w-xl mx-auto">Create new groups for every trip, house share, or project. Everything stays in sync across members.</p>
           <button data-action="${canJoinGroups(info.tier || 1) ? 'show-create-group-modal' : 'show-tier-alert-groups'}" class="primary-action mt-2">+ New Group</button>
         </div>
       </div>

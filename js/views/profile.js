@@ -33,8 +33,8 @@ export async function renderProfile() {
         <div class="flex items-start justify-between mb-6">
           <div>
             <p class="text-sm uppercase tracking-wide text-emerald-500 font-semibold">Account</p>
-            <h2 class="text-3xl font-bold text-gray-900 mt-2">Your Profile</h2>
-            <p class="text-gray-500 mt-1">Keep your details up to date so your friends can find you.</p>
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mt-2">Your Profile</h2>
+            <p class="text-gray-500 dark:text-gray-400 mt-1">Keep your details up to date so your friends can find you.</p>
             <span class="inline-block mt-2 px-3 py-1 rounded-full bg-emerald-50 text-emerald-700 text-sm font-medium border border-emerald-100">${tierLabel}</span>
           </div>
           <button type="button" data-action="change-password" class="px-4 py-2 rounded-full bg-gray-900 text-white hover:bg-gray-800 transition text-sm font-semibold">Change Password</button>
@@ -52,7 +52,7 @@ export async function renderProfile() {
             <form class="profile-photo-form">
               <input type="file" name="profile_picture" accept="image/*" class="profile-photo-input hidden">
               <button type="button" class="profile-photo-button" data-action="trigger-profile-upload">Choose Photo</button>
-              <span class="text-sm text-gray-600">
+              <span class="text-sm text-gray-600 dark:text-gray-400">
                 ${hasPendingAvatar ? 'New photo uploaded. Save Changes to confirm.' : 'JPG or PNG, max 5MB.'}
               </span>
             </form>
@@ -61,22 +61,22 @@ export async function renderProfile() {
         <form id="profile-form" data-form-action="update-profile" class="space-y-5">
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label class="text-sm font-medium text-gray-500">First name</label>
-              <input name="first_name" value="${info.first_name || ''}" placeholder="First Name" class="w-full rounded-lg border border-gray-200 bg-white text-gray-900 px-4 py-2.5 mt-1">
+              <label class="text-sm font-medium text-gray-500 dark:text-gray-400">First name</label>
+              <input name="first_name" value="${info.first_name || ''}" placeholder="First Name" class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2.5 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-colors">
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-500">Last name</label>
-              <input name="last_name" value="${info.last_name || ''}" placeholder="Last Name" class="w-full rounded-lg border border-gray-200 bg-white text-gray-900 px-4 py-2.5 mt-1">
+              <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Last name</label>
+              <input name="last_name" value="${info.last_name || ''}" placeholder="Last Name" class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2.5 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-colors">
             </div>
           </div>
           <div class="grid md:grid-cols-2 gap-4">
             <div>
-              <label class="text-sm font-medium text-gray-500">Username</label>
-              <input name="username" value="${info.username || ''}" placeholder="Username" class="w-full rounded-lg border border-gray-200 bg-white text-gray-900 px-4 py-2.5 mt-1">
+              <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Username</label>
+              <input name="username" value="${info.username || ''}" placeholder="Username" class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2.5 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-colors">
             </div>
             <div>
-              <label class="text-sm font-medium text-gray-500">Email</label>
-              <input name="email" value="${info.email || ''}" placeholder="Email" class="w-full rounded-lg border border-gray-200 bg-white text-gray-900 px-4 py-2.5 mt-1">
+              <label class="text-sm font-medium text-gray-500 dark:text-gray-400">Email</label>
+              <input name="email" value="${info.email || ''}" placeholder="Email" class="w-full rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white px-4 py-2.5 mt-1 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition-colors">
             </div>
           </div>
           <div class="flex flex-wrap gap-3 pt-2">

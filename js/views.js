@@ -1,1 +1,1 @@
-export * from './views/index.js';
+export * from './views/index.js?v=1.1.22';
