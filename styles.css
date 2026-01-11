@@ -2123,3 +2123,214 @@ body {
   background-repeat: no-repeat;
   background-position: center;
 }
+
+/* Fix visible text in dark mode for About/Contact pages */
+.grid-text-fix {
+  color: var(--color-foreground) !important;
+}
+
+/* Friends Page Redesign - Stronger Gold */
+.invite-card {
+  /* Ambient Amber Gradient - Stronger */
+  background: linear-gradient(135deg, #fffbeb 0%, #fef3c7 100%);
+  border: 1px solid #fcd34d;
+  border-radius: 18px;
+  padding: 1.5rem;
+  box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.3);
+  position: relative;
+  overflow: hidden;
+}
+
+/* Dark Mode Override */
+@media (prefers-color-scheme: dark) {
+  .invite-card {
+    background: linear-gradient(135deg, rgba(66, 32, 6, 0.8) 0%, rgba(146, 64, 14, 0.2) 100%);
+    border-color: rgba(245, 158, 11, 0.3);
+    box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.15);
+  }
+}
+
+.dark .invite-card {
+  background: linear-gradient(135deg, rgba(66, 32, 6, 0.8) 0%, rgba(146, 64, 14, 0.2) 100%);
+  border-color: rgba(245, 158, 11, 0.3);
+  box-shadow: 0 10px 30px -5px rgba(245, 158, 11, 0.15);
+}
+
+.invite-card__icon-box {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #f59e0b, #d97706);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  box-shadow: 0 4px 6px -1px rgba(245, 158, 11, 0.3);
+  margin-bottom: 1rem;
+}
+
+.invite-card__title {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #78350f;
+  /* darker amber/brown */
+}
+
+@media (prefers-color-scheme: dark) {
+  .invite-card__title {
+    color: #fcd34d;
+  }
+}
+
+.dark .invite-card__title {
+  color: #fcd34d;
+}
+
+
+.invite-card__body {
+  width: 100%;
+}
+
+.invite-card__form {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.invite-card__input-wrapper {
+  position: relative;
+  flex: 1;
+}
+
+.invite-card__input-icon {
+  position: absolute;
+  left: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #92400e;
+}
+
+@media (prefers-color-scheme: dark) {
+  .invite-card__input-icon {
+    color: #fcd34d;
+  }
+}
+
+.dark .invite-card__input-icon {
+  color: #fcd34d;
+}
+
+.invite-card__input {
+  width: 100%;
+  padding: 0.7rem 1rem 0.7rem 2.5rem;
+  border-radius: 12px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(4px);
+  color: #451a03;
+  font-size: 0.95rem;
+  transition: all 0.2s;
+}
+
+@media (prefers-color-scheme: dark) {
+  .invite-card__input {
+    background: rgba(0, 0, 0, 0.3);
+    border-color: rgba(245, 158, 11, 0.4);
+    color: #fff;
+  }
+}
+
+.dark .invite-card__input {
+  background: rgba(0, 0, 0, 0.3);
+  border-color: rgba(245, 158, 11, 0.4);
+  color: #fff;
+}
+
+.invite-card__input:focus {
+  outline: none;
+  border-color: #d97706;
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.2);
+  background: #fff;
+}
+
+.dark .invite-card__input:focus {
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.invite-card__button {
+  background: #f59e0b;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  padding: 0 1.5rem;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(245, 158, 11, 0.4);
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.invite-card__button:hover {
+  background: #d97706;
+  transform: translateY(-1px);
+}
+
+/* Friend Item - Mint Hover */
+.friend-item-modern {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem;
+  margin-bottom: 0.75rem;
+  border-radius: 16px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  transition: all 0.3s ease;
+  position: relative;
+  overflow: hidden;
+}
+
+.friend-item-modern:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px -4px rgba(16, 185, 129, 0.15);
+  /* Emerald shadow */
+  border-color: #34d399;
+  /* Emerald border */
+}
+
+/* Mint overlay */
+.friend-item-modern::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(52, 211, 153, 0.1), rgba(16, 185, 129, 0.05));
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+}
+
+.friend-item-modern:hover::before {
+  opacity: 1;
+}
+
+.friend-item__info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  position: relative;
+  z-index: 1;
+}
+
+.friend-item__avatar {
+  position: relative;
+  z-index: 1;
+}
+
+.friend-item__actions {
+  position: relative;
+  z-index: 2;
+}
