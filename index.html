@@ -6,6 +6,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spliitz</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        background: "var(--color-background)",
+                        foreground: "var(--color-foreground)",
+                        card: "var(--color-card)",
+                        "card-foreground": "var(--color-foreground)",
+                        primary: "var(--color-primary)",
+                        secondary: "var(--color-secondary)",
+                        accent: "var(--color-accent)",
+                        muted: "var(--text-muted)",
+                        "muted-foreground": "var(--text-muted)",
+                        border: "var(--border-color)",
+                        input: "var(--border-color)",
+                        "input-background": "var(--surface-color)"
+                    },
+                    borderRadius: {
+                        xl: "24px"
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
