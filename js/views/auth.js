@@ -118,7 +118,7 @@ export function renderAuth() {
       </div>
     </section>
     
-    <div class="w-full py-12 text-center space-y-6 mt-12 mb-8">
+    <div class="w-full py-12 mt-12 mb-8 flex flex-col items-center gap-6 text-center">
       <div class="space-x-8 text-base font-medium text-gray-500">
         <button data-action="nav" data-target="about" class="hover:text-emerald-600 transition">About Us</button>
         <span class="text-gray-400">•</span>
@@ -160,37 +160,37 @@ export function renderAbout() {
         </section>
 
         <!-- Mission -->
-        <section class="grid md:grid-cols-2 gap-8 items-center bg-white rounded-2xl p-8 shadow-sm border border-gray-100">
+        <section class="grid md:grid-cols-2 gap-8 items-center bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-sm border border-gray-100 dark:border-gray-700">
           <div>
-            <h3 class="text-2xl font-bold mb-4 text-gray-900 grid-text-fix">Our Mission</h3>
-            <p class="text-gray-600 leading-relaxed">
+            <h3 class="text-2xl font-bold mb-4 text-gray-900 dark:text-white">Our Mission</h3>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed">
               To reduce the stress and awkwardness that money places on our most important relationships. 
               We believe you shouldn't have to choose between being generous and being fair.
             </p>
           </div>
-          <div class="bg-emerald-50 h-48 rounded-xl flex items-center justify-center text-6xl">
+          <div class="bg-emerald-50 dark:bg-emerald-900/20 h-48 rounded-xl flex items-center justify-center text-6xl">
               🤝
           </div>
         </section>
 
         <!-- Why Us -->
         <section>
-          <h3 class="text-3xl font-bold mb-8 text-gray-900 grid-text-fix">Why Choose Spliitz?</h3>
+          <h3 class="text-3xl font-bold mb-8 text-gray-900 dark:text-white">Why Choose Spliitz?</h3>
           <div class="grid md:grid-cols-3 gap-6">
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">⚡️</div>
-              <h4 class="text-lg font-bold mb-2 text-gray-900 grid-text-fix">Real-time Sync</h4>
-              <p class="text-gray-600">Changes update instantly across everyone's devices. No more "did you add that yet?"</p>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">⚡️</div>
+              <h4 class="text-lg font-bold mb-2 text-gray-900 dark:text-white">Real-time Sync</h4>
+              <p class="text-gray-600 dark:text-gray-300">Changes update instantly across everyone's devices. No more "did you add that yet?"</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-              <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">🧠</div>
-              <h4 class="text-lg font-bold mb-2 text-gray-900 grid-text-fix">Smart Math</h4>
-              <p class="text-gray-600">We optimize debts so you pay back the right people with the fewest transfers.</p>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+              <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">🧠</div>
+              <h4 class="text-lg font-bold mb-2 text-gray-900 dark:text-white">Smart Math</h4>
+              <p class="text-gray-600 dark:text-gray-300">We optimize debts so you pay back the right people with the fewest transfers.</p>
             </div>
-            <div class="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-               <div class="w-12 h-12 bg-emerald-100 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">🔒</div>
-              <h4 class="text-lg font-bold mb-2 text-gray-900 grid-text-fix">Secure Cloud</h4>
-              <p class="text-gray-600">Your data is encrypted and stored safely. Access it from anywhere, anytime.</p>
+            <div class="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+               <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/30 rounded-lg flex items-center justify-center text-2xl mb-4 text-emerald-600">🔒</div>
+              <h4 class="text-lg font-bold mb-2 text-gray-900 dark:text-white">Secure Cloud</h4>
+              <p class="text-gray-600 dark:text-gray-300">Your data is encrypted and stored safely. Access it from anywhere, anytime.</p>
             </div>
           </div>
         </section>
@@ -221,27 +221,27 @@ export function renderContact() {
         <div class="space-y-8">
           <div>
             <p class="text-emerald-600 font-bold tracking-wide uppercase mb-2">Get in touch</p>
-            <h1 class="text-4xl font-bold mb-4 text-gray-900 grid-text-fix">Contact Us</h1>
-            <p class="text-lg text-gray-600 leading-relaxed">
+            <h1 class="text-4xl font-bold mb-4 text-gray-900 dark:text-white">Contact Us</h1>
+            <p class="text-lg text-gray-600 dark:text-gray-300 leading-relaxed">
               Have questions, feedback, or need support? We'd love to hear from you. 
               Fill out the form or send us an email directly.
             </p>
           </div>
 
           <div class="space-y-6">
-            <div class="flex items-start space-x-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-              <div class="bg-emerald-50 p-3 rounded-lg text-2xl">📧</div>
+            <div class="flex items-start space-x-4 bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+              <div class="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg text-2xl">📧</div>
               <div>
-                <h3 class="text-lg font-bold text-gray-900 grid-text-fix">Email Support</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Email Support</h3>
                 <p class="text-gray-500 mb-1 text-sm">For general inquiries and technical help:</p>
                 <a href="mailto:support@spliitz.com" class="text-emerald-600 hover:text-emerald-500 font-medium">support@spliitz.com</a>
               </div>
             </div>
             
-             <div class="flex items-start space-x-4 bg-white p-5 rounded-xl border border-gray-100 shadow-sm">
-              <div class="bg-emerald-50 p-3 rounded-lg text-2xl">💼</div>
+             <div class="flex items-start space-x-4 bg-white dark:bg-gray-800 p-5 rounded-xl border border-gray-100 dark:border-gray-700 shadow-sm">
+              <div class="bg-emerald-50 dark:bg-emerald-900/20 p-3 rounded-lg text-2xl">💼</div>
               <div>
-                <h3 class="text-lg font-bold text-gray-900 grid-text-fix">Partnerships</h3>
+                <h3 class="text-lg font-bold text-gray-900 dark:text-white">Partnerships</h3>
                 <p class="text-gray-500 mb-1 text-sm">Interested in working with us?</p>
                 <a href="mailto:partners@spliitz.com" class="text-emerald-600 hover:text-emerald-500 font-medium">partners@spliitz.com</a>
               </div>
@@ -250,16 +250,16 @@ export function renderContact() {
         </div>
 
         <!-- Contact Form -->
-        <div class="bg-white rounded-2xl p-8 shadow-lg border border-gray-100">
-          <h3 class="text-xl font-bold mb-6 text-gray-900 grid-text-fix">Send a message</h3>
+        <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg border border-gray-100 dark:border-gray-700">
+          <h3 class="text-xl font-bold mb-6 text-gray-900 dark:text-white">Send a message</h3>
           <form class="space-y-5" onsubmit="event.preventDefault(); alert('Thanks! We will get back to you soon.');">
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Your Name</label>
-              <input type="text" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition" placeholder="John Doe">
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Your Name</label>
+              <input type="text" class="w-full bg-gray-50 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition" placeholder="John Doe">
             </div>
             <div>
-              <label class="block text-sm font-semibold text-gray-700 mb-1">Email Address</label>
-              <input type="email" class="w-full bg-gray-50 border border-gray-200 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition" placeholder="john@example.com">
+              <label class="block text-sm font-semibold text-gray-700 dark:text-gray-300 mb-1">Email Address</label>
+              <input type="email" class="w-full bg-gray-50 dark:bg-gray-900 dark:text-white border border-gray-200 dark:border-gray-600 rounded-lg px-4 py-3 text-gray-900 focus:ring-2 focus:ring-emerald-500 focus:border-transparent outline-none transition" placeholder="john@example.com">
             </div>
              <div>
               <label class="block text-sm font-semibold text-gray-700 mb-1">Subject</label>

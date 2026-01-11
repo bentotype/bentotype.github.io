@@ -245,13 +245,19 @@ export function registerEventListeners() {
 
     switch (act) {
       case 'show-tab': {
+        // Toggle forms
         document.querySelectorAll('.tab-content').forEach((el) => el.classList.add('hidden'));
-        document.getElementById(e.target.dataset.target).classList.remove('hidden');
+        const targetId = e.target.closest('[data-target]')?.dataset.target;
+        if (targetId) {
+          document.getElementById(targetId)?.classList.remove('hidden');
+        }
+
+        // Toggle buttons state
+        document.querySelectorAll('.tab-button').forEach((btn) => {
+          btn.classList.remove('is-active');
+        });
         const activeButton = e.target.closest('.tab-button');
         if (activeButton) {
-          document.querySelectorAll('.tab-button').forEach((btn) => {
-            btn.classList.remove('is-active');
-          });
           activeButton.classList.add('is-active');
         }
         break;
