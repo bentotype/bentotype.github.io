@@ -19,7 +19,7 @@ export * from './profile.js';
 // Main Render Function
 export function render() {
     setLoading(true);
-    app.innerHTML = '';
+    // app.innerHTML = ''; // Removed to prevent flash of unstyled content
     switch (appState.currentView) {
         case 'auth':
             renderAuth();

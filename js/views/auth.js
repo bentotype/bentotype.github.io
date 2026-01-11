@@ -44,9 +44,6 @@ export function renderAuth() {
               </div>
             </div>
           </div>
-          <div class="mt-8 text-xs text-muted-foreground opacity-60">
-             &copy; 2026 Spliitz LLC. Making expense splitting simple.
-          </div>
         </div>
       </div>
       <div class="card auth-card">
@@ -120,12 +117,18 @@ export function renderAuth() {
       </div>
       </div>
     </section>
-  </main>
-    <div class="fixed bottom-0 w-full py-6 text-center space-x-8 text-base font-medium text-gray-500 bg-gradient-to-t from-background to-transparent">
-      <button data-action="nav" data-target="about" class="hover:text-emerald-600 transition">About Us</button>
-      <span class="text-gray-400">•</span>
-      <button data-action="nav" data-target="contact" class="hover:text-emerald-600 transition">Contact Us</button>
+    
+    <div class="w-full py-12 text-center space-y-6 mt-12 mb-8">
+      <div class="space-x-8 text-base font-medium text-gray-500">
+        <button data-action="nav" data-target="about" class="hover:text-emerald-600 transition">About Us</button>
+        <span class="text-gray-400">•</span>
+        <button data-action="nav" data-target="contact" class="hover:text-emerald-600 transition">Contact Us</button>
+      </div>
+      <div class="text-xs text-muted-foreground opacity-60">
+         &copy; 2026 Spliitz LLC. Making expense splitting simple.
+      </div>
     </div>
+  </main>
 </div>`;
 }
 

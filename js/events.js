@@ -250,11 +250,9 @@ export function registerEventListeners() {
         const activeButton = e.target.closest('.tab-button');
         if (activeButton) {
           document.querySelectorAll('.tab-button').forEach((btn) => {
-            btn.classList.remove('border-b-2', 'border-indigo-400', 'text-indigo-400', 'font-semibold');
-            btn.classList.add('text-gray-400');
+            btn.classList.remove('is-active');
           });
-          activeButton.classList.add('border-b-2', 'border-indigo-400', 'text-indigo-400', 'font-semibold');
-          activeButton.classList.remove('text-gray-400');
+          activeButton.classList.add('is-active');
         }
         break;
       }
