@@ -1,6 +1,6 @@
 import { db } from './supabaseClient.js';
 import { appState } from './state.js';
-import { render } from './views.js?v=1.1.27';
+import { render } from './views.js?v=1.1.28';
 import { registerEventListeners } from './events.js';
 import { initRouter, navigate } from './router.js';
 import { ensureUserInfoForSession } from './users.js';
@@ -9,7 +9,7 @@ import { setLoading } from './ui.js';
 /**
  * Bootstraps UI listeners and keeps the app in sync with Supabase auth state.
  */
-console.log('%cApp Version: 1.1.27 - Theme: Dark Emerald', 'background: rgba(0, 0, 0, 0.8); color: #10b981; padding: 4px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(4px);');
+console.log('%cApp Version: 1.1.28 - Theme: Dark Emerald', 'background: rgba(0, 0, 0, 0.8); color: #10b981; padding: 4px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(4px);');
 
 registerEventListeners();
 
@@ -62,7 +62,12 @@ db.auth.onAuthStateChange((event, session) => {
     });
   } else {
     // If not logged in:
-    const path = window.location.pathname;
+    let path = window.location.pathname;
+    if (path.length > 1 && path.endsWith('/')) {
+      path = path.slice(0, -1);
+    }
+
+    // Check normalized path
     const isPublicPage = path === '/about' || path === '/contact' || path === '/privacypolicy' || path === '/terms';
 
     appState.currentUser = null;
