@@ -120,6 +120,13 @@ function handleRouteChange() {
         return;
     }
 
+    if (path === '/terms') {
+        appState.currentView = 'terms';
+        render();
+        window.scrollTo(0, 0);
+        return;
+    }
+
     if (!appState.currentUser) {
         // Public routes handled above. Everything else requires auth.
         navigate(AUTH_PATH, { replace: true });

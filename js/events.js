@@ -329,7 +329,7 @@ export function registerEventListeners() {
       case 'nav': {
         const targetView = t.dataset.target || e.target.dataset.target;
         if (targetView) {
-          if (['about', 'contact', 'privacypolicy'].includes(targetView)) {
+          if (['about', 'contact', 'privacypolicy', 'terms'].includes(targetView)) {
             navigate(`/${targetView}`);
           } else {
             // Default to user-scoped routes, e.g. /:userId/:page

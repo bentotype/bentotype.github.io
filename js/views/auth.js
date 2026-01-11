@@ -338,3 +338,48 @@ export function renderPrivacyPolicy() {
   </main>
 </div>`;
 }
+
+export function renderTerms() {
+  app.innerHTML = `
+<div class="home-shell">
+  <header class="app-header auth-header" style="padding-bottom: 0.5rem;">
+    <div class="app-header__left">
+      <div class="app-logo cursor-pointer" onclick="window.location.href='/'">Spliitz</div>
+    </div>
+  </header>
+  <main class="home-main">
+    <section class="max-w-4xl mx-auto w-full p-4 md:p-0 md:pt-4">
+      <div class="mb-6">
+        <button data-action="nav" data-target="auth" class="text-emerald-600 hover:text-emerald-500 font-medium text-lg flex items-center gap-2">
+          <span>←</span> Back
+        </button>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 shadow-sm border border-gray-100 dark:border-gray-700">
+        <h1 class="text-4xl font-bold mb-8 text-gray-900 dark:text-white">Terms of Service</h1>
+        <div class="prose dark:prose-invert max-w-none space-y-6 text-gray-600 dark:text-gray-300">
+          <p class="text-lg">Effective Date: January 11, 2026</p>
+          
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">1. Agreement to Terms</h2>
+          <p>By accessing or using our services, you agree to be bound by these Terms. If you do not agree to these Terms, you may not access or use usage of our services.</p>
+          
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">2. Use of Service</h2>
+          <p>You agree to use Spliitz only for lawful purposes and in a way that does not infringe the rights of, restrict or inhibit anyone else's use and enjoyment of the website.</p>
+          
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">3. Accounts</h2>
+          <p>When you create an account with us, you must provide us information that is accurate, complete, and current at all times. Failure to do so constitutes a breach of the Terms, which may result in immediate termination of your account.</p>
+
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">4. Termination</h2>
+          <p>We may terminate or suspend your account immediately, without prior notice or liability, for any reason whatsoever, including without limitation if you breach the Terms.</p>
+
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">5. Changes to Terms</h2>
+          <p>We reserve the right, at our sole discretion, to modify or replace these Terms at any time. If a revision is material we will try to provide at least 30 days notice prior to any new terms taking effect.</p>
+
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">6. Contact Us</h2>
+          <p>If you have any questions about these Terms, please contact us at <a href="mailto:legal@spliitz.com" class="text-emerald-600 hover:text-emerald-500">legal@spliitz.com</a>.</p>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>`;
+}
