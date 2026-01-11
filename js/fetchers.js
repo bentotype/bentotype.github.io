@@ -77,7 +77,7 @@ export async function fetchUserGroups() {
           </div>
           <div class="group-card__title">${title}</div>
           <p class="group-card__desc">${description}</p>
-          <span class="text-indigo-500 text-sm font-semibold">Open group →</span>
+          <span class="text-emerald-500 text-sm font-semibold">Open group →</span>
         </button>`;
     })
     .join('');
@@ -152,7 +152,7 @@ export async function fetchFriends() {
               <div class="friend-avatar">${avatar}</div>
               <div>
                 <div class="text-gray-900 font-semibold text-lg">${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}</div>
-                <div class="text-sm text-indigo-500">@${escapeHtml(info.username || '')}</div>
+                <div class="text-sm text-emerald-500">@${escapeHtml(info.username || '')}</div>
                 <div class="text-sm text-gray-600">${escapeHtml(info.email || '')}</div>
               </div>
             </div>
@@ -284,7 +284,7 @@ export async function fetchGroupMembers(groupId) {
         const canRemove = ownerId && appState.currentUser?.id === ownerId && !isOwner;
         const fullName = `${escapeHtml(user.first_name || '')} ${escapeHtml(user.last_name || '')}`.trim() || escapeHtml(user.email || 'Member');
         const initials = `${user.first_name?.[0] ?? ''}${user.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
-        const usernameLabel = user.username ? `<span class="text-xs text-indigo-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
+        const usernameLabel = user.username ? `<span class="text-xs text-emerald-500 ml-1">@${escapeHtml(user.username)}</span>` : '';
         const avatarContent = user.profile_picture
           ? `<div class="group-member__avatar"><img src="${user.profile_picture}" alt="${escapeHtml(
             user.first_name || ''

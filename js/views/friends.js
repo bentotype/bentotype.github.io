@@ -6,14 +6,14 @@ import { render } from './index.js';
 import { setLoading } from '../ui.js';
 
 export async function renderFriends() {
-    const user = appState.currentUser;
-    if (!user) {
-        appState.currentView = 'auth';
-        render();
-        return;
-    }
-    const info = await getUserInfo(user.id);
-    app.innerHTML = `
+  const user = appState.currentUser;
+  if (!user) {
+    appState.currentView = 'auth';
+    render();
+    return;
+  }
+  const info = await getUserInfo(user.id);
+  app.innerHTML = `
 <div class="home-shell">
   ${renderTopNav('friends', info)}
   <main class="home-main">
@@ -47,44 +47,44 @@ export async function renderFriends() {
     </section>
   </main>
 </div>`;
-    fetchFriends();
-    fetchPendingFriendRequests();
+  fetchFriends();
+  fetchPendingFriendRequests();
 }
 
 export async function renderUserProfileModal(userId) {
-    setLoading(true);
-    const info = await getUserInfo(userId);
-    setLoading(false);
-    const initials =
-        `${info?.first_name?.[0] ?? ''}${info?.last_name?.[0] ?? ''}`.trim() ||
-        (info?.email?.[0] ?? '').toUpperCase() ||
-        'U';
-    const avatarUrl = info?.profile_picture ? escapeHtml(info.profile_picture) : '';
-    const id = 'user-profile-' + userId;
-    modalContainer.innerHTML = `
+  setLoading(true);
+  const info = await getUserInfo(userId);
+  setLoading(false);
+  const initials =
+    `${info?.first_name?.[0] ?? ''}${info?.last_name?.[0] ?? ''}`.trim() ||
+    (info?.email?.[0] ?? '').toUpperCase() ||
+    'U';
+  const avatarUrl = info?.profile_picture ? escapeHtml(info.profile_picture) : '';
+  const id = 'user-profile-' + userId;
+  modalContainer.innerHTML = `
 <div id="${id}" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
     <div class="bg-gray-800 p-4 rounded-md w-full max-w-md">
         <div class="modal-profile-avatar">
             ${avatarUrl
-            ? `<img src="${avatarUrl}" alt="${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}" />`
-            : `<span>${initials}</span>`
-        }
+      ? `<img src="${avatarUrl}" alt="${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}" />`
+      : `<span>${initials}</span>`
+    }
         </div>
         <h3 class="font-medium text-white">${info.first_name} ${info.last_name}</h3>
         <p class="text-sm text-gray-400">@${info.username || ''}</p>
         <p class="text-sm text-gray-400">${info.email}</p>
         <div class="mt-4 text-right">
             <button data-action="close-modal" data-target="${id}" class="px-3 py-1 bg-gray-700 text-white rounded-md mr-2">Close</button>
-            <button data-action="add-friend" data-userid="${userId}" class="px-3 py-1 bg-indigo-600 text-white rounded-md">Add Friend</button>
+            <button data-action="add-friend" data-userid="${userId}" class="px-3 py-1 bg-emerald-600 text-white rounded-md">Add Friend</button>
         </div>
     </div>
 </div>`;
-    setTimeout(() => document.getElementById(id).classList.add('flex', 'show'), 10);
+  setTimeout(() => document.getElementById(id).classList.add('flex', 'show'), 10);
 }
 
 export async function showInviteFriendsModal() {
-    const modalId = 'invite-group-modal';
-    modalContainer.innerHTML = `
+  const modalId = 'invite-group-modal';
+  modalContainer.innerHTML = `
 <div id="${modalId}" class="modal fixed inset-0 bg-gray-900 bg-opacity-50 flex items-center justify-center">
   <div class="invite-modal bg-white rounded-2xl shadow-2xl w-full max-w-xl">
     <div class="invite-modal__header">
@@ -97,37 +97,37 @@ export async function showInviteFriendsModal() {
     </div>
   </div>
 </div>`;
-    setTimeout(() => document.getElementById(modalId).classList.add('flex', 'show'), 10);
+  setTimeout(() => document.getElementById(modalId).classList.add('flex', 'show'), 10);
 
-    const listEl = document.getElementById('invite-friends-list');
-    if (!appState.currentUser) {
-        listEl.innerHTML = '<p class="invite-list__empty">You must be signed in to invite friends.</p>';
-        return;
-    }
+  const listEl = document.getElementById('invite-friends-list');
+  if (!appState.currentUser) {
+    listEl.innerHTML = '<p class="invite-list__empty">You must be signed in to invite friends.</p>';
+    return;
+  }
 
-    const friends = await getFriendsForUser(appState.currentUser.id);
-    if (!friends.length) {
-        listEl.innerHTML = '<p class="invite-list__empty">No friends to invite yet.</p>';
-        return;
-    }
+  const friends = await getFriendsForUser(appState.currentUser.id);
+  if (!friends.length) {
+    listEl.innerHTML = '<p class="invite-list__empty">No friends to invite yet.</p>';
+    return;
+  }
 
-    const excludedIds = new Set([appState.currentUser.id, ...(appState.currentGroupMemberIds || [])]);
-    const availableFriends = friends.filter(({ friendId }) => !excludedIds.has(friendId));
-    if (!availableFriends.length) {
-        listEl.innerHTML = '<p class="invite-list__empty">No friends left to add to this group</p>';
-        return;
-    }
+  const excludedIds = new Set([appState.currentUser.id, ...(appState.currentGroupMemberIds || [])]);
+  const availableFriends = friends.filter(({ friendId }) => !excludedIds.has(friendId));
+  if (!availableFriends.length) {
+    listEl.innerHTML = '<p class="invite-list__empty">No friends left to add to this group</p>';
+    return;
+  }
 
-    listEl.innerHTML = availableFriends
-        .map(({ friendId, info }) => {
-            const fullName = escapeHtml(`${info.first_name || ''} ${info.last_name || ''}`.trim() || info.email || 'Friend');
-            const email = escapeHtml(info.email || '');
-            const username = info.username ? `@${escapeHtml(info.username)}` : '';
-            const initials = `${info.first_name?.[0] ?? ''}${info.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
-            const avatar = info.profile_picture
-                ? `<img src="${info.profile_picture}" alt="${fullName}" class="invite-list-avatar__img">`
-                : `<span class="invite-list-avatar__fallback">${initials}</span>`;
-            return `
+  listEl.innerHTML = availableFriends
+    .map(({ friendId, info }) => {
+      const fullName = escapeHtml(`${info.first_name || ''} ${info.last_name || ''}`.trim() || info.email || 'Friend');
+      const email = escapeHtml(info.email || '');
+      const username = info.username ? `@${escapeHtml(info.username)}` : '';
+      const initials = `${info.first_name?.[0] ?? ''}${info.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
+      const avatar = info.profile_picture
+        ? `<img src="${info.profile_picture}" alt="${fullName}" class="invite-list-avatar__img">`
+        : `<span class="invite-list-avatar__fallback">${initials}</span>`;
+      return `
       <div class="invite-list-item">
         <div class="invite-list-avatar">${avatar}</div>
         <div class="invite-list-info">
@@ -136,6 +136,6 @@ export async function showInviteFriendsModal() {
         </div>
         <button type="button" class="invite-button" data-action="invite-to-group" data-userid="${friendId}">Invite</button>
       </div>`;
-        })
-        .join('');
+    })
+    .join('');
 }
