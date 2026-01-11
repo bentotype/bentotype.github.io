@@ -19,7 +19,7 @@ export async function renderFriends() {
   <main class="home-main">
     <section class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
 
-      <!-- LEFT COLUMN: Actions (Invite, Search, Pending) -->
+      <!-- LEFT COLUMN: Actions (Invite, Search) -->
       <div class="col-span-12 lg:col-span-5 xl:col-span-4 space-y-6">
           
           <!-- 1. Invite a Friend (Global Search) -->
@@ -60,21 +60,20 @@ export async function renderFriends() {
               </div>
           </div>
 
-          <!-- 3. Pending Requests (Conditional) -->
-          <div id="pending-container" class="hidden backdrop-blur-xl bg-white/80 dark:bg-gray-800/80 border border-emerald-500/30 shadow-md rounded-xl overflow-hidden">
-            <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700/50 bg-emerald-50/50 dark:bg-emerald-900/20">
-              <h3 class="font-semibold text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
-                <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
-                Pending Requests
-              </h3>
-            </div>
-            <div id="pending-requests-list" class="p-2"></div>
-          </div>
-
       </div>
 
-      <!-- RIGHT COLUMN: Friends List -->
+      <!-- RIGHT COLUMN: Friends List + Pending -->
       <div class="col-span-12 lg:col-span-7 xl:col-span-8">
+          
+          <!-- 3. Pending Requests (Integrated) -->
+          <div id="pending-container" class="hidden mb-8 space-y-3">
+             <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                Pending Requests
+             </h3>
+             <div id="pending-requests-list" class="space-y-2"></div>
+          </div>
+
           <!-- 4. Friends List -->
           <div class="backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-gray-200/50 dark:border-gray-700/50 shadow-lg rounded-xl overflow-hidden min-h-[500px]">
             <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700/50 flex justify-between items-center sticky top-0 bg-white/50 dark:bg-gray-800/50 backdrop-blur-md z-10">

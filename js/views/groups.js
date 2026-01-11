@@ -41,7 +41,16 @@ export async function renderGroups() {
         </div>
       </div>
 
-      <!-- 2. Groups List -->
+      <!-- 2. Pending Group Invites (Integrated) -->
+      <div class="hidden mb-6 space-y-3" id="group-invites-container">
+        <h3 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider flex items-center gap-2 px-1">
+            <span class="w-2 h-2 rounded-full bg-blue-500 animate-pulse"></span>
+            Pending Invites
+        </h3>
+        <div id="group-invite-requests" class="space-y-2"></div>
+      </div>
+
+      <!-- 3. Groups List -->
       <div>
         <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 px-1">Your Groups</h3>
         <div id="groups-list" class="space-y-4">
@@ -51,14 +60,6 @@ export async function renderGroups() {
                <div class="h-32 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
              </div>
         </div>
-      </div>
-
-      <!-- 3. Invites (if any) -->
-      <div class="card full-span group-invites-card mt-8 hidden" id="group-invites-container">
-        <div class="card-header pb-2">
-          <h3 class="font-medium text-gray-900 dark:text-white">Pending Group Invites</h3>
-        </div>
-        <div id="group-invite-requests" class="card-body invite-requests-body"></div>
       </div>
 
     </section>

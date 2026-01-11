@@ -178,11 +178,11 @@ export async function fetchFriends() {
 }
 
 export async function fetchGroupInvites() {
-  const el = document.getElementById('group-invite-requests');
+  const container = document.getElementById('group-invite-requests');
+  const wrapper = document.getElementById('group-invites-container');
   const user = appState.currentUser;
-  if (!el || !user) return;
 
-  el.innerHTML = '<div class="text-gray-500">Loading invites...</div>';
+  if (!container || !user) return;
 
   const { data, error } = await db
     .from('split_groups')
@@ -191,13 +191,19 @@ export async function fetchGroupInvites() {
     .eq('invite', true);
 
   if (error) {
-    el.innerHTML = '<div class="text-red-500 text-sm">Unable to load invites.</div>';
+    console.error('Error fetching group invites:', error);
+    if (wrapper) wrapper.classList.add('hidden');
     return;
   }
-  if (!data?.length) {
-    el.innerHTML = '<div class="text-gray-500 text-sm">No group invites at the moment.</div>';
+
+  if (!data || data.length === 0) {
+    if (wrapper) wrapper.classList.add('hidden');
+    container.innerHTML = '';
     return;
   }
+
+  // Show wrapper
+  if (wrapper) wrapper.classList.remove('hidden');
 
   const inviteCards = data
     .map((row) => {
@@ -207,8 +213,8 @@ export async function fetchGroupInvites() {
       return `
         <div class="invite-card">
           <div class="invite-card__copy">
-            <p class="invite-card__title">${title}</p>
-            <p class="invite-card__desc">${desc}</p>
+            <p class="invite-card__title">${escapeHtml(title)}</p>
+            <p class="invite-card__desc">${escapeHtml(desc)}</p>
           </div>
           <div class="invite-card__actions">
             <button
@@ -217,7 +223,7 @@ export async function fetchGroupInvites() {
               data-action="respond-group-invite"
               data-response="accept"
               data-group-id="${row.group_id}"
-              aria-label="Accept invite to ${title}">
+              aria-label="Accept invite to ${escapeHtml(title)}">
               &#10003;
             </button>
             <button
@@ -226,7 +232,7 @@ export async function fetchGroupInvites() {
               data-action="respond-group-invite"
               data-response="decline"
               data-group-id="${row.group_id}"
-              aria-label="Decline invite to ${title}">
+              aria-label="Decline invite to ${escapeHtml(title)}">
               &#10005;
             </button>
           </div>
@@ -234,7 +240,7 @@ export async function fetchGroupInvites() {
     })
     .join('');
 
-  el.innerHTML = inviteCards;
+  container.innerHTML = inviteCards;
 }
 
 export async function fetchGroupMembers(groupId) {

@@ -9,7 +9,7 @@ import { setLoading } from './ui.js';
 /**
  * Bootstraps UI listeners and keeps the app in sync with Supabase auth state.
  */
-console.log('%cApp Version: 1.1.25 - Theme: Dark Emerald', 'background: rgba(0, 0, 0, 0.8); color: #10b981; padding: 4px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(4px);');
+console.log('%cApp Version: 1.1.26 - Theme: Dark Emerald', 'background: rgba(0, 0, 0, 0.8); color: #10b981; padding: 4px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(4px);');
 
 registerEventListeners();
 
