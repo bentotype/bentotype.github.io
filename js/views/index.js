@@ -4,7 +4,7 @@ import { setLoading } from '../ui.js';
 // Import Renderers
 import { renderAuth, renderAbout, renderContact } from './auth.js';
 import { renderHome } from './home.js';
-import { renderFriends } from './friends.js';
+import { renderFriends } from './friends.js?v=1.1.22';
 import { renderGroups, renderGroupDetail, renderReceiptUploadPage, renderExpenseInfoPage } from './groups.js';
 import { renderProfile } from './profile.js';
 
@@ -12,7 +12,7 @@ import { renderProfile } from './profile.js';
 export * from './components.js';
 export * from './auth.js';
 export * from './home.js';
-export * from './friends.js';
+export * from './friends.js?v=1.1.22';
 export * from './groups.js';
 export * from './profile.js';
 
