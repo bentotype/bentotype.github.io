@@ -4,14 +4,18 @@ import { render } from './views.js?v=1.1.22';
 import { registerEventListeners } from './events.js';
 import { initRouter, navigate } from './router.js';
 import { ensureUserInfoForSession } from './users.js';
+import { setLoading } from './ui.js';
 
 /**
  * Bootstraps UI listeners and keeps the app in sync with Supabase auth state.
  */
-console.log('%cApp Version: 1.1.22 - Theme: Dark Emerald', 'background: rgba(0, 0, 0, 0.8); color: #10b981; padding: 4px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(4px);');
+console.log('%cApp Version: 1.1.23 - Theme: Dark Emerald', 'background: rgba(0, 0, 0, 0.8); color: #10b981; padding: 4px; border-radius: 4px; border: 1px solid rgba(16, 185, 129, 0.2); backdrop-filter: blur(4px);');
 
 registerEventListeners();
-initRouter();
+
+// Initial Load State
+let isRouterInitialized = false;
+setLoading(true);
 
 db.auth.onAuthStateChange((event, session) => {
   if (session && session.user) {
@@ -24,6 +28,15 @@ db.auth.onAuthStateChange((event, session) => {
     import('./users.js').then(m => {
       m.ensureUserInfoForSession(session.user);
       m.getUserInfo(session.user.id).then(info => {
+
+        // Router Init (Optimized to prevent FOUC)
+        if (!isRouterInitialized) {
+          initRouter();
+          isRouterInitialized = true;
+          // The router will trigger a render/navigate, so we can unset loading here or let router handle it
+          setLoading(false);
+        }
+
         // 1. Admin Redirect
         if (info && info.tier == 4) {
           if (!window.location.pathname.startsWith('/admin')) {
@@ -36,6 +49,8 @@ db.auth.onAuthStateChange((event, session) => {
         // 2. Normal Rendering (only if not redirected and not on admin)
         if (!window.location.pathname.startsWith('/admin')) {
           const path = window.location.pathname;
+          // If we are already on a valid path managed by router, do nothing, router handles it.
+          // But if we need to force a render refresh on auth change:
           const isAuthPage = !path || path === '/' || path === '/signin' || path === '/auth';
           if (isAuthPage) {
             navigate(`/${session.user.id}/home`, { replace: true });
@@ -43,7 +58,6 @@ db.auth.onAuthStateChange((event, session) => {
             render();
           }
         }
-        // If on /admin, we do NOTHING here. router.js handles the Admin UI rendering independent of the main app render loop.
       });
     });
   } else {
@@ -56,10 +70,15 @@ db.auth.onAuthStateChange((event, session) => {
     appState.pendingProfilePicturePath = '';
     appState.pendingProfilePictureUrl = '';
 
+    if (!isRouterInitialized) {
+      initRouter();
+      isRouterInitialized = true;
+      setLoading(false);
+    }
+
     if (!isPublicPage) {
       // If we are on a protected route, go to signin. 
-      // Note: initRouter handles the initial 404 redirect.
-      // If we are already at /signin, do nothing.
+      // initRouter handles the initial 404 redirect logic first, so we just ensure we are safe here.
       if (path !== '/signin' && path !== '/' && path !== '/auth') {
         navigate('/signin', { replace: true });
       } else {

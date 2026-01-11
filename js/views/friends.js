@@ -20,17 +20,17 @@ export async function renderFriends() {
     <section class="max-w-3xl mx-auto space-y-6">
       
       <!-- Search -->
-      <div class="card search-card">
-        <div class="card-header">
-          <h3 class="card-title">Search profiles</h3>
-        </div>
-        <div class="card-body">
-          <form id="search-users-form" data-form-action="search-user" class="search-form">
-            <input id="search-input" name="query" placeholder="Email or username" class="search-input">
-            <button class="search-button">Search</button>
+      <!-- Search -->
+      <div class="card p-2 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 shadow-sm search-card">
+          <form id="search-users-form" data-form-action="search-user" class="relative">
+             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+             </div>
+             <input id="search-input" name="query" placeholder="Search friends by email or username..." 
+                    class="w-full pl-10 pr-4 py-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all">
+             <button class="hidden">Search</button>
           </form>
-          <div id="search-results" class="search-results mt-4"></div>
-        </div>
+          <div id="search-results" class="search-results mt-2"></div>
       </div>
 
       <!-- Invite Friend (Golden Hue) -->
