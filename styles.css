@@ -1,74 +1,81 @@
 :root {
-    /* OKLCH Palette (Light Mode Default) */
-    --color-background: oklch(0.98 0.005 165);
-    --color-foreground: oklch(0.15 0.02 165);
-    --color-primary: oklch(0.48 0.16 168);
-    --color-secondary: oklch(0.62 0.14 75);
-    --color-accent: oklch(0.96 0.008 165);
+  /* OKLCH Palette (Light Mode Default) */
+  --color-background: oklch(0.98 0.005 165);
+  --color-foreground: oklch(0.15 0.02 165);
+  --color-primary: oklch(0.48 0.16 168);
+  --color-secondary: oklch(0.62 0.14 75);
+  --color-accent: oklch(0.96 0.008 165);
 
-    --color-card: oklch(0.995 0.003 165);
-    --color-card-border: rgba(0, 0, 0, 0.08);
-    /* Dark border for light mode */
+  --color-card: oklch(0.995 0.003 165);
+  --color-card-border: rgba(0, 0, 0, 0.08);
+  /* Dark border for light mode */
 
-    /* Mapped Variables */
-    --bg-color: var(--color-background);
-    --text-color: var(--color-foreground);
-    --text-muted: oklch(0.45 0.03 165);
-    --primary-color: var(--color-primary);
-    --accent-gold: var(--color-secondary);
+  /* Mapped Variables */
+  --bg-color: var(--color-background);
+  --text-color: var(--color-foreground);
+  --text-muted: oklch(0.45 0.03 165);
+  --primary-color: var(--color-primary);
+  --accent-gold: var(--color-secondary);
 
-    --surface-color: rgba(255, 255, 255, 0.7);
-    /* Bright Glass */
-    --surface-secondary: rgba(241, 245, 249, 0.8);
-    --border-color: var(--color-card-border);
+  --surface-color: rgba(255, 255, 255, 0.7);
+  /* Bright Glass */
+  --surface-secondary: rgba(241, 245, 249, 0.8);
+  --border-color: var(--color-card-border);
 
-    --glass-blur: blur(20px);
-    --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
-    /* Softer shadow */
+  --glass-blur: blur(20px);
+  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.08);
+  /* Softer shadow */
 }
 
 @media (prefers-color-scheme: dark) {
-    :root {
-        /* OKLCH Palette (Dark Mode Override) */
-        --color-background: oklch(0.08 0.045 165);
-        --color-foreground: oklch(0.98 0.01 165);
+  :root {
+    /* OKLCH Palette (Dark Mode Override) */
+    --color-background: oklch(0.08 0.045 165);
+    --color-foreground: oklch(0.98 0.01 165);
 
-        --color-primary: oklch(0.62 0.2 168);
-        /* Brighter in dark */
-        --color-secondary: oklch(0.75 0.18 75);
-        --color-accent: oklch(0.2 0.09 165);
+    --color-primary: oklch(0.62 0.2 168);
+    /* Brighter in dark */
+    --color-secondary: oklch(0.75 0.18 75);
+    --color-accent: oklch(0.2 0.09 165);
 
-        --color-card: oklch(0.12 0.05 165);
-        --color-card-border: rgba(255, 255, 255, 0.1);
+    --color-card: oklch(0.12 0.05 165);
+    --color-card-border: rgba(255, 255, 255, 0.1);
 
-        --bg-color: var(--color-background);
-        --text-color: var(--color-foreground);
-        --text-muted: oklch(0.58 0.045 165);
-        --primary-color: var(--color-primary);
+    --bg-color: var(--color-background);
+    --text-color: var(--color-foreground);
+    --text-muted: oklch(0.58 0.045 165);
+    --primary-color: var(--color-primary);
 
-        --surface-color: rgba(23, 23, 23, 0.6);
-        /* Dark Glass */
-        --surface-secondary: rgba(51, 65, 85, 0.7);
-        --border-color: var(--color-card-border);
+    --surface-color: rgba(23, 23, 23, 0.6);
+    /* Dark Glass */
+    --surface-secondary: rgba(51, 65, 85, 0.7);
+    --border-color: var(--color-card-border);
 
-        --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
-    }
+    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+  }
+}
+
+/* Ensure Dark Mode is enforced/consistent */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Force Dark Mode visuals even in Light Mode for this theme */
+    --bg-color: var(--color-background);
+    --text-color: var(--color-foreground);
+    --primary-color: var(--color-primary);
+  }
 }
 
 body {
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    background-color: var(--bg-color);
-    color: var(--text-color);
-    min-height: 100vh;
-    /* Fixed Gradient Blobs via multiple backgrounds */
-    background-image:
-        radial-gradient(circle at 90% 10%, rgba(76, 29, 149, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 10% 90%, rgba(5, 150, 105, 0.1) 0%, transparent 40%),
-        radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.05) 0%, transparent 50%);
-    background-attachment: fixed;
-    -webkit-font-smoothing: antialiased;
-    line-height: 1.6;
-}  background-attachment: fixed;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
+  color: var(--text-color);
+  min-height: 100vh;
+  /* Fixed Gradient Blobs via multiple backgrounds */
+  background-image:
+    radial-gradient(circle at 90% 10%, rgba(76, 29, 149, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 10% 90%, rgba(5, 150, 105, 0.25) 0%, transparent 40%),
+    radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.15) 0%, transparent 50%);
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   line-height: 1.6;
 }

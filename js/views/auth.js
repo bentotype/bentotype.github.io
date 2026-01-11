@@ -1,5 +1,11 @@
 import { app } from '../state.js';
 
+const Icons = {
+  LayoutDashboard: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-layout-dashboard"><rect width="7" height="9" x="3" y="3" rx="1"/><rect width="7" height="5" x="14" y="3" rx="1"/><rect width="7" height="9" x="14" y="12" rx="1"/><rect width="7" height="5" x="3" y="16" rx="1"/></svg>`,
+  Split: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-split"><path d="M16 3h5v5"/><path d="M8 3H3v5"/><path d="M12 22v-8.3a4 4 0 0 0-1.172-2.872L3 3"/><path d="m15 9 6-6"/></svg>`,
+  ShieldCheck: `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-shield-check"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>`
+};
+
 export function renderAuth() {
   app.innerHTML = `
 <div class="home-shell auth-page">
@@ -12,31 +18,34 @@ export function renderAuth() {
     <section class="auth-layout">
       <div class="auth-intro">
         <div class="summary-card auth-summary">
-          <p class="summary-title">Welcome back</p>
+          <p class="summary-title text-emerald-500 font-medium">Welcome back</p>
           <h2 class="summary-amount">Keep every bill in sync.</h2>
           <p class="summary-desc">Track shared expenses, approve splits, and store receipts for every group.</p>
           <div class="auth-highlights">
             <div class="auth-highlight">
-              <span class="auth-highlight__dot"></span>
+              <span class="auth-highlight__icon text-emerald-500">${Icons.LayoutDashboard}</span>
               <div>
                 <div class="auth-highlight__title">One dashboard</div>
                 <div class="auth-highlight__desc">See pending proposals, totals, and activity at a glance.</div>
               </div>
             </div>
             <div class="auth-highlight">
-              <span class="auth-highlight__dot"></span>
+              <span class="auth-highlight__icon text-emerald-500">${Icons.Split}</span>
               <div>
                 <div class="auth-highlight__title">Smart splits</div>
                 <div class="auth-highlight__desc">Auto-calculate shares and keep approvals tidy.</div>
               </div>
             </div>
             <div class="auth-highlight">
-              <span class="auth-highlight__dot"></span>
+              <span class="auth-highlight__icon text-emerald-500">${Icons.ShieldCheck}</span>
               <div>
                 <div class="auth-highlight__title">Trusted profiles</div>
                 <div class="auth-highlight__desc">Find friends by email or username and stay connected.</div>
               </div>
             </div>
+          </div>
+          <div class="mt-8 text-xs text-muted-foreground opacity-60">
+             &copy; 2026 Spliitz LLC. Making expense splitting simple.
           </div>
         </div>
       </div>
@@ -63,6 +72,9 @@ export function renderAuth() {
               <span>Password</span>
               <input name="password" type="password" autocomplete="current-password" required placeholder="Enter your password" class="auth-input">
             </label>
+            <div class="text-right mb-4">
+                 <a href="#" class="text-xs text-primary hover:underline font-medium">Forgot your password? Reset it</a>
+            </div>
             <button class="auth-submit">Sign In</button>
           </form>
           <p class="auth-helper">New here? Use Sign Up to create your account.</p>
