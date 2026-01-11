@@ -2,7 +2,7 @@ import { appState, app } from '../state.js';
 import { setLoading } from '../ui.js';
 
 // Import Renderers
-import { renderAuth, renderAbout, renderContact } from './auth.js';
+import { renderAuth, renderAbout, renderContact, renderPrivacyPolicy } from './auth.js';
 import { renderHome } from './home.js';
 import { renderFriends } from './friends.js?v=1.1.26';
 import { renderGroups, renderGroupDetail, renderReceiptUploadPage, renderExpenseInfoPage } from './groups.js?v=1.1.26';
@@ -50,6 +50,9 @@ export function render() {
             break;
         case 'contact':
             renderContact();
+            break;
+        case 'privacypolicy':
+            renderPrivacyPolicy();
             break;
         default:
             renderAuth();

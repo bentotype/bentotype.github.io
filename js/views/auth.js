@@ -123,6 +123,8 @@ export function renderAuth() {
         <button data-action="nav" data-target="about" class="hover:text-emerald-600 transition">About Us</button>
         <span class="text-gray-400">•</span>
         <button data-action="nav" data-target="contact" class="hover:text-emerald-600 transition">Contact Us</button>
+        <span class="text-gray-400">•</span>
+        <button data-action="nav" data-target="privacypolicy" class="hover:text-emerald-600 transition">Privacy Policy</button>
       </div>
       <div class="text-xs text-muted-foreground opacity-60">
          &copy; 2026 Spliitz LLC. Making expense splitting simple.
@@ -278,6 +280,58 @@ export function renderContact() {
               Send Message
             </button>
           </form>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>`;
+}
+
+export function renderPrivacyPolicy() {
+  app.innerHTML = `
+<div class="home-shell">
+  <header class="app-header auth-header" style="padding-bottom: 0.5rem;">
+    <div class="app-header__left">
+      <div class="app-logo cursor-pointer" onclick="window.location.href='/'">Spliitz</div>
+    </div>
+  </header>
+  <main class="home-main">
+    <section class="max-w-4xl mx-auto w-full p-4 md:p-0 md:pt-4">
+      <div class="mb-6">
+        <button data-action="nav" data-target="auth" class="text-emerald-600 hover:text-emerald-500 font-medium text-lg flex items-center gap-2">
+          <span>←</span> Back
+        </button>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 md:p-12 shadow-sm border border-gray-100 dark:border-gray-700">
+        <h1 class="text-4xl font-bold mb-8 text-gray-900 dark:text-white">Privacy Policy</h1>
+        <div class="prose dark:prose-invert max-w-none space-y-6 text-gray-600 dark:text-gray-300">
+          <p class="text-lg">Effective Date: January 11, 2026</p>
+          
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">1. Introduction</h2>
+          <p>Spliitz ("we," "our," or "us") respects your privacy and is committed to protecting your personal data. This privacy policy will inform you as to how we look after your personal data when you visit our website or use our application.</p>
+          
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">2. Data We Collect</h2>
+          <p>We may collect, use, store and transfer different kinds of personal data about you which we have grouped together follows:</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li><strong>Identity Data:</strong> includes first name, last name, username or similar identifier.</li>
+            <li><strong>Contact Data:</strong> includes email address and telephone numbers.</li>
+            <li><strong>Transaction Data:</strong> includes details about payments to and from you and other details of products and services you have purchased from us.</li>
+          </ul>
+          
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">3. How We Use Your Data</h2>
+          <p>We will only use your personal data when the law allows us to. Most commonly, we will use your personal data in the following circumstances:</p>
+          <ul class="list-disc pl-6 space-y-2">
+            <li>To register you as a new customer.</li>
+            <li>To process and deliver your orders including managing payments, fees and charges.</li>
+            <li>To manage our relationship with you.</li>
+          </ul>
+
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">4. Data Security</h2>
+          <p>We have put in place appropriate security measures to prevent your personal data from being accidentally lost, used or accessed in an unauthorized way, altered or disclosed.</p>
+
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mt-8">5. Contact Us</h2>
+          <p>If you have any questions about this privacy policy or our privacy practices, please contact us at <a href="mailto:privacy@spliitz.com" class="text-emerald-600 hover:text-emerald-500">privacy@spliitz.com</a>.</p>
         </div>
       </div>
     </section>
