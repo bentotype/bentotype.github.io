@@ -1,6 +1,6 @@
 import { db } from './supabaseClient.js';
 import { appState } from './state.js';
-import { render } from './views.js?v=1.1.22';
+import { render } from './views.js?v=1.1.26';
 import { registerEventListeners } from './events.js';
 import { initRouter, navigate } from './router.js';
 import { ensureUserInfoForSession } from './users.js';
