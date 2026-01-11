@@ -63,7 +63,7 @@ db.auth.onAuthStateChange((event, session) => {
   } else {
     // If not logged in:
     const path = window.location.pathname;
-    const isPublicPage = path === '/about' || path === '/contact';
+    const isPublicPage = path === '/about' || path === '/contact' || path === '/privacypolicy' || path === '/terms';
 
     appState.currentUser = null;
     appState.userCache.clear();
