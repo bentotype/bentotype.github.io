@@ -143,26 +143,26 @@ export async function fetchFriends() {
       ({ friendId, info }) => {
         const initials = `${info.first_name?.[0] ?? ''}${info.last_name?.[0] ?? ''}`.trim().toUpperCase() || 'U';
         const avatar = info.profile_picture
-          ? `<img src="${info.profile_picture}" alt="${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}" class="friend-avatar__img" />`
+          ? `<img src="${info.profile_picture}" alt="${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}" class="friend-avatar__img" style="width:100%;height:100%;object-fit:cover;border-radius:50%;" />`
           : `<span>${initials}</span>`;
+
         return `
-        <div class="p-4 border border-gray-200 rounded-xl bg-white shadow-sm hover:shadow-md transition friend-card" data-friend-id="${friendId}">
-          <div class="flex items-center justify-between gap-3">
-            <div class="flex items-center gap-3">
-              <div class="friend-avatar">${avatar}</div>
-              <div>
-                <div class="text-gray-900 font-semibold text-lg">${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')}</div>
-                <div class="text-sm text-emerald-500">@${escapeHtml(info.username || '')}</div>
-                <div class="text-sm text-gray-600">${escapeHtml(info.email || '')}</div>
-              </div>
+        <div class="friend-item-modern group" data-friend-id="${friendId}">
+          <div class="friend-item__info">
+            <div class="friend-item__avatar">${avatar}</div>
+            <div class="friend-item__details">
+              <h3>${escapeHtml(info.first_name || '')} ${escapeHtml(info.last_name || '')} <span class="text-xs text-emerald-500 font-normal ml-2">@${escapeHtml(info.username || '')}</span></h3>
+              <p>${escapeHtml(info.email || '')}</p>
             </div>
-            <div class="friend-menu">
-              <button type="button" class="friend-menu__trigger" data-action="toggle-friend-menu" data-friendid="${friendId}" aria-haspopup="true" aria-expanded="false">&#8942;</button>
-              <div class="friend-menu__list hidden" data-menu-for="${friendId}">
-                <button type="button" class="friend-menu__item" data-action="remove-friend" data-friendid="${friendId}">Remove friend</button>
-                <button type="button" class="friend-menu__item friend-menu__item--danger" data-action="block-friend" data-friendid="${friendId}">Block friend</button>
-              </div>
-            </div>
+          </div>
+          <div class="friend-item__actions">
+             <div class="friend-menu relative">
+               <button type="button" class="friend-menu__trigger" data-action="toggle-friend-menu" data-friendid="${friendId}" aria-haspopup="true" aria-expanded="false">&#8942;</button>
+               <div class="friend-menu__list hidden" data-menu-for="${friendId}">
+                 <button type="button" class="friend-menu__item" data-action="remove-friend" data-friendid="${friendId}">Remove friend</button>
+                 <button type="button" class="friend-menu__item friend-menu__item--danger" data-action="block-friend" data-friendid="${friendId}">Block friend</button>
+               </div>
+             </div>
           </div>
         </div>`;
       }

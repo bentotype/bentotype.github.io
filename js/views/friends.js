@@ -17,33 +17,59 @@ export async function renderFriends() {
 <div class="home-shell">
   ${renderTopNav('friends', info)}
   <main class="home-main">
-    <section class="content-section">
-      <div class="friends-primary space-y-4">
-        <div class="card search-card">
-          <div class="card-header">
-            <h3 class="card-title">Search profiles</h3>
-          </div>
-          <div class="card-body">
-            <form id="search-users-form" data-form-action="search-user" class="search-form">
-              <input id="search-input" name="query" placeholder="Email or username" class="search-input">
-              <button class="search-button">Search</button>
-            </form>
-            <div id="search-results" class="search-results mt-4"></div>
-          </div>
+    <section class="max-w-3xl mx-auto space-y-6">
+      
+      <!-- Search -->
+      <div class="card search-card">
+        <div class="card-header">
+          <h3 class="card-title">Search profiles</h3>
         </div>
-        <div class="card pending-card">
-          <div class="card-header">
-            <h3 class="card-title">Pending Requests</h3>
-          </div>
-          <div id="pending-requests-list" class="card-body">No pending requests.</div>
+        <div class="card-body">
+          <form id="search-users-form" data-form-action="search-user" class="search-form">
+            <input id="search-input" name="query" placeholder="Email or username" class="search-input">
+            <button class="search-button">Search</button>
+          </form>
+          <div id="search-results" class="search-results mt-4"></div>
         </div>
       </div>
-      <aside class="card friends-card">
-        <div class="card-header">
-          <h3 class="card-title">My Friends</h3>
+
+      <!-- Invite Friend (Golden Hue) -->
+      <div class="invite-card">
+        <div class="invite-card__title">
+            <div class="invite-card__icon-box">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+            </div>
+            Invite a Friend
         </div>
-        <div id="friends-list" class="card-body">Loading...</div>
-      </aside>
+        <div class="invite-card__body">
+            <form class="invite-card__form" onsubmit="event.preventDefault(); alert('Invite sent! (Demo)');">
+              <div class="invite-card__input-wrapper">
+                  <div class="invite-card__input-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                  </div>
+                  <input type="email" placeholder="Enter email or username" class="invite-card__input" required>
+              </div>
+              <button class="invite-card__button">Send Invite</button>
+            </form>
+        </div>
+      </div>
+
+      <!-- Friends List -->
+      <div class="card friends-card">
+        <div class="card-header">
+          <h3 class="card-title">Your Friends</h3>
+        </div>
+        <div id="friends-list" class="card-body p-4">Loading...</div>
+      </div>
+
+      <!-- Pending Requests -->
+      <div class="card pending-card">
+        <div class="card-header">
+          <h3 class="card-title">Pending Requests</h3>
+        </div>
+        <div id="pending-requests-list" class="card-body">No pending requests.</div>
+      </div>
+
     </section>
   </main>
 </div>`;

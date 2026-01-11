@@ -364,7 +364,7 @@ body {
 }
 
 .card {
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--surface-color);
   border-radius: 18px;
   box-shadow: 0 12px 38px rgba(79, 70, 229, 0.1);
 }
