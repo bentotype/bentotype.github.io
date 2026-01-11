@@ -2,18 +2,18 @@ import { appState, app } from '../state.js';
 import { setLoading } from '../ui.js';
 
 // Import Renderers
-import { renderAuth, renderAbout, renderContact, renderPrivacyPolicy } from './auth.js';
+import { renderAuth, renderAbout, renderContact, renderPrivacyPolicy } from './auth.js?v=1.1.27';
 import { renderHome } from './home.js';
-import { renderFriends } from './friends.js?v=1.1.26';
-import { renderGroups, renderGroupDetail, renderReceiptUploadPage, renderExpenseInfoPage } from './groups.js?v=1.1.26';
+import { renderFriends } from './friends.js?v=1.1.27';
+import { renderGroups, renderGroupDetail, renderReceiptUploadPage, renderExpenseInfoPage } from './groups.js?v=1.1.27';
 import { renderProfile } from './profile.js';
 
 // Export everything from sub-modules
 export * from './components.js';
-export * from './auth.js';
+export * from './auth.js?v=1.1.27';
 export * from './home.js';
-export * from './friends.js?v=1.1.26';
-export * from './groups.js?v=1.1.26';
+export * from './friends.js?v=1.1.27';
+export * from './groups.js?v=1.1.27';
 export * from './profile.js';
 
 // Main Render Function
