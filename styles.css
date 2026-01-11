@@ -1,61 +1,66 @@
 :root {
-  /* Palette Definitions */
-  --indigo-primary: #4f46e5;
-  --indigo-dark: #3730a3;
-  --sky-light: #e0f2fe;
-  --sky-white: #f0f9ff;
+  /* OKLCH Palette (Dark Emerald Theme) */
+  --color-background: oklch(0.145 0 0);
+  /* #1c1c1c approx */
+  --color-foreground: oklch(0.985 0 0);
+  /* White */
 
-  --gold-accent: #FFD700;
+  --color-primary: oklch(0.488 0.243 264.376);
+  /* Neon Violet/Blue */
+  --color-secondary: oklch(0.696 0.17 162.48);
+  /* Emerald Green */
+  --color-accent: oklch(0.769 0.188 70.08);
+  /* Warm Amber/Orange */
 
-  /* Shared Defaults */
-  --primary-color: var(--indigo-primary);
-  --accent-gold: var(--gold-accent);
+  --color-card: oklch(0.145 0 0);
+  --color-card-border: rgba(255, 255, 255, 0.1);
 
-  /* Modern Glass Variables */
-  --glass-bg: rgba(255, 255, 255, 0.75);
-  --glass-border: 1px solid rgba(255, 255, 255, 0.6);
-  --glass-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.1);
-  --glass-blur: blur(16px);
+  /* Shared Defaults Mapped to Old Vars */
+  --bg-color: var(--color-background);
+  --text-color: var(--color-foreground);
+  --text-muted: oklch(0.708 0 0);
+  --primary-color: var(--color-primary);
+  /* For text/buttons */
+  --surface-color: rgba(23, 23, 23, 0.6);
+  /* Glassy card bg */
+  --border-color: var(--color-card-border);
 
-  /* Light Mode Defaults */
-  --bg-color: #f8fafc;
-  --bg-gradient: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%);
-  --surface-color: var(--glass-bg);
-  --surface-secondary: rgba(241, 245, 249, 0.8);
-  --text-color: #0f172a;
-  --text-muted: #64748b;
-  --border-color: rgba(226, 232, 240, 0.8);
+  --glass-blur: blur(20px);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+}
+
+/* Ensure Dark Mode is enforced/consistent */
+@media (prefers-color-scheme: light) {
+  :root {
+    /* Force Dark Mode visuals even in Light Mode for this theme */
+    --bg-color: var(--color-background);
+    --text-color: var(--color-foreground);
+    --primary-color: var(--color-primary);
+  }
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    /* Dark Mode (State/Indigo) */
-    --bg-color: #0f172a;
-    --bg-gradient: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
-    --glass-bg: rgba(30, 41, 59, 0.7);
-    --glass-border: 1px solid rgba(255, 255, 255, 0.1);
-    --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
-
-    --surface-color: var(--glass-bg);
-    --surface-secondary: rgba(51, 65, 85, 0.7);
-    --text-color: #f8fafc;
-    --text-muted: #94a3b8;
-    --border-color: rgba(51, 65, 85, 0.5);
-
-    --primary-color: #818cf8;
-    /* Increased lightness for dark mode */
+    /* Already defined in :root */
   }
 }
 
 body {
-  font-family: Inter, system-ui, -apple-system, 'Segoe UI', Roboto, Helvetica, Arial;
-  background: var(--bg-gradient);
-  background-attachment: fixed;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-color);
   color: var(--text-color);
   min-height: 100vh;
-  min-height: 100dvh;
-  line-height: 1.6;
+  /* Fixed Gradient Blobs via multiple backgrounds */
+  background-image:
+    radial-gradient(circle at 90% 10%, rgba(76, 29, 149, 0.15) 0%, transparent 40%),
+    /* Primary Top Right */
+    radial-gradient(circle at 10% 90%, rgba(5, 150, 105, 0.15) 0%, transparent 40%),
+    /* Secondary Bottom Left */
+    radial-gradient(circle at 50% 50%, rgba(217, 119, 6, 0.08) 0%, transparent 50%);
+  /* Accent Center */
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
+  line-height: 1.6;
 }
 
 .home-shell {
@@ -270,7 +275,7 @@ body {
   font-size: 2.75rem;
   font-weight: 700;
   margin-top: 0.75rem;
-  color: #111827;
+  color: var(--text-color);
   text-shadow: 0 2px 4px rgba(79, 70, 229, 0.18);
 }
 
@@ -573,12 +578,12 @@ body {
   border-radius: 999px;
   /* Pill */
   padding: 0.9rem 1.2rem;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   color: #fff;
   font-weight: 700;
   font-size: 1.05rem;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   transition: all 0.2s ease;
   margin-top: 0.5rem;
 }
@@ -1392,12 +1397,12 @@ body {
   width: 100%;
   border-radius: 999px;
   padding: 0.9rem;
-  background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-secondary) 100%);
   color: #fff;
   font-weight: 700;
   border: none;
   cursor: pointer;
-  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.3);
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
   transition: all 0.2s ease;
 }
 
