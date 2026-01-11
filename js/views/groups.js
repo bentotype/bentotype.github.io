@@ -18,27 +18,49 @@ export async function renderGroups() {
 <div class="home-shell">
   ${renderTopNav('groups', info)}
   <main class="home-main groups-page">
-    <section class="content-section">
-      <div class="card centered-card full-span">
-        <div class="card-header" style="flex-direction: column; gap: 0.75rem; text-align: center;">
-          <p class="text-sm uppercase tracking-[0.2em] text-emerald-400 font-semibold">My Groups</p>
-          <h2 class="text-3xl font-bold text-gray-900 dark:text-white grid-text-fix">Organize your crews</h2>
-          <p class="text-gray-500 dark:text-gray-400 max-w-xl mx-auto">Create new groups for every trip, house share, or project. Everything stays in sync across members.</p>
-          <button data-action="${canJoinGroups(info.tier || 1) ? 'show-create-group-modal' : 'show-tier-alert-groups'}" class="primary-action mt-2">+ New Group</button>
+    <section class="max-w-3xl mx-auto space-y-6">
+      
+      <!-- 1. Hero / Create Group CTA -->
+      <div class="backdrop-blur-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 dark:from-emerald-900/20 dark:to-teal-900/10 border border-emerald-500/20 shadow-lg rounded-2xl relative overflow-hidden group hover:shadow-xl transition-all duration-500">
+        <div class="absolute top-0 right-0 w-48 h-48 rounded-full bg-gradient-to-br from-emerald-500/20 to-transparent blur-3xl group-hover:bg-emerald-500/30 transition-all duration-500"></div>
+        <div class="p-8 relative z-10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+            <div class="flex items-start gap-5">
+                <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 flex items-center justify-center shadow-lg backdrop-blur-sm border border-emerald-500/20">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 dark:text-emerald-400"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275Z"/></svg>
+                </div>
+                <div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">Organize your crews</h2>
+                    <p class="text-gray-600 dark:text-gray-400 max-w-sm">Create new groups for sharing expenses at events, trips, or everyday life.</p>
+                </div>
+            </div>
+            <button data-action="${canJoinGroups(info.tier || 1) ? 'show-create-group-modal' : 'show-tier-alert-groups'}" 
+                class="px-6 py-3 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-xl font-semibold shadow-lg shadow-emerald-500/20 hover:shadow-emerald-500/40 transition-all flex items-center gap-2 whitespace-nowrap">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                New Group
+            </button>
         </div>
       </div>
-      <div class="card full-span groups-list-card">
-        <div class="card-header">
-          <h3 class="card-title">All Groups</h3>
+
+      <!-- 2. Groups List -->
+      <div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white mb-4 px-1">Your Groups</h3>
+        <div id="groups-list" class="space-y-4">
+             <!-- Skeleton Loader -->
+             <div class="animate-pulse space-y-4">
+               <div class="h-32 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+               <div class="h-32 bg-gray-200 dark:bg-gray-800 rounded-xl"></div>
+             </div>
         </div>
-        <div id="groups-list" class="card-body groups-grid">Loading...</div>
       </div>
-      <div class="card full-span group-invites-card">
-        <div class="card-header">
-          <h3 class="card-title">Pending Group Invites</h3>
+
+      <!-- 3. Invites (if any) -->
+      <div class="card full-span group-invites-card mt-8 hidden" id="group-invites-container">
+        <div class="card-header pb-2">
+          <h3 class="font-medium text-gray-900 dark:text-white">Pending Group Invites</h3>
         </div>
-        <div id="group-invite-requests" class="card-body invite-requests-body">Loading...</div>
+        <div id="group-invite-requests" class="card-body invite-requests-body"></div>
       </div>
+
     </section>
   </main>
 </div>`;

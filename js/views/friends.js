@@ -18,61 +18,84 @@ export async function renderFriends() {
   ${renderTopNav('friends', info)}
   <main class="home-main">
     <section class="max-w-3xl mx-auto space-y-6">
-      
-      <!-- Search -->
-      <!-- Search -->
-      <div class="card p-2 rounded-2xl bg-white/50 dark:bg-gray-800/50 backdrop-blur-md border border-gray-200/50 dark:border-gray-700/50 shadow-sm search-card">
-          <form id="search-users-form" data-form-action="search-user" class="relative">
-             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
-                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
-             </div>
-             <input id="search-input" name="query" placeholder="Search friends by email or username..." 
-                    class="w-full pl-10 pr-4 py-3 bg-white/60 dark:bg-gray-900/60 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-xl text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all">
-             <button class="hidden">Search</button>
-          </form>
-          <div id="search-results" class="search-results mt-2"></div>
-      </div>
 
-      <!-- Invite Friend (Golden Hue) -->
-      <div class="invite-card">
-        <div class="invite-card__title">
-            <div class="invite-card__icon-box">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+      <!-- 1. Invite a Friend (Global Search) -->
+      <div class="backdrop-blur-xl bg-gradient-to-br from-emerald-900/10 to-emerald-950/20 dark:from-emerald-900/20 dark:to-emerald-950/40 border border-emerald-500/20 shadow-lg rounded-xl overflow-hidden relative">
+        <div class="absolute top-0 right-0 w-32 h-32 rounded-full bg-gradient-to-br from-emerald-500/10 to-transparent blur-2xl"></div>
+        <div class="p-6">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 rounded-full bg-gradient-to-br from-emerald-500/20 to-emerald-500/10 flex items-center justify-center shadow-inner">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 dark:text-emerald-400"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="23" y1="11" x2="17" y2="11"/></svg>
+                </div>
+                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Invite a Friend</h3>
             </div>
-            Invite a Friend
-        </div>
-        <div class="invite-card__body">
-            <form class="invite-card__form" onsubmit="event.preventDefault(); alert('Invite sent! (Demo)');">
-              <div class="invite-card__input-wrapper">
-                  <div class="invite-card__input-icon">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
-                  </div>
-                  <input type="email" placeholder="Enter email or username" class="invite-card__input" required>
-              </div>
-              <button class="invite-card__button">Send Invite</button>
+            
+            <form id="search-users-form" data-form-action="search-user" class="flex gap-2 relative z-10">
+                <div class="relative flex-1">
+                    <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></svg>
+                    </div>
+                    <input id="search-input" name="query" placeholder="Enter email or username to invite" 
+                        class="w-full pl-10 pr-4 py-2.5 bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-emerald-500/50 transition-all text-gray-900 dark:text-gray-100">
+                </div>
+                <button class="px-4 py-2 bg-gradient-to-r from-emerald-600 to-emerald-500 hover:from-emerald-500 hover:to-emerald-400 text-white rounded-lg font-medium shadow-lg shadow-emerald-500/20 transition-all text-sm whitespace-nowrap">
+                    Search
+                </button>
             </form>
+            <div id="search-results" class="search-results mt-3"></div>
         </div>
       </div>
 
-      <!-- Friends List -->
-      <div class="card friends-card">
-        <div class="card-header">
-          <h3 class="card-title">Your Friends</h3>
-        </div>
-        <div id="friends-list" class="card-body p-4">Loading...</div>
+      <!-- 2. Search Your Friends (Local Filter) -->
+      <div class="backdrop-blur-xl bg-white/60 dark:bg-gray-800/60 border border-gray-200/50 dark:border-gray-700/50 shadow-sm rounded-xl p-2">
+          <div class="relative">
+             <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+             </div>
+             <input id="local-friend-search" placeholder="Search your friends..." 
+                    class="w-full pl-10 pr-4 py-2.5 bg-transparent border-none text-base text-gray-900 dark:text-gray-100 placeholder-gray-500 focus:outline-none focus:ring-0">
+          </div>
       </div>
 
-      <!-- Pending Requests -->
-      <div class="card pending-card">
-        <div class="card-header">
-          <h3 class="card-title">Pending Requests</h3>
+      <!-- 3. Pending Requests (Conditional) -->
+      <div id="pending-container" class="hidden backdrop-blur-xl bg-white/80 dark:bg-gray-800/80 border border-emerald-500/30 shadow-md rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700/50 bg-emerald-50/50 dark:bg-emerald-900/20">
+          <h3 class="font-semibold text-emerald-800 dark:text-emerald-400 flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+            Pending Requests
+          </h3>
         </div>
-        <div id="pending-requests-list" class="card-body">No pending requests.</div>
+        <div id="pending-requests-list" class="p-2"></div>
+      </div>
+
+      <!-- 4. Friends List -->
+      <div class="backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-gray-200/50 dark:border-gray-700/50 shadow-lg rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700/50">
+          <h3 class="font-semibold text-gray-900 dark:text-white">Your Friends</h3>
+        </div>
+        <div id="friends-list" class="p-4 space-y-2 min-h-[100px]">Loading...</div>
       </div>
 
     </section>
   </main>
 </div>`;
+
+  // Filter Logic
+  const localSearch = document.getElementById('local-friend-search');
+  localSearch?.addEventListener('input', (e) => {
+    const term = e.target.value.toLowerCase();
+    const items = document.querySelectorAll('.friend-item-modern');
+    items.forEach(item => {
+      const name = item.dataset.name || '';
+      const email = item.dataset.email || '';
+      if (name.toLowerCase().includes(term) || email.toLowerCase().includes(term)) {
+        item.style.display = 'flex';
+      } else {
+        item.style.display = 'none';
+      }
+    });
+  });
+
   fetchFriends();
   fetchPendingFriendRequests();
 }

@@ -19,71 +19,78 @@ const escapeHtml = (value = '') =>
  */
 
 export async function fetchUserGroups() {
-  const el = document.getElementById('groups-list');
-  if (!el || !appState.currentUser) return;
+  const container = document.getElementById('groups-list');
+  if (!container) return;
 
-  const { data, error } = await db
+  const { data: groups, error } = await db
     .from('split_groups')
     .select('group_id, invite, group_info(group_title, description, owner_id)')
-    .eq('user_id', appState.currentUser.id);
+    .eq('user_id', appState.currentUser.id)
+    .order('created_at', { ascending: false });
 
   if (error) {
-    el.classList.remove('groups-grid');
-    el.innerHTML = '<div class="text-red-500">No Groups Found</div>';
-    return;
-  }
-  const confirmed = (data || []).filter((row) => row.invite !== true);
-  if (!confirmed.length) {
-    el.classList.remove('groups-grid');
-    el.innerHTML = '<div class="text-gray-500">You have not created any groups yet.</div>';
+    console.error('Error fetching groups:', error);
+    container.innerHTML = '<p class="text-red-500 p-4">Failed to load groups.</p>';
     return;
   }
 
-  if (appState.currentGroup) {
-    const match = confirmed.find((row) => row.group_id === appState.currentGroup.id);
-    if (match?.group_info?.owner_id) {
-      appState.currentGroup.owner_id = match.group_info.owner_id;
-    }
+  // Filter out invites (handled separately)
+  const confirmed = (groups || []).filter(g => g.invite !== true);
+
+  if (!confirmed || confirmed.length === 0) {
+    container.innerHTML = `
+      <div class="backdrop-blur-xl bg-white/40 dark:bg-gray-800/40 border border-gray-200/50 dark:border-gray-700/50 shadow-lg rounded-2xl p-12 text-center">
+        <div class="w-16 h-16 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center mx-auto mb-4">
+           <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 dark:text-emerald-400"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h3 class="text-lg font-medium text-gray-900 dark:text-white">No groups yet</h3>
+        <p class="text-gray-500 dark:text-gray-400 mt-1">Create your first group to get started.</p>
+      </div>`;
+    return;
   }
 
-  const cards = confirmed
-    .map((g) => {
-      const title = g.group_info?.group_title || 'Untitled group';
-      const description = g.group_info?.description || 'No description yet.';
-      const ownerId = g.group_info?.owner_id || '';
-      const safeTitle = encodeURIComponent(title);
-      const safeDesc = encodeURIComponent(description);
-      return `
-        <button
-          type="button"
-          class="group-card"
-          data-action="view-group"
-          data-group-id="${g.group_id}"
-          data-group-title="${safeTitle}"
-          data-group-desc="${safeDesc}"
-          data-owner-id="${ownerId}">
-          <div class="group-card__header">
-            <span class="group-card__meta">Group</span>
-            <span
-              class="group-card__settings"
-              aria-label="Edit group settings"
-              data-action="edit-group"
-              data-group-id="${g.group_id}"
-              data-group-title="${safeTitle}"
-              data-group-desc="${safeDesc}"
-              data-owner-id="${ownerId}">
-              <img src="${GEAR_ICON_URL}" alt="" class="group-card__settings-icon" />
-            </span>
-          </div>
-          <div class="group-card__title">${title}</div>
-          <p class="group-card__desc">${description}</p>
-          <span class="text-emerald-500 text-sm font-semibold">Open group →</span>
-        </button>`;
-    })
-    .join('');
+  // Pre-fetch member counts or details if needed?
+  // Ideally, we'd join 'group_members', but the current query is on 'split_groups'.
+  // For now, we will just render the card with the info we have.
 
-  el.classList.add('groups-grid');
-  el.innerHTML = cards;
+  container.innerHTML = confirmed.map(g => {
+    const info = g.group_info;
+    const title = info?.group_title || 'Untitled Group';
+    const desc = info?.description || 'No description';
+
+    // We can't easily get member count/avatars without a join or separate fetch here,
+    // so we'll stick to a clean card layout without the avatars for now, or just show "View Details"
+
+    return `
+    <div onclick="window.history.pushState({}, '', '/${appState.currentUser.id}/groups/${g.group_id}'); window.dispatchEvent(new Event('popstate'));" 
+         class="group cursor-pointer backdrop-blur-xl bg-white/60 dark:bg-gray-800/60 border border-gray-200/50 dark:border-gray-700/50 shadow-md hover:shadow-xl hover:scale-[1.01] transition-all duration-300 rounded-2xl overflow-hidden">
+        <div class="p-6">
+            <div class="flex items-start justify-between mb-4">
+                <div class="flex items-center gap-4">
+                    <div class="w-14 h-14 rounded-2xl bg-gradient-to-br from-emerald-500/20 to-emerald-500/5 flex items-center justify-center border border-emerald-500/10 shadow-sm group-hover:shadow-md transition-all">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-emerald-600 dark:text-emerald-400"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    </div>
+                    <div>
+                        <h3 class="text-lg font-bold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">${escapeHtml(title)}</h3>
+                        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1 line-clamp-1">${escapeHtml(desc)}</p>
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 dark:bg-emerald-900/30 text-emerald-800 dark:text-emerald-300">
+                      Active
+                    </span>
+                </div>
+            </div>
+            
+            <div class="pt-4 border-t border-gray-100 dark:border-gray-700/50 flex justify-between items-center">
+                <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400">
+                    <span>View Group Details</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="group-hover:translate-x-1 transition-transform"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
+                </div>
+            </div>
+        </div>
+    </div>`;
+  }).join('');
 }
 
 export async function fetchPendingProposals() {
@@ -412,9 +419,11 @@ export async function fetchGroupExpenseActivity(groupId) {
  * ===============================================================
  */
 export async function fetchPendingFriendRequests() {
-  const el = document.getElementById('pending-requests-list');
+  const container = document.getElementById('pending-requests-list');
+  const wrapper = document.getElementById('pending-container'); // Parent wrapper
   const user = appState.currentUser;
-  if (!el || !user) return;
+
+  if (!container || !user) return;
 
   const { data, error } = await db
     .from('friend_request')
@@ -422,13 +431,19 @@ export async function fetchPendingFriendRequests() {
     .eq('id_1', user.id);
 
   if (error) {
-    el.innerHTML = '<div class="text-red-500">Unable to load requests.</div>';
+    console.error('Error fetching requests', error);
+    if (wrapper) wrapper.classList.add('hidden');
     return;
   }
+
   if (!data || data.length === 0) {
-    el.innerHTML = '<div class="text-gray-500">No pending requests.</div>';
+    if (wrapper) wrapper.classList.add('hidden');
+    container.innerHTML = '';
     return;
   }
+
+  // Show wrapper if we have requests
+  if (wrapper) wrapper.classList.remove('hidden');
 
   const requests = await Promise.all(
     data.map(async (row) => {
@@ -442,48 +457,39 @@ export async function fetchPendingFriendRequests() {
     })
   );
 
-  el.innerHTML = requests
-    .map(({ sender, created_at, requesterId, requesteeId }) => {
-      const avatar = sender.profile_picture
-        ? `<img src="${sender.profile_picture}" alt="${escapeHtml(sender.first_name || '')} ${escapeHtml(sender.last_name || '')}" />`
-        : `<span>${(sender.first_name?.[0] || '')}${(sender.last_name?.[0] || '')}</span>`;
-      let date = '';
-      if (created_at) {
-        const parsed = new Date(created_at);
-        if (!Number.isNaN(parsed.valueOf())) {
-          date = parsed.toLocaleDateString();
-        }
-      }
-      const usernameLabel = sender.username ? `@${sender.username}` : '';
-      return `<div class="pending-item invite-card friend-request-card">
-            <div class="invite-card__copy">
-                <div class="friend-avatar friend-avatar--small">${avatar}</div>
-                <p class="invite-card__title">
-                    ${sender.first_name} ${sender.last_name}
-                    ${usernameLabel ? `<span class="invite-card__username">${usernameLabel}</span>` : ''}
-                </p>
-                <p class="invite-card__desc">${sender.email}</p>
-                <p class="invite-card__date">${date}</p>
-            </div>
-            <div class="invite-card__actions">
-                <button class="invite-card__action invite-card__action--accept"
-                    data-action="respond-friend-request"
-                    data-response="accept"
-                    data-requester="${requesterId}"
-                    data-requestee="${requesteeId}"
-                    aria-label="Accept friend request">
-                    &#10003;
-                </button>
-                <button class="invite-card__action invite-card__action--decline"
-                    data-action="respond-friend-request"
-                    data-response="reject"
-                    data-requester="${requesterId}"
-                    data-requestee="${requesteeId}"
-                    aria-label="Reject friend request">
-                    &#10005;
-                </button>
-            </div>
-        </div>`;
+  container.innerHTML = requests
+    .map(({ sender, requesterId, requesteeId }) => {
+      const name = `${sender.first_name || ''} ${sender.last_name || ''}`.trim() || sender.email;
+      const email = sender.email || '';
+
+      return `
+    <div class="flex items-center justify-between p-3 bg-white/50 dark:bg-gray-700/30 rounded-lg border border-gray-100 dark:border-gray-600/50 mb-2">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/50 flex items-center justify-center text-emerald-700 dark:text-emerald-300 font-bold">
+            ${(name[0] || '?').toUpperCase()}
+        </div>
+        <div>
+           <p class="text-sm font-semibold text-gray-900 dark:text-white">${escapeHtml(name)}</p>
+           <p class="text-xs text-gray-500 dark:text-gray-400">${escapeHtml(email)}</p>
+        </div>
+      </div>
+      <div class="flex gap-2">
+        <button class="p-2 rounded-full bg-emerald-100 text-emerald-600 hover:bg-emerald-200 transition-colors" 
+                data-action="respond-friend-request" 
+                data-response="accept" 
+                data-requester="${requesterId}" 
+                data-requestee="${requesteeId}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+        </button>
+        <button class="p-2 rounded-full bg-red-50 text-red-500 hover:bg-red-100 transition-colors" 
+                data-action="respond-friend-request" 
+                data-response="reject" 
+                data-requester="${requesterId}" 
+                data-requestee="${requesteeId}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+        </button>
+      </div>
+    </div>`;
     })
     .join('');
 }
