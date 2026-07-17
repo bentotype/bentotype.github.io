@@ -1,0 +1,167 @@
+/* Sprout — Ocean theme (design ref: Sprout.dc.html, screen 4a) */
+
+:root {
+  --ink: #123330;
+  --teal: #0FA896;
+  --teal-dark: #0A8375;
+  --mist: #EAF5F2;
+  --teal-tint: #D6F1EC;
+  --ring-track: #DDECE8;
+  --coral: #FF7A59;
+  --coral-tint: #FFE3D9;
+  --text-muted: #6E8B85;
+  --text-soft: #48605A;
+  --nav-text: #3A524C;
+  --footer-text: #A9C4BD;
+  --font-display: 'Fredoka', system-ui, sans-serif;
+  --font-body: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  background: var(--mist);
+  color: var(--ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+a { text-decoration: none; color: inherit; }
+
+/* Buttons */
+.btn { display: inline-block; border-radius: 12px; font: 600 14px var(--font-display); cursor: pointer; }
+.btn-primary { background: var(--teal); color: #fff; }
+.btn-nav { padding: 9px 18px; }
+.btn-small { font-size: 10px; padding: 8px 12px; border-radius: 10px; align-self: center; }
+
+/* Nav */
+.nav {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 20px 40px;
+}
+.brand {
+  display: flex; align-items: center; gap: 10px;
+  font: 600 21px var(--font-display); color: var(--ink);
+}
+.brand-mark {
+  width: 30px; height: 30px; border-radius: 9px;
+  background: var(--teal); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font: 600 16px var(--font-display);
+}
+.nav-links { display: flex; align-items: center; gap: 28px; font: 500 14px var(--font-display); color: var(--nav-text); }
+
+/* Hero */
+.hero {
+  display: flex; align-items: center; gap: 40px;
+  padding: 36px 40px 56px;
+  max-width: 1180px; margin: 0 auto;
+}
+.hero-copy { flex: 1; }
+.eyebrow {
+  display: inline-block; background: var(--teal-tint); color: var(--teal-dark);
+  font: 600 12px var(--font-display); padding: 7px 13px; border-radius: 999px;
+  letter-spacing: .03em; text-transform: uppercase;
+}
+.hero h1 {
+  font: 600 52px/1.08 var(--font-display);
+  margin-top: 18px; letter-spacing: -.01em;
+}
+.hero-copy p {
+  font: 400 17px/1.6 var(--font-body); color: var(--text-soft);
+  max-width: 450px; margin-top: 18px;
+}
+.store-buttons { display: flex; gap: 12px; margin-top: 26px; }
+.store-btn {
+  display: flex; align-items: center; gap: 10px;
+  background: var(--ink); color: #fff;
+  padding: 11px 18px; border-radius: 14px;
+}
+.store-icon { font-size: 22px; }
+.store-btn small { display: block; font: 500 10px var(--font-body); opacity: .75; }
+.store-btn strong { display: block; font: 600 16px var(--font-display); }
+.hero-note { font: 500 13px var(--font-display); color: var(--text-muted); margin-top: 16px; }
+
+/* Hero visual */
+.hero-visual {
+  flex: none; position: relative;
+  width: 320px; height: 430px;
+  display: flex; align-items: center; justify-content: center;
+}
+.hero-circle { position: absolute; width: 300px; height: 300px; border-radius: 999px; background: var(--teal-tint); }
+.hero-float { position: absolute; z-index: 3; }
+.hero-float-game {
+  top: 20px; right: 6px; width: 64px; height: 64px; border-radius: 20px;
+  background: var(--coral-tint); display: flex; align-items: center; justify-content: center;
+  font-size: 30px; transform: rotate(8deg);
+}
+.hero-float-pts {
+  bottom: 30px; left: -6px; background: #fff; border-radius: 16px;
+  padding: 10px 14px; box-shadow: 0 10px 24px rgba(18,51,48,.14);
+}
+.pts-amount { font: 600 13px var(--font-display); color: var(--teal); }
+.pts-label { font: 400 10px var(--font-body); color: var(--text-muted); }
+
+.phone {
+  position: relative; width: 212px; height: 404px;
+  background: var(--mist); border-radius: 36px;
+  box-shadow: 0 24px 50px rgba(18,51,48,.22);
+  border: 6px solid var(--ink); overflow: hidden;
+}
+.phone-notch {
+  position: absolute; top: 10px; left: 50%; transform: translateX(-50%);
+  width: 70px; height: 20px; border-radius: 99px; background: var(--ink); z-index: 2;
+}
+.phone-screen { padding: 36px 14px 0; }
+.phone-greeting { font: 600 14px var(--font-display); }
+.phone-card { background: #fff; border-radius: 20px; padding: 14px 12px; margin-top: 10px; }
+.phone-ring-card { text-align: center; }
+.ring-wrap { position: relative; width: 132px; height: 132px; margin: 0 auto; }
+.ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+}
+.ring-time { font: 600 23px var(--font-display); }
+.ring-sub { font: 400 9px var(--font-body); color: var(--text-muted); }
+.phone-points-card { border-radius: 16px; padding: 12px; display: flex; align-items: center; justify-content: space-between; }
+.points-label { font: 400 9px var(--font-body); color: var(--text-muted); }
+.points-value { font: 600 20px var(--font-display); }
+
+/* How it works */
+.how { background: #fff; padding: 48px 40px; }
+.how h2 { text-align: center; font: 600 32px var(--font-display); }
+.how-sub { text-align: center; font: 400 15px var(--font-body); color: var(--text-soft); margin: 8px 0 32px; }
+.how-cards { display: flex; gap: 22px; max-width: 1100px; margin: 0 auto; }
+.how-card { flex: 1; background: var(--mist); border-radius: 20px; padding: 24px 22px; }
+.how-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+.step-num {
+  width: 30px; height: 30px; border-radius: 10px;
+  background: var(--teal); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font: 600 15px var(--font-display);
+}
+.step-emoji { font-size: 26px; }
+.how-card h3 { font: 600 18px var(--font-display); margin-bottom: 6px; }
+.how-card p { font: 400 14px/1.55 var(--font-body); color: var(--text-soft); }
+
+/* Footer */
+.footer {
+  background: var(--ink); color: var(--footer-text);
+  padding: 34px 40px;
+  display: flex; justify-content: space-between; align-items: center;
+}
+.brand-footer { font: 600 18px var(--font-display); color: #fff; }
+.brand-mark-small { width: 26px; height: 26px; border-radius: 8px; font-size: 14px; }
+.footer-links { display: flex; gap: 24px; font: 500 13px var(--font-body); }
+.footer-note { font: 400 12px var(--font-body); }
+
+/* Responsive */
+@media (max-width: 900px) {
+  .nav-links a:not(.btn) { display: none; }
+  .hero { flex-direction: column; padding: 24px 24px 48px; text-align: center; }
+  .hero h1 { font-size: 38px; }
+  .hero-copy p { margin-left: auto; margin-right: auto; }
+  .store-buttons { justify-content: center; }
+  .how-cards { flex-direction: column; }
+  .footer { flex-direction: column; gap: 16px; text-align: center; }
+}

@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sign up — Sprout</title>
+<meta name="description" content="Create your Sprout parent account and set up your family.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
+<style>
+  .auth-wrap {
+    min-height: calc(100vh - 90px);
+    display: flex; align-items: center; justify-content: center;
+    padding: 24px 16px 56px;
+  }
+  .auth-card {
+    width: 100%; max-width: 420px;
+    background: #fff; border-radius: 26px;
+    padding: 36px 32px;
+    box-shadow: 0 6px 20px rgba(18,51,48,.06), 0 30px 70px rgba(18,51,48,.08);
+  }
+  .auth-brand-mark {
+    width: 56px; height: 56px; border-radius: 18px;
+    background: var(--teal); color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font: 600 30px var(--font-display);
+    margin: 0 auto 14px;
+    box-shadow: 0 10px 22px rgba(15,168,150,.3);
+  }
+  .auth-card h1 {
+    font: 600 26px var(--font-display); color: var(--ink);
+    text-align: center;
+  }
+  .auth-sub {
+    font: 400 14px/1.5 var(--font-body); color: var(--text-soft);
+    text-align: center; margin: 8px 0 26px;
+  }
+  .field { margin-bottom: 14px; }
+  .field label {
+    display: block;
+    font: 600 12px var(--font-display); color: var(--text-muted);
+    text-transform: uppercase; letter-spacing: .05em;
+    margin: 0 2px 6px;
+  }
+  .field input {
+    width: 100%;
+    font: 400 15px var(--font-body); color: var(--ink);
+    background: var(--mist);
+    border: 2px solid transparent; border-radius: 14px;
+    padding: 13px 14px;
+    outline: none;
+    transition: border-color .15s, background .15s;
+  }
+  .field input::placeholder { color: #9DB6B0; }
+  .field input:focus { border-color: var(--teal); background: #fff; }
+  .auth-submit {
+    width: 100%;
+    font: 600 16px var(--font-display); color: #fff;
+    background: var(--teal);
+    border: none; border-radius: 16px;
+    padding: 15px;
+    cursor: pointer;
+    box-shadow: 0 10px 22px rgba(15,168,150,.3);
+    margin-top: 8px;
+    transition: background .15s;
+  }
+  .auth-submit:hover { background: var(--teal-dark); }
+  .auth-divider {
+    display: flex; align-items: center; gap: 12px;
+    font: 500 12px var(--font-display); color: var(--text-muted);
+    margin: 18px 0;
+  }
+  .auth-divider::before, .auth-divider::after {
+    content: ""; flex: 1; height: 1px; background: var(--ring-track);
+  }
+  .auth-alt {
+    width: 100%;
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+    font: 600 15px var(--font-display); color: #fff;
+    background: var(--ink);
+    border: none; border-radius: 16px;
+    padding: 14px;
+    cursor: pointer;
+  }
+  .auth-note {
+    font: 400 12px/1.6 var(--font-body); color: var(--text-muted);
+    text-align: center; margin-top: 18px;
+  }
+  .auth-note a { color: var(--teal-dark); font-weight: 600; }
+  .auth-footer {
+    font: 400 14px var(--font-body); color: var(--text-muted);
+    text-align: center; margin-top: 22px;
+  }
+  .auth-footer a { color: var(--ink); font-weight: 700; }
+  .auth-msg {
+    display: none;
+    font: 500 13px/1.5 var(--font-body);
+    border-radius: 12px; padding: 12px 14px; margin-bottom: 14px;
+  }
+  .auth-msg.error { display: block; background: var(--coral-tint); color: #A03A22; }
+  .auth-msg.success { display: block; background: var(--teal-tint); color: #0A5C50; }
+</style>
+</head>
+<body>
+
+<header class="nav">
+  <a class="brand" href="index.html">
+    <span class="brand-mark">S</span>Sprout
+  </a>
+  <nav class="nav-links">
+    <a href="index.html#how">How it works</a>
+    <a class="btn btn-primary btn-nav" href="signup.html">Sign up</a>
+  </nav>
+</header>
+
+<main class="auth-wrap">
+  <div class="auth-card">
+    <div class="auth-brand-mark">S</div>
+    <h1>Create your account</h1>
+    <p class="auth-sub">Set up your family in a couple of minutes.<br>Free to start — no card needed.</p>
+
+    <div id="message" class="auth-msg"></div>
+
+    <form id="signup-form">
+      <div class="field">
+        <label for="name">Your name</label>
+        <input id="name" name="name" type="text" placeholder="Jordan Rivera" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="email">Email</label>
+        <input id="email" name="email" type="email" placeholder="jordan@email.com" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="password">Password</label>
+        <input id="password" name="password" type="password" placeholder="At least 8 characters" autocomplete="new-password" minlength="8" required>
+      </div>
+      <button class="auth-submit" type="submit">Get started</button>
+    </form>
+
+    <div class="auth-divider">or</div>
+    <button class="auth-alt" type="button" id="apple-btn">🍎 Continue with Apple</button>
+
+    <p class="auth-note">
+      By signing up you agree to the <a href="#">Terms of Service</a> and
+      <a href="#">Privacy Policy</a>. Sprout is for parents — kids join by
+      pairing a device, never with their own sign-up.
+    </p>
+    <p class="auth-footer">Already have an account? <a href="#">Log in</a></p>
+  </div>
+</main>
+
+<script type="module">
+  // Wire up Supabase: replace with your project's URL and anon key
+  // (Supabase Dashboard → Settings → API).
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+
+  const SUPABASE_URL = 'https://YOUR-PROJECT.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR-ANON-KEY';
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const form = document.getElementById('signup-form');
+  const message = document.getElementById('message');
+
+  function show(kind, text) {
+    message.className = 'auth-msg ' + kind;
+    message.textContent = text;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const password = document.getElementById('password').value;
+
+    if (SUPABASE_URL.includes('YOUR-PROJECT')) {
+      show('error', 'Supabase is not configured yet — add your project URL and anon key in signup.html.');
+      return;
+    }
+
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { data: { display_name: name } },
+    });
+
+    if (error) {
+      show('error', error.message);
+    } else {
+      show('success', 'Almost there! Check your inbox to confirm your email. 🌱');
+      form.reset();
+    }
+  });
+
+  document.getElementById('apple-btn').addEventListener('click', async () => {
+    if (SUPABASE_URL.includes('YOUR-PROJECT')) {
+      show('error', 'Supabase is not configured yet — add your project URL and anon key in signup.html.');
+      return;
+    }
+    await supabase.auth.signInWithOAuth({ provider: 'apple' });
+  });
+</script>
+
+</body>
+</html>

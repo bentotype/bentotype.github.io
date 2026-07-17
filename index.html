@@ -1,31 +1,117 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8" />
-  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>KrateLink | Your Cross-Border Concierge</title>
-  <!-- Start Single Page Apps for GitHub Pages -->
-  <script type="text/javascript">
-    (function (l) {
-      if (l.search[1] === '/') {
-        var decoded = l.search.slice(1).split('&').map(function (s) {
-          return s.replace(/~and~/g, '&')
-        }).join('?');
-        window.history.replaceState(null, null,
-          l.pathname.slice(0, -1) + decoded + l.hash
-        );
-      }
-    }(window.location))
-  </script>
-  <!-- End Single Page Apps for GitHub Pages -->
-  <script type="module" crossorigin src="/assets/index-CIsVEzmu.js"></script>
-  <link rel="stylesheet" crossorigin href="/assets/index-B7UKVEPT.css">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sprout — Screen time that rewards good habits</title>
+<meta name="description" content="Set a healthy limit, let kids earn points for staying under it, and redeem them in a reward shop you control. Motivation instead of punishment.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/styles.css">
 </head>
-
 <body>
-  <div id="root"></div>
-</body>
 
+<header class="nav">
+  <a class="brand" href="#">
+    <span class="brand-mark">S</span>Sprout
+  </a>
+  <nav class="nav-links">
+    <a href="#how">How it works</a>
+    <a href="#rewards">Rewards</a>
+    <a href="#about">About</a>
+    <a href="#contact">Contact</a>
+    <a class="btn btn-primary btn-nav" href="#download">Download</a>
+  </nav>
+</header>
+
+<section class="hero">
+  <div class="hero-copy">
+    <span class="eyebrow">Rewards, not restrictions</span>
+    <h1>Screen time that<br>rewards good habits.</h1>
+    <p>Set a healthy limit, let kids earn points for staying under it, and redeem them in a reward shop you control. Motivation instead of punishment.</p>
+    <div class="store-buttons" id="download">
+      <a class="store-btn" href="#">
+        <span class="store-icon">🍎</span>
+        <span><small>Download on the</small><strong>App Store</strong></span>
+      </a>
+      <a class="store-btn" href="#">
+        <span class="store-icon">▶</span>
+        <span><small>Get it on</small><strong>Google Play</strong></span>
+      </a>
+    </div>
+    <div class="hero-note">Free to start · No ads for kids · You approve every reward</div>
+  </div>
+
+  <div class="hero-visual">
+    <div class="hero-circle"></div>
+    <div class="hero-float hero-float-game">🎮</div>
+    <div class="hero-float hero-float-pts">
+      <div class="pts-amount">+120 pts</div>
+      <div class="pts-label">earned today</div>
+    </div>
+    <div class="phone">
+      <div class="phone-notch"></div>
+      <div class="phone-screen">
+        <div class="phone-greeting">Hi, Maya</div>
+        <div class="phone-card phone-ring-card">
+          <div class="ring-wrap">
+            <svg width="132" height="132" viewBox="0 0 200 200">
+              <circle cx="100" cy="100" r="82" fill="none" stroke="#DDECE8" stroke-width="20"/>
+              <circle cx="100" cy="100" r="82" fill="none" stroke="#0FA896" stroke-width="20" stroke-linecap="round" stroke-dasharray="273 516" transform="rotate(-90 100 100)"/>
+            </svg>
+            <div class="ring-center">
+              <div class="ring-time">2h 40m</div>
+              <div class="ring-sub">of 5h limit</div>
+            </div>
+          </div>
+        </div>
+        <div class="phone-card phone-points-card">
+          <div>
+            <div class="points-label">Points</div>
+            <div class="points-value">1,240</div>
+          </div>
+          <span class="btn btn-primary btn-small">Redeem</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="how" id="how">
+  <h2>How Sprout works</h2>
+  <p class="how-sub">Three steps to a calmer household.</p>
+  <div class="how-cards">
+    <div class="how-card">
+      <div class="how-head"><span class="step-num">1</span><span class="step-emoji">⏱️</span></div>
+      <h3>Set the limits</h3>
+      <p>You choose a daily or weekly allowance and how gently points phase out after it — different rules for school days and weekends.</p>
+    </div>
+    <div class="how-card">
+      <div class="how-head"><span class="step-num">2</span><span class="step-emoji">⭐</span></div>
+      <h3>Kids earn points</h3>
+      <p>Stay under the limit and keep the full daily points. Go over and they fade out slowly — never a hard punishment.</p>
+    </div>
+    <div class="how-card" id="rewards">
+      <div class="how-head"><span class="step-num">3</span><span class="step-emoji">🎁</span></div>
+      <h3>Redeem rewards</h3>
+      <p>Kids spend points in a shop you build: extra screen time, a movie night, a snack, or a big goal like a game console.</p>
+    </div>
+  </div>
+</section>
+
+<footer class="footer" id="about">
+  <a class="brand brand-footer" href="#">
+    <span class="brand-mark brand-mark-small">S</span>Sprout
+  </a>
+  <nav class="footer-links" id="contact">
+    <a href="#">Privacy</a>
+    <a href="#">Terms</a>
+    <a href="#">Contact</a>
+    <a href="#">About</a>
+  </nav>
+  <div class="footer-note">© 2026 Sprout · Not a monitoring app</div>
+</footer>
+
+</body>
 </html>
